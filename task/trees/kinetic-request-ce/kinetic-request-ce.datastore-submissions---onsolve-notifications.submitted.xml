@@ -1,0 +1,257 @@
+<tree schema_version="1.0">
+<sourceName>Kinetic Request CE</sourceName>
+<sourceGroup>Datastore Submissions > onsolve-notifications</sourceGroup>
+<type>Tree</type>
+<status>Active</status>
+<taskTree builder_version="" schema_version="1.0" version="">
+    <name>Submitted</name>
+    <author/>
+    <notes/>
+    <lastID>54</lastID>
+    <request>
+        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+            <version>1</version>
+            <configured>true</configured>
+            <defers>false</defers>
+            <deferrable>false</deferrable>
+            <visible>false</visible>
+            <parameters/>
+            <messages/>
+            <dependents>
+                
+                
+            <task label="Not Custom" type="Complete" value="@values['Custom XML'] == &quot;No&quot;">routine_onsolve_mir3_search_notifications_v1_39</task>
+            <task label="Custom" type="Complete" value="@values['Custom XML'] == &quot;Yes&quot;">system_junction_v1_50</task></dependents>
+        </task>
+    
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="7" y="506">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters/>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        <task definition_id="routine_onsolve_mir3_search_notifications_v1" id="routine_onsolve_mir3_search_notifications_v1_39" name="Get Notifications" x="189" y="110">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Title" label="Title" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%= @values['Notification Name']%&gt;</parameter>
+        </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents>
+                <task label="Expected Output" type="Complete" value="@results['Get Notifications']['Success'].downcase == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_43</task>
+                <task label="Unexpected Output" type="Complete" value="@results['Get Notifications']['Success'].downcase != &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_51</task>
+            </dependents>
+    </task>
+      
+        
+      
+        
+      
+        
+      
+        <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_43" name="Update Notification XML Content" x="333" y="231">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."/>
+        <parameter id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= @submission['Id']%&gt;</parameter>
+        <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
+        <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{"Notification XML" =&gt; @results['Get Notifications']['Output'],
+ "Notification Method" =&gt; @results['Get Notifications']['Notification Method'],
+ "Last Retrieved At" =&gt; Time.now.iso8601,
+ "Retrieval Error" =&gt; "No",
+ "Retrieval Message" =&gt; nil}.to_json
+%&gt;</parameter>
+        <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
+        <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents>
+                <task label="" type="Complete" value="">routine_onsolve_mir3_extract_notification_parameters_v1_48</task>
+            </dependents>
+    </task>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        <task definition_id="routine_onsolve_mir3_extract_notification_parameters_v1" id="routine_onsolve_mir3_extract_notification_parameters_v1_48" name="Handle Notification Parameters" x="333" y="396">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Notification Title" label="Notification Title" menu="" required="true" tooltip="">&lt;%= @values['Notification Name']%&gt;</parameter>
+            <parameter id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="">&lt;%=@results['Get Notifications']['Output']%&gt;</parameter>
+            <parameter id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]"/>
+        </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents>
+                <task label="" type="Complete" value="">system_junction_v1_50</task>
+            </dependents>
+    </task>
+      
+        
+      
+        <task definition_id="system_junction_v1" id="system_junction_v1_50" name="Junction" x="12" y="418">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters/>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents>
+            <task label="" type="Complete" value="">system_noop_v1_17</task>
+            </dependents>
+    </task>
+      
+        <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_51" name="Update Notification XML Content-Unexpected Output" x="189" y="232">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."/>
+        <parameter id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= @submission['Id']%&gt;</parameter>
+        <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
+        <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{"Last Retrieved At" =&gt; Time.now.iso8601,
+ "Retrieval Error" =&gt; "Yes",
+ "Retrieval Message" =&gt; @results['Get Notifications']['Output']}.to_json
+%&gt;</parameter>
+        <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
+        <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents>
+                <task label="" type="Complete" value="">system_junction_v1_50</task>
+            </dependents>
+    </task>
+      
+        
+      
+        
+      
+        
+      </request>
+</taskTree>
+</tree>

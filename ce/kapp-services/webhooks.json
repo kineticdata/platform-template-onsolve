@@ -1,0 +1,37 @@
+[
+  {
+    "event": "Created",
+    "filter": "kapp('attribute:Custom Form Workflow').indexOf('Created') === -1",
+    "name": "Form Created - Space Default",
+    "type": "Form",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Forms/Created"
+  },
+  {
+    "event": "Deleted",
+    "filter": "kapp('attribute:Custom Form Workflow').indexOf('Deleted') === -1",
+    "name": "Form Deleted - Space Default",
+    "type": "Form",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Forms/Deleted"
+  },
+  {
+    "event": "Updated",
+    "filter": "kapp('attribute:Custom Form Workflow').indexOf('Updated') === -1",
+    "name": "Form Updated - Space Default",
+    "type": "Form",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Forms/Updated"
+  },
+  {
+    "event": "Submitted",
+    "filter": "form('attribute:Custom Submission Workflow').indexOf('Submitted') > -1",
+    "name": "Submission Submitted - Custom Form",
+    "type": "Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Submissions%20%3E%20${kapp('slug')}%20%3E%20${form('slug')}/Submitted"
+  },
+  {
+    "event": "Submitted",
+    "filter": "form('attribute:Custom Submission Workflow').indexOf('Submitted') === -1",
+    "name": "Submission Submitted - Kapp Default",
+    "type": "Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Submissions%20%3E%20${kapp('slug')}/Submitted"
+  }
+]

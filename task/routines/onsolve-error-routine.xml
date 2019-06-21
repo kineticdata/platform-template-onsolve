@@ -1,0 +1,134 @@
+<tree schema_version="1.0">
+<sourceName>-</sourceName>
+<sourceGroup>-</sourceGroup>
+<definitionId>routine_onsolve_error_v1</definitionId>
+<type>Global Routine</type>
+<status>Active</status>
+<taskTree builder_version="" schema_version="1.0" version="">
+    <name>OnSolve Error Routine</name>
+    <author/>
+    <notes/>
+    <lastID>8</lastID>
+    <taskDefinition id="routine_onsolve_error_v1" name="OnSolve Error Routine" schema_version="1.0" version="1">
+        <visible>false</visible>
+        <deferrable>true</deferrable>
+        <parameters>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification"/>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification"/>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record"/>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification"/>
+        </parameters>
+        <handler name="system_tree_call" version="1"/>
+        <results format="xml">
+            <result name="Output" tooltip="Output of the error process"/>
+        </results>
+    </taskDefinition>
+    <request>
+        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+            <version>1</version>
+            <configured>true</configured>
+            <defers>false</defers>
+            <deferrable>false</deferrable>
+            <visible>false</visible>
+            <parameters/>
+            <messages/>
+            <dependents>
+                
+            <task label="Has Integration Id" type="Complete" value="!@inputs['Integration Id'].nil?">kinetic_request_ce_datastore_submission_retrieve_v1_1</task>
+            <task type="Complete" label="Recipients List" value="@inputs['Integration Id'].nil? &amp;&amp; !@inputs['Recipient List'].nil?">routine_kinetic_email_template_notification_send_v1_8</task></dependents>
+        </task>
+    
+        <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_1" name="Retrieve Intgeration Config" x="192" y="98">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+        <parameter id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+        <!-- Retrieve By Query parameters -->
+        <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"/>
+        <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"/>
+        <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"/>
+        <!-- Retrieve By Id parameters -->
+        <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=@inputs['Integration Id']%&gt;</parameter>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents>
+                
+            <task type="Complete" label="Has notification email" value="!JSON.parse( @results['Retrieve Intgeration Config']['Values JSON'] )['Error Notification Email'].to_s.empty?">routine_kinetic_email_template_notification_send_v1_8</task></dependents>
+    </task>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_7" name="Add to Error Log" x="243" y="211">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."/>
+        <parameter id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for."/>
+        <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values."/>
+        <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
+        <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task name="Send Error Email" id="routine_kinetic_email_template_notification_send_v1_8" definition_id="routine_kinetic_email_template_notification_send_v1" x="405" y="108">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+                <parameter id="Recipient List" label="Recipient List" required="true" tooltip="Comma separated list of recipients (Usernames, SMTP Addresses, and/or Team Names)" menu="">&lt;%=
+if !@inputs['Recipient List'].nil?
+  @inputs['Recipient List']
+elsif !@inputs['Integration Id'].nil?
+  JSON.parse( @results['Retrieve Intgeration Config']['Values JSON'] )['Error Notification Email']
+end
+%&gt;</parameter>
+                <parameter id="Notification Template Name" label="Notification Template Name" required="true" tooltip="Name of the notification template to use when sending this email" menu="">OnSolve Error Notification</parameter>
+                <parameter id="JSON Variables" label="JSON Variables" required="false" tooltip="JSON input of miscellaneous values.  These values are used to replace placeholder content in notification messages." menu="">&lt;%=
+{
+  "Error Title":@inputs['Error Message Title'],
+  "Error Message":@inputs['Error Message Details']
+}.to_json
+%&gt;</parameter>
+                <parameter id="Kapp Slug Initiating Notification" label="Kapp Slug Initiating Notification" required="true" tooltip="The slug of the Kapp sending the notification (ex: services, queue, etc.)" menu="">task-activity-monitor</parameter>
+                <parameter id="Related Submission Id" label="Related Submission Id" required="false" tooltip="Id of the submission to get values for, required if using those or attachments in the message" menu="">&lt;%=@inputs['Submission Id']%&gt;</parameter>
+                <parameter id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)" menu=""/>
+                <parameter id="Is Datastore" label="Is Datastore" required="false" tooltip="If the Related Submission Id, or Form Slug is a datastore form." menu="">false</parameter>
+            </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      </request>
+</taskTree></tree>

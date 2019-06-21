@@ -1,0 +1,93 @@
+[
+  {
+    "event": "Invitation Created",
+    "filter": "",
+    "name": "Discussion Invitation Created",
+    "type": "Discussion",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/Kinetic%20Discussions/Discussion%20%3E%20Invitation/Created"
+  },
+  {
+    "event": "Invitation Updated",
+    "filter": "",
+    "name": "Discussion Invitation Updated",
+    "type": "Discussion",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/Kinetic%20Discussions/Discussion%20%3E%20Invitation/Created"
+  },
+  {
+    "event": "Notification",
+    "filter": "",
+    "name": "Discussion Notification Created",
+    "type": "Discussion",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/Kinetic%20Discussions/Discussion%20%3E%20Notification/Created"
+  },
+  {
+    "event": "Membership Change",
+    "filter": "team('name') === 'Role::Employee'",
+    "name": "Employee Membership Change",
+    "type": "Team",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Teams/Employee%20Membership%20Change"
+  },
+  {
+    "event": "Updated",
+    "filter": "form('attribute:Integration Config') === \"True\" && values('Status') !== valuesPrevious('Status')",
+    "name": "OnSolve Integration Config Form Status Change",
+    "type": "Datastore Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Datastore%20Submissions%20%3E%20${form('slug')}/Updated%20-%20Status%20Change"
+  },
+  {
+    "event": "Submitted",
+    "filter": "form('slug') === \"onsolve-notifications\"",
+    "name": "OnSolve Notification Create",
+    "type": "Datastore Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Datastore%20Submissions%20%3E%20${form('slug')}/Submitted"
+  },
+  {
+    "event": "Created",
+    "filter": "form('slug')===\"robot-definitions\"",
+    "name": "Robot Created",
+    "type": "Datastore Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Datastore%20Submissions%20%3E%20${form('slug')}/Saved"
+  },
+  {
+    "event": "Updated",
+    "filter": "form('slug')===\"robot-definitions\"",
+    "name": "Robot Updated",
+    "type": "Datastore Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Datastore%20Submissions%20%3E%20${form('slug')}/Saved"
+  },
+  {
+    "event": "Created",
+    "filter": "",
+    "name": "Team Created",
+    "type": "Team",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Teams/Created"
+  },
+  {
+    "event": "Deleted",
+    "filter": "",
+    "name": "Team Deleted",
+    "type": "Team",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Teams/Deleted"
+  },
+  {
+    "event": "Membership Change",
+    "filter": "!team('name').startsWith('Role::')",
+    "name": "Team Membership Change",
+    "type": "Team",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Teams/Team%20Membership%20Change"
+  },
+  {
+    "event": "Updated",
+    "filter": "",
+    "name": "Team Updated",
+    "type": "Team",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Teams/Updated"
+  },
+  {
+    "event": "Created",
+    "filter": "user('invitedBy') === null",
+    "name": "User Created",
+    "type": "User",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Users/Created"
+  }
+]

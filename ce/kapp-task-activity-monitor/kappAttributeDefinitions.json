@@ -1,0 +1,17 @@
+[
+  {
+    "allowsMultiple": false,
+    "description": "The product used by the OnSolve Customer - MIR3 or SWN",
+    "name": "OnSolve Product"
+  },
+  {
+    "allowsMultiple": false,
+    "description": "The number of days before polling runs are removed from the task system.",
+    "name": "Polling Artifact Cleanup Days"
+  },
+  {
+    "allowsMultiple": false,
+    "description": "The field in the OnSolve tool that will uniquely identify this user. Either 'username' or 'employeeId' or 'userId'. Must match the spelling and case exactly.",
+    "name": "Unique Individual Identifier Field"
+  }
+]
