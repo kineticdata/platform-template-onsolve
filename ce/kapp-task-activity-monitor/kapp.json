@@ -8,6 +8,12 @@
       ]
     },
     {
+      "name": "Polling Artifact Cleanup Days",
+      "values": [
+        "30"
+      ]
+    },
+    {
       "name": "Unique Individual Identifier Field",
       "values": [
         "employeeId"
