@@ -237,7 +237,7 @@
           "defaultResourceName": null,
           "visible": "(values('Retrieval Error') !== \"Yes\" && values('Custom XML')!==\"Yes\" && submission('id') !==null) || values('Custom XML')===\"Yes\"",
           "enabled": true,
-          "required": false,
+          "required": true,
           "requiredMessage": null,
           "omitWhenHidden": false,
           "pattern": null,
@@ -250,8 +250,27 @@
           "renderAttributes": {
           },
           "dataType": "string",
-          "renderType": "text",
-          "rows": 1
+          "renderType": "dropdown",
+          "choicesResourceName": null,
+          "choicesRunIf": null,
+          "choices": [
+            {
+              "label": "Callout Info",
+              "value": "calloutInfo"
+            },
+            {
+              "label": "Broadcast Info",
+              "value": "broadcastInfo"
+            },
+            {
+              "label": "Bulletin Board Info",
+              "value": "bulletinBoardInfo"
+            },
+            {
+              "label": "First Response Info",
+              "value": "firstResponseInfo"
+            }
+          ]
         },
         {
           "type": "field",
