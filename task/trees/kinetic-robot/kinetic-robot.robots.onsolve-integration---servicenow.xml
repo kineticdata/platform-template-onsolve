@@ -19,9 +19,9 @@
             <messages/>
             <dependents>
                 
-            <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
+            <task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
                 
-            <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_join_v1_74</task></dependents>
+            <task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">system_join_v1_74</task></dependents>
         </task>
     
         <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="14" y="99">
@@ -631,7 +631,7 @@ query
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_junction_v1_45</task><task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">utilities_create_trigger_v1_15</task></dependents>
+      <dependents><task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">system_junction_v1_45</task><task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">utilities_create_trigger_v1_15</task></dependents>
     </task>
       
         <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="659" y="220">
@@ -670,5 +670,4 @@ query
       <dependents/>
     </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>
