@@ -13,6 +13,7 @@
     "routine_kinetic_datastore_form_delete_v1",
     "routine_kinetic_datastore_form_retrieve_v1",
     "routine_kinetic_datastore_form_update_v1",
+    "routine_kinetic_datastore_forms_retrieve_list_custom_v1",
     "routine_kinetic_datastore_forms_retrieve_list_v1"
   ]
 }

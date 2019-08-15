@@ -42,6 +42,13 @@
     "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Datastore%20Submissions%20%3E%20${form('slug')}/Submitted"
   },
   {
+    "event": "Updated",
+    "filter": "form('slug') === \"onsolve-notifications\" && values('Refresh') === \"Refresh\"",
+    "name": "OnSolve Notification Update - Refresh",
+    "type": "Datastore Submission",
+    "url": "${space('attribute:Task Server Scheme')}://${space('attribute:Task Server Host')}/kinetic-task/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Datastore%20Submissions%20%3E%20${form('slug')}/Updated"
+  },
+  {
     "event": "Created",
     "filter": "form('slug')===\"robot-definitions\"",
     "name": "Robot Created",

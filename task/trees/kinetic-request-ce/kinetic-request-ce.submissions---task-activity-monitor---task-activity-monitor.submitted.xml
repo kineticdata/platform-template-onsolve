@@ -615,7 +615,7 @@ duration = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['T
   "Task Activity Monitor Submission" =&gt; @submission['Id'],
   "Source Id" =&gt; @values['Source Id'],
   "Source Data" =&gt; begin JSON.parse( @values['Source Data'] ) rescue @values['Source Data'] end,
-  "Unique Individual Identifier Field" =&gt; @kapp_attributes['Unique Individual Identifier Field'],
+  "MIR3 Unique User Match Field" =&gt; @values['MIR3 Unique User Match Field'],
   "Onsolve Product" =&gt; @kapp_attributes['OnSolve Product'],
   "Deferral Token" =&gt; @results['Defer: Initial Notification Process']['deferral_token']
 }.to_json
@@ -666,7 +666,7 @@ duration = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['T
   "Task Activity Monitor Submission" =&gt; @submission['Id'],
   "Source Id" =&gt; @values['Source Id'],
   "Source Data" =&gt; begin JSON.parse( @values['Source Data'] ) rescue @values['Source Data'] end,
-  "Unique Individual Identifier Field" =&gt; @kapp_attributes['Unique Individual Identifier Field'],
+  "MIR3 Unique User Match Field" =&gt; @values['MIR3 Unique User Match Field'],
   "Onsolve Product" =&gt; @kapp_attributes['OnSolve Product'],
   "Deferral Token" =&gt; @results['Defer: Initial Notification Process']['deferral_token']
 }.to_json

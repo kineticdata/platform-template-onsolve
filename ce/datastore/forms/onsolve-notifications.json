@@ -98,6 +98,13 @@
       "unique": false
     },
     {
+      "name": "values[Refresh]",
+      "parts": [
+        "values[Refresh]"
+      ],
+      "unique": false
+    },
+    {
       "name": "values[Retrieval Error]",
       "parts": [
         "values[Retrieval Error]"
@@ -120,6 +127,25 @@
       "displayCondition": null,
       "displayPage": null,
       "elements": [
+        {
+          "type": "button",
+          "label": "Refresh",
+          "name": "Refresh",
+          "visible": true,
+          "enabled": true,
+          "renderType": "custom",
+          "renderAttributes": {
+            "class": "pull-right"
+          },
+          "events": [
+            {
+              "name": "Set Fields and Save",
+              "type": "Click",
+              "action": "Custom",
+              "code": "K('field[Refresh]').value(\"Refresh\");\n//K('form').save();\nK('form').submitPage();\n\n//https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\n//window.location = \"#/kapps/task-activity-monitor/settings/message_templates\";"
+            }
+          ]
+        },
         {
           "type": "field",
           "name": "Custom XML",
@@ -356,6 +382,38 @@
           },
           "dataType": "string",
           "renderType": "datetime"
+        },
+        {
+          "type": "field",
+          "name": "Refresh",
+          "label": "Refresh",
+          "key": "f8",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": false,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": false,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "radio",
+          "choicesResourceName": null,
+          "choicesRunIf": null,
+          "choices": [
+            {
+              "label": "Refresh",
+              "value": "Refresh"
+            }
+          ]
         },
         {
           "type": "button",

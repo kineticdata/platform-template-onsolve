@@ -1,0 +1,165 @@
+<tree schema_version="1.0">
+<sourceName>-</sourceName>
+<sourceGroup>-</sourceGroup>
+<definitionId>routine_onsolve_get_active_integrations_v1</definitionId>
+<type>Global Routine</type>
+<status>Active</status>
+<taskTree schema_version="1.0" version="" builder_version="">
+    <name>OnSolve Get Active Integrations</name>
+    <author/>
+    <notes/>
+    <lastID>7</lastID>
+    <taskDefinition id="routine_onsolve_get_active_integrations_v1" name="OnSolve Get Active Integrations" schema_version="1.0" version="1">
+        <visible>false</visible>
+        <deferrable>true</deferrable>
+        <parameters/>
+        <handler name="system_tree_call" version="1"/>
+        <results format="xml">
+            <result name="JSON Output" tooltip=""/>
+        </results>
+    </taskDefinition>
+    <request>
+        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+            <version>1</version>
+            <configured>true</configured>
+            <defers>false</defers>
+            <deferrable>false</deferrable>
+            <visible>false</visible>
+            <parameters/>
+            <messages/>
+            <dependents><task type="Complete" label="" value="">routine_kinetic_datastore_forms_retrieve_list_custom_v1_1</task></dependents>
+        </task>
+    
+        <task name="Get Datastore Forms" id="routine_kinetic_datastore_forms_retrieve_list_custom_v1_1" definition_id="routine_kinetic_datastore_forms_retrieve_list_custom_v1" x="99" y="110">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Query" label="Query" required="false" tooltip="Query to use to fetch datastore forms. All datastore forms fetched when left blank" menu=""/>
+            <parameter id="Include" label="Include" required="false" tooltip="Comma-separated list of properties to include in the response (defaults to: details,attributesMap,indexDefinitions,pages,securityPolicies,fields,customHeadContent)" menu="">attributes[Integration Config]</parameter>
+        </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">utilities_echo_v1_2</task></dependents>
+    </task>
+      
+        <task name="Extract forms into XML" id="utilities_echo_v1_2" definition_id="utilities_echo_v1" x="242" y="110">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="input" label="Input" required="true" tooltip="" menu="">&lt;%=
+forms = JSON.parse(@results['Get Datastore Forms']['Datastore Forms List JSON'])
+
+config_forms=[]
+
+# Forms are retrieved with a single attribute include.  If a form has it, it will be listed, else the attributes will be an empty array
+forms.each {|form|
+  if form['attributes'].size &gt; 0 &amp;&amp; form['attributes'][0]['values'][0].to_s.strip.downcase == "true"
+    config_forms.push( form['slug'] )
+  end
+}
+
+"&lt;formSlugs&gt;#{config_forms.map{|form| "&lt;formSlug&gt;#{form}&lt;/formSlug&gt;"}.join}&lt;/formSlugs&gt;"
+%&gt;</parameter>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">system_loop_head_v1_3</task></dependents>
+    </task>
+      
+        <task name="Loop Head" id="system_loop_head_v1_3" definition_id="system_loop_head_v1" x="385" y="130">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="data_source" label="Data Source:" required="true" tooltip="The source that contains the data to use to create each task in the loop." menu="">&lt;%=@results['Extract forms into XML']['output']%&gt;</parameter>
+        <parameter id="loop_path" label="Loop Path:" required="true" tooltip="The XPath statement to indicate what data records to process." menu="">/formSlugs/formSlug</parameter>
+        <parameter id="var_name" label="Variable Name:" required="false" tooltip="The local variable name used to represent the data used in loop tasks." menu=""/>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">system_loop_tail_v1_4</task><task type="Complete" label="" value="">routine_kinetic_datastore_submissions_retrieve_list_v1_5</task></dependents>
+    </task>
+      
+        <task name="Loop Tail" id="system_loop_tail_v1_4" definition_id="system_loop_tail_v1" x="382.0833435058594" y="214.96669006347656">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+        <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" tooltip="If some, how many?" required="false" menu=""/>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">system_tree_return_v1_6</task></dependents>
+    </task>
+      
+        <task name="Get Datastore Form Submissions" id="routine_kinetic_datastore_submissions_retrieve_list_v1_5" definition_id="routine_kinetic_datastore_submissions_retrieve_list_v1" x="565" y="99">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+                <parameter id="Form Slug" label="Form Slug" required="false" tooltip="The slug of the Form to find submissions in." menu="">&lt;%=@results['Loop Head']['Value']%&gt;</parameter>
+                <parameter id="Index To Search" label="Index To Search" required="false" tooltip="The Index definition to search (i.e. values[Name],values[Status])" menu="">values[Status]</parameter>
+                <parameter id="Core State" label="Core State" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states." menu=""/>
+                <parameter id="Direction" label="Direction" required="false" tooltip="Result Set sorting direction. The default value is ascending." menu=""/>
+                <parameter id="Limit" label="Limit" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000" menu="">1000</parameter>
+                <parameter id="Query" label="Query" required="false" tooltip="Query to use to fetch submissions. (i.e values[First Name]=&quot;Fred&quot;)" menu="">values[Status]="Active"</parameter>
+                <parameter id="Next Page Token" label="Next Page Token" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results." menu=""/>
+            </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">system_loop_tail_v1_4</task></dependents>
+    </task>
+      
+        <task name="Return" id="system_tree_return_v1_6" definition_id="system_tree_return_v1" x="385.0833435058594" y="321.96669006347656">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="JSON Output" label="JSON Output" required="false" tooltip="" menu="">&lt;%=
+submissions = []
+
+@results['Get Datastore Form Submissions'].collect{|results|
+  result = JSON.parse(results[1]['Submissions List JSON'])
+  result.each{|submission|
+    submissions.push({"id" =&gt; submission['id'],"name" =&gt; submission['values']['Name']})
+  }
+}
+
+submissions.to_json
+%&gt;</parameter>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        
+      </request>
+</taskTree></tree>

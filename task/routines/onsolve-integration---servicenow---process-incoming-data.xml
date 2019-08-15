@@ -69,8 +69,8 @@ query%&gt;</parameter>
       </messages>
       <dependents>
                 <task label="None" type="Complete" value="@results['Active Alerts']['Count'].to_i == 0">kinetic_request_ce_submission_create_v1_2</task>
-                <task label="Any - Non Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;integration_config['Unique Tickets Only'] == &quot;No&quot; &amp;&amp; &#10;@results['Active Alerts']['Count'].to_i &gt; 0">system_noop_v1_4</task>
-            <task label="Any - Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;integration_config['Unique Tickets Only'] == &quot;Yes&quot; &amp;&amp; &#10;@results['Active Alerts']['Count'].to_i &gt; 0">system_junction_v1_11</task></dependents>
+                <task label="Any - Non Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#xA;integration_config['Notify more than once per record'] == &quot;Yes&quot; &amp;&amp; &#xA;@results['Active Alerts']['Count'].to_i &gt; 0">system_noop_v1_4</task>
+            <task label="Any - Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#xA;integration_config['Notify more than once per record'] == &quot;No&quot; &amp;&amp; &#xA;@results['Active Alerts']['Count'].to_i &gt; 0">system_junction_v1_11</task></dependents>
     </task>
       
         <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_2" name="Create Submission" x="77" y="197">
@@ -95,7 +95,7 @@ details = JSON.parse( @inputs['Source Data'] )
   "Response Expected" =&gt; integration_details['Notification Response Expected'],
   "Message" =&gt; "Service Now Ticket: #{details['number']['value']}",
   "Source Id" =&gt; details['sys_id']['value'],
-  "Source Reference Id" =&gt; details[integration_details['Display Reference Field Database Name']]['value'],
+  "Source Reference Id" =&gt; details[integration_details['External Unique Key Field Name']]['value'],
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
 }.to_json%&gt;</parameter>
@@ -154,7 +154,7 @@ details = JSON.parse( @inputs['Source Data'] )
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="Has Restart Criteria" type="Complete" value="!(JSON.parse( @inputs['Integration Config Values'] )['Restart Notification Criteria']).nil?&#10;&#10;">utilities_echo_v1_5</task>
+                <task label="Has Restart Criteria" type="Complete" value="!(JSON.parse( @inputs['Integration Config Values'] )['Restart Notification Criteria']).nil?&#xA;&#xA;">utilities_echo_v1_5</task>
                 <task label="Has Stop Criteria" type="Complete" value="!(JSON.parse( @inputs['Integration Config Values'] )['Stop Notification Criteria']).nil?">utilities_echo_v1_9</task>
             </dependents>
     </task>
@@ -298,7 +298,7 @@ details = JSON.parse( @inputs['Source Data'] )
   "Response Expected" =&gt; integration_details['Notification Response Expected'],
   "Message" =&gt; "Service Now Ticket: #{details['number']['value']}",
   "Source Id" =&gt; details['sys_id']['value'],
-  "Source Reference Id" =&gt; details[integration_details['Display Reference Field Database Name']]['value'],
+  "Source Reference Id" =&gt; details[integration_details['External Unique Key Field Name']]['value'],
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
 }.to_json%&gt;</parameter>
@@ -508,5 +508,4 @@ existing_activity_record[0]['values']['Deferral Token']
       <dependents/>
     </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>

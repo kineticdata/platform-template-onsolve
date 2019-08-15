@@ -677,7 +677,7 @@ service_now_identifier_field = JSON.parse( @source['Data'] )['Integration Config
       <parameters>
         <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 # identify the field that we're pulling back from ServiceNow
-field = JSON.parse( @source['Data'] )['Integration Configuration']['Unique Individual Identifier Field']
+field = JSON.parse( @source['Data'] )['Integration Configuration']['User Field Containing Match to OnSolve Users']
 
 # put oncall users into a hash for easy lookup
 oncall_users = {}
@@ -772,5 +772,4 @@ end
       <dependents><task label="" type="Complete" value="">utilities_echo_v1_12</task></dependents>
     </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>
