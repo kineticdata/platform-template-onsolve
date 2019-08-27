@@ -7,7 +7,7 @@
     <name>ServiceNow Standard Results Process</name>
     <author/>
     <notes/>
-    <lastID>36</lastID>
+    <lastID>40</lastID>
     <request>
         <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
             <version>1</version>
@@ -22,7 +22,7 @@
             <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_create_v1_35</task></dependents>
         </task>
     
-        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="Send Complete Trigger" x="1042" y="236">
+        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="Send Complete Trigger" x="626" y="396">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -82,33 +82,7 @@ JSON.parse(@source['Data'])['Deferral Token']
       
         
       
-        <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_10" name="Update SNow" x="693" y="0">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-    <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%=
-integration_config = JSON.parse(@source['Data'])['Integration Configuration']
-integration_config['Schema Name']
-%&gt;</parameter>
-    <parameter id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%=@results['Get Task Activity Monitoring Values']['Source Id']%&gt;</parameter>
-    <parameter id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%=
-output = {}
-
-output['work_notes'] = @results['Assemble SNow Work Note-orig']['output']
-
-output.to_json
-%&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
+        
       
         
       
@@ -137,43 +111,13 @@ output.to_json
       <dependents/>
     </task>
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_14" name="Assemble SNow Work Note-orig" x="500" y="0">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
-report_output = JSON.parse(@results['Get Integration Report Results']['Output'])
-report_result = report_output['execute_custom_report_response']['report_detail']
-headers = report_result['header']['column_name']
-rows = report_result['row'] if report_result['row'].is_a? (Array)
-rows = [report_result['row']] if report_result['row'].is_a? (Hash)
-
-work_note_text = "Alerting Result"
-
-display_line_index = headers.find_index('DISPLAYLINE');
-rows.each{|row|
-  work_note_text += "\n#{row['value'][display_line_index]}"
-}
-
-work_note_text
-%&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
+        
       
         
       
         
       
-        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_17" name="Add Task Run Cleanup Entry" x="902" y="364">
+        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_17" name="Add Task Run Cleanup Entry" x="628" y="550">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -204,7 +148,7 @@ duration = integration_config['Task History Duration'].to_i
             </dependents>
     </task>
       
-        <task definition_id="system_noop_v1" id="system_noop_v1_18" name="End" x="1046" y="506">
+        <task definition_id="system_noop_v1" id="system_noop_v1_18" name="End" x="923" y="572">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -223,22 +167,7 @@ duration = integration_config['Task History Duration'].to_i
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_21" name="Update SNow: Note" x="594" y="5">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">The 'Update SNow' node also determines if the ticket should be assigned and what field and value to use.</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
+        
       
         <task definition_id="routine_onsolve_mir3_get_integration_report_results" id="routine_onsolve_mir3_get_integration_report_results_22" name="Get Integration Report Results" x="449" y="99">
       <version>1</version>
@@ -333,7 +262,7 @@ report_name
       </messages>
       <dependents>
                 
-            <task label="" type="Complete" value="">utilities_echo_v1_26</task></dependents>
+            <task type="Complete" label="" value="">utilities_create_trigger_v1_1</task><task type="Complete" label="Unsuccessful" value="@results['Get Integration Report Results']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_37</task><task type="Complete" label="Unsuccessful" value="@results['Get Integration Report Results']['Success'] != &quot;true&quot;">utilities_echo_v1_39</task><task type="Complete" label="Successful" value="@results['Get Integration Report Results']['Success'] == &quot;true&quot;">utilities_echo_v1_26</task></dependents>
     </task>
       
         <task definition_id="kinetic_request_ce_submission_retrieve_v2" id="kinetic_request_ce_submission_retrieve_v2_23" name="Get Task Activity Monitoring Record" x="154" y="101">
@@ -367,7 +296,7 @@ report_name
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_26" name="Assignment Logic" x="616" y="123">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_26" name="Assignment Logic" x="725" y="143">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -412,12 +341,12 @@ output = {"notificationStatus" =&gt; notification_status, "responderType" =&gt; 
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="Expects Assignment" type="Complete" value="JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot;">servicenow_object_query_retrieve_v1_27</task>
-                <task label="No Assignment" type="Complete" value="JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot;">system_junction_v1_28</task>
+                <task label="Expects Assignment" type="Complete" value="integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">servicenow_object_query_retrieve_v1_27</task>
+                <task label="No Assignment" type="Complete" value="integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
             </dependents>
     </task>
       
-        <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_27" name="Get ServiceNow User" x="527" y="275">
+        <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_27" name="Get ServiceNow User" x="727" y="296">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -480,7 +409,7 @@ query
             </dependents>
     </task>
       
-        <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="737" y="298">
+        <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="925" y="154">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -497,7 +426,7 @@ query
             </dependents>
     </task>
       
-        <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_29" name="Assign SNow" x="629" y="418">
+        <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_29" name="Assign SNow" x="924" y="298">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -526,7 +455,7 @@ integration_config['Schema Name']
             </dependents>
     </task>
       
-        <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_30" name="Update SNow - WorkLog" x="913" y="111">
+        <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_30" name="Update SNow - WorkLog" x="1403" y="132">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -548,12 +477,10 @@ integration_config['Schema Name']
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_36</task></dependents>
+      <dependents/>
     </task>
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="Assemble Work Note" x="778" y="119">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="Assemble Work Note" x="1058" y="143">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -572,7 +499,8 @@ rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 assignment_status = nil
 ### Need to 1: Determine if they want it assigned, or the type of notification was a callout
 # Determine if notification was designed to capture a responder.
-if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']
+#if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']  # This line is previous logic.
+if integration_config['Assign Responder'] == "Yes"
   # Determine if this configuration expects a responder
   if !assignment_logic_output['responderType'].nil? &amp;&amp; assignment_logic_output['responderType'] != "0"
     # Determine if assignment was RESPONDED or TIME_OUT
@@ -598,16 +526,20 @@ if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification
     assignment_status = "Assignment not attempted per configuration."    
   end
 else
-  assignment_status = "Assignment not expected."
+  ## No assignment expected; commented out next line.
+  #assignment_status = "Assignment not expected."
 end
 
-work_note_text = "Alerting Result: #{assignment_logic_output['notificationStatus']}"
+work_note_text = "Alerting Result (UUID: @results['Get Task Activity Monitoring Values']['Onsolve Id']): #{assignment_logic_output['notificationStatus']}"
 work_note_text += "\n#{assignment_status}" if !assignment_status.nil?
 
-display_line_index = headers.find_index('DISPLAYLINE');
-rows.each{|row|
-  work_note_text += "\n#{row['value'][display_line_index]}"
-}
+if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
+  work_note_text += "\n#Status update through completion:" if !assignment_status.nil?
+  display_line_index = headers.find_index('DISPLAYLINE');
+  rows.each{|row|
+    work_note_text += "\n#{row['value'][display_line_index]}"
+  }
+end
 
 work_note_text
 %&gt;</parameter>
@@ -618,13 +550,13 @@ work_note_text
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="" type="Complete" value="">servicenow_object_update_v1_30</task>
-            </dependents>
+                
+            <task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_36</task></dependents>
     </task>
       
         
       
-        <task definition_id="system_join_v1" id="system_join_v1_33" name="Join" x="1044" y="395">
+        <task definition_id="system_join_v1" id="system_join_v1_33" name="Join" x="773" y="573">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -677,7 +609,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
       <dependents><task label="" type="Complete" value="">kinetic_request_ce_submission_retrieve_v2_23</task></dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_36" name="Update Submission Activity" x="1047" y="105">
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_36" name="Update Submission Activity" x="1209" y="133">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -706,7 +638,117 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="" type="Complete" value="">utilities_create_trigger_v1_1</task></dependents>
+      <dependents><task type="Complete" label="If result config" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">servicenow_object_update_v1_30</task></dependents>
+    </task>
+      
+        <task name="OnSolve Error Notification" id="routine_onsolve_error_v1_37" definition_id="routine_onsolve_error_v1" x="451" y="266">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
+uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
+
+"Unable to retrieve 'Integration Results' report from MIR3 for UUID: #{uuid} (Integration Name: #{integration_config['Name']}, client reference: #{client_reference})"
+%&gt;</parameter>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">&lt;%=
+results = JSON.parse(@results['Get Integration Report Results']['Output'])['Full Output JSON']
+results['message']
+%&gt;</parameter>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu=""/>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu="">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu="">&lt;%=JSON.parse( @source['Data'] )['Integration Configuration']['Error Notification Email']%&gt;</parameter>
+            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
+            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
+        </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_38" name="Update SNow - WorkLog - Error" x="1406" y="11">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+    <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%=
+integration_config = JSON.parse(@source['Data'])['Integration Configuration']
+integration_config['Schema Name']
+%&gt;</parameter>
+    <parameter id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%=@results['Get Task Activity Monitoring Values']['Source Id']%&gt;</parameter>
+    <parameter id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%= {
+ 'work_notes' =&gt; @results['Assemble Work Note - Error']['output']
+}.to_json
+%&gt;</parameter>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_39" name="Assemble Work Note - Error" x="1056" y="32">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
+uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
+
+"Alerting complete, but unable to retrieve 'Integration Results' report from MIR3 for #{client_reference} (UUID: #{uuid})"
+%&gt;</parameter>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_40</task></dependents>
+    </task>
+      
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_40" name="Update Submission Activity - Error" x="1208" y="22">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."/>
+        <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+        <parameter id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Submission Activity']['Id']%&gt;</parameter>
+        <parameter id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Completed</parameter>
+        <parameter id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity.">Source Name: &lt;%=@source['Name']%&gt;
+Source Group: &lt;%=@source['Group']%&gt;
+Source Id: &lt;%=@source['Id']%&gt;
+Run Id: &lt;%=@run['Id']%&gt;</parameter>
+        <parameter id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Completed</parameter>
+        <parameter id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Completed",
+  "Comments" =&gt; "Alert Results: #{@results['Assemble Work Note - Error']['output']}"
+}.to_json
+%&gt;</parameter>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="If result config" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">servicenow_object_update_v1_38</task></dependents>
     </task>
       </request>
 </taskTree></tree>

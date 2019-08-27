@@ -7,7 +7,7 @@
     <name>Micro Focus OBM Standard Interim Results Process</name>
     <author/>
     <notes/>
-    <lastID>45</lastID>
+    <lastID>46</lastID>
     <request>
         <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
             <version>1</version>
@@ -24,7 +24,7 @@
             </dependents>
         </task>
     
-        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="Send Update Trigger" x="625" y="351">
+        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="Send Update Trigger" x="781" y="515">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -113,7 +113,7 @@ JSON.parse(@source['Data'])['Deferral Token']
       <dependents/>
     </task>
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_14" name="Assemble Work Note" x="627" y="88">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_14" name="Assemble Work Note" x="627" y="153">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -128,7 +128,7 @@ rows = []
 rows = report_result['row'] if report_result['row'].is_a? (Array)
 rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 
-work_note_text = "Alerting Interim Update"
+work_note_text = "Alerting Interim Update (UUID: @results['Get Task Activity Monitoring Values']['Onsolve Id'])"
 
 display_line_index = headers.find_index('DISPLAYLINE');
 rows.each{|row|
@@ -143,10 +143,7 @@ work_note_text
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                
-            
-            <task label="" type="Complete" value="">obm_event_annotation_add_v1_44</task></dependents>
+      <dependents><task type="Complete" label="" value="">utilities_echo_v1_26</task></dependents>
     </task>
       
         
@@ -185,7 +182,7 @@ duration = integration_config['Task History Duration'].to_i
             </dependents>
     </task>
       
-        <task definition_id="system_noop_v1" id="system_noop_v1_18" name="End" x="814" y="671">
+        <task definition_id="system_noop_v1" id="system_noop_v1_18" name="End" x="780" y="671">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -225,10 +222,10 @@ duration = integration_config['Task History Duration'].to_i
                 
             <task label="Closed" type="Complete" value="@results['Re-Get Task Activity Monitoring Values']['Onsolve Status'] == &quot;Closed&quot;">kinetic_request_ce_submission_activity_update_v1_34</task>
                 <task label="Not Closed" type="Complete" value="@results['Re-Get Task Activity Monitoring Values']['Onsolve Status'] != &quot;Closed&quot;">system_noop_v1_36</task>
-            </dependents>
+            <task type="Complete" label="Not Closed" value="@results['Re-Get Task Activity Monitoring Values']['Onsolve Status'] != &quot;Closed&quot;">system_wait_v1_22</task></dependents>
     </task>
       
-        <task definition_id="system_wait_v1" id="system_wait_v1_22" name="Wait Interval" x="936" y="429">
+        <task definition_id="system_wait_v1" id="system_wait_v1_22" name="Wait Interval" x="625" y="249">
       <version>1</version>
       <configured>true</configured>
       <defers>true</defers>
@@ -254,7 +251,7 @@ interval_input.to_i &gt; 5 ? interval_input.to_i : 5
       
         
       
-        <task definition_id="system_junction_v1" id="system_junction_v1_24" name="Junction" x="560" y="532">
+        <task definition_id="system_junction_v1" id="system_junction_v1_24" name="Junction" x="631" y="528">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -267,13 +264,13 @@ interval_input.to_i &gt; 5 ? interval_input.to_i : 5
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#10;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_17</task>
+                <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#xA;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_17</task>
                 
-            <task label="Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#10;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_junction_v1_35</task>
+            <task label="Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#xA;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_junction_v1_35</task>
             </dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_25" name="Update Task Activity Record with Last Activity Time" x="1074" y="57">
+        <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_25" name="Update Task Activity Record with Last Activity Time" x="946" y="120">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -300,13 +297,10 @@ interval_input.to_i &gt; 5 ? interval_input.to_i : 5
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_33</task>
-            </dependents>
+      <dependents><task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_33</task></dependents>
     </task>
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_26" name="Extract Last Activity Time" x="933" y="79">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_26" name="Extract Last Activity Time" x="781" y="142">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -337,11 +331,11 @@ last_activity_time
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_25</task>
-            </dependents>
+                
+            <task type="Complete" label="" value="">kinetic_request_ce_submission_update_v1_25</task></dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_submission_get_answers_v1" id="kinetic_request_ce_submission_get_answers_v1_27" name="Re-Get Task Activity Monitoring Values 2" x="790" y="407">
+        <task definition_id="kinetic_request_ce_submission_get_answers_v1" id="kinetic_request_ce_submission_get_answers_v1_27" name="Re-Get Task Activity Monitoring Values 2" x="628" y="341">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -458,7 +452,7 @@ report_name
       </messages>
       <dependents>
                 <task label="" type="Complete" value="">kinetic_request_ce_submission_get_answers_v1_21</task>
-            </dependents>
+            <task type="Complete" label="Unsuccessful" value="@results['Get Integration Report Results']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_46</task></dependents>
     </task>
       
         <task definition_id="kinetic_request_ce_submission_retrieve_v2" id="kinetic_request_ce_submission_retrieve_v2_30" name="Get Task Activity Monitoring Record" x="11" y="232">
@@ -523,7 +517,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
             </dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_33" name="Update Submission Activity - Not Closed" x="1231" y="76">
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_33" name="Update Submission Activity - Not Closed" x="1098" y="132">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -553,9 +547,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_junction_v1_40</task>
-            </dependents>
+      <dependents><task type="Complete" label="" value="">obm_event_annotation_add_v1_44</task></dependents>
     </task>
       
         <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_34" name="Update Submission Activity - Closed" x="440" y="384">
@@ -593,7 +585,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
             </dependents>
     </task>
       
-        <task definition_id="system_junction_v1" id="system_junction_v1_35" name="Junction: End" x="626" y="661">
+        <task definition_id="system_junction_v1" id="system_junction_v1_35" name="Junction: End" x="627" y="660">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -628,7 +620,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
             </dependents>
     </task>
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_37" name="Assemble Work Note - Error" x="627" y="197">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_37" name="Assemble Work Note - Error" x="627" y="12">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -651,12 +643,12 @@ work_note_text
       </messages>
       <dependents>
                 
-            <task label="" type="Complete" value="">obm_event_annotation_add_v1_45</task></dependents>
+            <task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_39</task></dependents>
     </task>
       
         
       
-        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_39" name="Update Submission Activity - Not Closed - Error" x="935" y="175">
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_39" name="Update Submission Activity - Not Closed - Error" x="1098" y="11">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -686,64 +678,18 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                <task label="" type="Complete" value="">routine_onsolve_error_v1_43</task>
-            </dependents>
-    </task>
-      
-        <task definition_id="system_junction_v1" id="system_junction_v1_40" name="Junction: Successful" x="1144" y="417">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters/>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_wait_v1_22</task>
-            </dependents>
+      <dependents><task type="Complete" label="" value="">obm_event_annotation_add_v1_45</task></dependents>
     </task>
       
         
       
         
       
-        <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_43" name="OnSolve Error Notification" x="1077" y="198">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>true</defers>
-      <deferrable>true</deferrable>
-      <visible>false</visible>
-      <parameters>
-            <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">&lt;%=
-uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
-client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
-
-"Unable to retrieve interim update from MIR3 for #{client_reference} (UUID: #{uuid})"
-%&gt;</parameter>
-            <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=
-report_results = JSON.parse(@results['Get Integration Report Results']['Output'])['Full Output JSON']
-report_results['message']
-%&gt;</parameter>
-            <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"/>
-            <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
-            <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse(@source['Data'])['Integration Configuration']['Error Notification Email']%&gt;</parameter>
-        </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_junction_v1_40</task>
-            </dependents>
-    </task>
+        
       
-        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_44" name="Add Event Annotation" x="792" y="87">
+        
+      
+        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_44" name="Add Event Annotation" x="1252" y="153">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -758,10 +704,10 @@ report_results['message']
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="" type="Complete" value="">utilities_echo_v1_26</task></dependents>
+      <dependents/>
     </task>
       
-        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_45" name="Add Event Annotation - Error" x="793" y="197">
+        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_45" name="Add Event Annotation - Error" x="1252" y="23">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -776,8 +722,37 @@ report_results['message']
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_39</task></dependents>
+      <dependents/>
+    </task>
+      
+        <task name="OnSolve Error Notification" id="routine_onsolve_error_v1_46" definition_id="routine_onsolve_error_v1" x="282.9666442871094" y="393.0833282470703">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">&lt;%=
+uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
+client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
+
+"Unable to retrieve interim update from MIR3 for #{client_reference} (UUID: #{uuid})"
+%&gt;</parameter>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">&lt;%=
+report_results = JSON.parse(@results['Get Integration Report Results']['Output'])['Full Output JSON']
+report_results['message']
+%&gt;</parameter>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu=""/>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu=""/>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu="">&lt;%=JSON.parse(@source['Data'])['Integration Configuration']['Error Notification Email']%&gt;</parameter>
+            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
+            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
+        </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
     </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>

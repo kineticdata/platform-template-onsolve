@@ -7,7 +7,7 @@
     <name>BMC Remedy Standard Results Process</name>
     <author/>
     <notes/>
-    <lastID>43</lastID>
+    <lastID>47</lastID>
     <request>
         <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
             <version>1</version>
@@ -22,7 +22,7 @@
             <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_create_v1_42</task></dependents>
         </task>
     
-        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="Send Complete Trigger" x="1042" y="236">
+        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_1" name="Send Complete Trigger" x="624" y="399">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -42,8 +42,8 @@ JSON.parse(@source['Data'])['Deferral Token']
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#10;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_17</task>
-                <task label="Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#10;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_join_v1_33</task>
+                <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#xA;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_17</task>
+                <task label="Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#xA;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_join_v1_33</task>
             </dependents>
     </task>
       
@@ -117,7 +117,7 @@ JSON.parse(@source['Data'])['Deferral Token']
       
         
       
-        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_17" name="Add Task Run Cleanup Entry" x="904" y="366">
+        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_17" name="Add Task Run Cleanup Entry" x="624" y="553">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -148,7 +148,7 @@ duration = integration_config['Task History Duration'].to_i
             </dependents>
     </task>
       
-        <task definition_id="system_noop_v1" id="system_noop_v1_18" name="End" x="1046" y="506">
+        <task definition_id="system_noop_v1" id="system_noop_v1_18" name="End" x="922" y="575">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -262,8 +262,8 @@ report_name
       </messages>
       <dependents>
                 
-            <task label="" type="Complete" value="">utilities_echo_v1_26</task>
-            </dependents>
+            
+            <task type="Complete" label="Unsuccessful" value="@results['Get Integration Report Results']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_46</task><task type="Complete" label="Unsuccessful" value="@results['Get Integration Report Results']['Success'] != &quot;true&quot;">utilities_echo_v1_44</task><task type="Complete" label="Successful" value="@results['Get Integration Report Results']['Success'] == &quot;true&quot;">utilities_echo_v1_26</task><task type="Complete" label="" value="">utilities_create_trigger_v1_1</task></dependents>
     </task>
       
         <task definition_id="kinetic_request_ce_submission_retrieve_v2" id="kinetic_request_ce_submission_retrieve_v2_23" name="Get Task Activity Monitoring Record" x="153" y="103">
@@ -297,7 +297,7 @@ report_name
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_26" name="Assignment Logic" x="615" y="121">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_26" name="Assignment Logic" x="725" y="143">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -343,14 +343,14 @@ output = {"notificationStatus" =&gt; notification_status, "responderType" =&gt; 
       </messages>
       <dependents>
                 
-                <task label="No Assignment" type="Complete" value="JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot;">system_junction_v1_28</task>
-            <task label="Expects Assignment" type="Complete" value="JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot;">remedy_generic_query_retrieve_v2_39</task>
+                <task label="No Assignment" type="Complete" value="integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
+            <task label="Expects Assignment" type="Complete" value="integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">remedy_generic_query_retrieve_v2_39</task>
             </dependents>
     </task>
       
         
       
-        <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="737" y="296">
+        <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="923" y="152">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -371,7 +371,7 @@ output = {"notificationStatus" =&gt; notification_status, "responderType" =&gt; 
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="Assemble Work Note" x="782" y="121">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="Assemble Work Note" x="1055" y="143">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -390,7 +390,8 @@ rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 assignment_status = nil
 ### Need to 1: Determine if they want it assigned, or the type of notification was a callout
 # Determine if notification was designed to capture a responder.
-if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']
+#if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']  # This line is previous logic.
+if integration_config['Assign Responder'] == "Yes"
   # Determine if this configuration expects a responder
   if !assignment_logic_output['responderType'].nil? &amp;&amp; assignment_logic_output['responderType'] != "0"
     # Determine if assignment was RESPONDED or TIME_OUT
@@ -417,16 +418,20 @@ if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification
     assignment_status = "Assignment not attempted per configuration."    
   end
 else
-  assignment_status = "Assignment not expected."
+  ## No assignment expected; commented out next line.
+  #assignment_status = "Assignment not expected."
 end
 
-work_note_text = "Alerting Result: #{assignment_logic_output['notificationStatus']}"
+work_note_text = "Alerting Result (UUID: @results['Get Task Activity Monitoring Values']['Onsolve Id']): #{assignment_logic_output['notificationStatus']}"
 work_note_text += "\n#{assignment_status}" if !assignment_status.nil?
 
-display_line_index = headers.find_index('DISPLAYLINE');
-rows.each{|row|
-  work_note_text += "\n#{row['value'][display_line_index]}"
-}
+if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
+  work_note_text += "\n#Status update through completion:" if !assignment_status.nil?
+  display_line_index = headers.find_index('DISPLAYLINE');
+  rows.each{|row|
+    work_note_text += "\n#{row['value'][display_line_index]}"
+  }
+end
 
 work_note_text
 %&gt;</parameter>
@@ -438,13 +443,13 @@ work_note_text
       </messages>
       <dependents>
                 
-            <task label="" type="Complete" value="">remedy_generic_create_v2_38</task>
-            </dependents>
+            
+            <task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_43</task></dependents>
     </task>
       
         
       
-        <task definition_id="system_join_v1" id="system_join_v1_33" name="Join" x="1044" y="395">
+        <task definition_id="system_join_v1" id="system_join_v1_33" name="Join" x="767" y="575">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -472,7 +477,7 @@ work_note_text
       
         
       
-        <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_38" name="Add Remedy - WorkInfo" x="914" y="110">
+        <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_38" name="Add Remedy - WorkInfo" x="1405" y="133">
       <version>2</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -510,12 +515,10 @@ work_note_description = "Alerting Result: #{assignment_logic_output['notificatio
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_43</task></dependents>
+      <dependents/>
     </task>
       
-        <task definition_id="remedy_generic_query_retrieve_v2" id="remedy_generic_query_retrieve_v2_39" name="Get Remedy User" x="528" y="274">
+        <task definition_id="remedy_generic_query_retrieve_v2" id="remedy_generic_query_retrieve_v2_39" name="Get Remedy User" x="727" y="295">
       <version>2</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -559,12 +562,12 @@ query
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="Error Message or no user" type="Complete" value="#!@results['Get Remedy User']['Handler Error Message'].nil? || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">system_junction_v1_28</task>
-                <task label="No Error Message and not empty" type="Complete" value="#@results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;!@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">remedy_generic_update_v3_40</task>
+                <task label="Error Message or no user" type="Complete" value="#!@results['Get Remedy User']['Handler Error Message'].nil? || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#xA;@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">system_junction_v1_28</task>
+                <task label="No Error Message and not empty" type="Complete" value="#@results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#xA;!@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">remedy_generic_update_v3_40</task>
             </dependents>
     </task>
       
-        <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_40" name="Assign Remedy" x="627" y="417">
+        <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_40" name="Assign Remedy" x="924" y="297">
       <version>3</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -626,7 +629,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
       <dependents><task label="" type="Complete" value="">kinetic_request_ce_submission_retrieve_v2_23</task></dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_43" name="Update Submission Activity" x="1045" y="109">
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_43" name="Update Submission Activity" x="1211" y="133">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -655,8 +658,133 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="" type="Complete" value="">utilities_create_trigger_v1_1</task></dependents>
+      <dependents><task type="Complete" label="If result config" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">remedy_generic_create_v2_38</task></dependents>
+    </task>
+      
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_44" name="Assemble Work Note - Error" x="1055" y="33">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
+uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
+
+"Alerting complete, but unable to retrieve 'Integration Results' report from MIR3 for #{client_reference} (UUID: #{uuid})"
+%&gt;</parameter>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_47</task></dependents>
+    </task>
+      
+        <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_45" name="Add Remedy - WorkInfo - Error" x="1408" y="11">
+      <version>2</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>true</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+parameters["Work Log Form"]
+%&gt;</parameter>
+        <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+source_data = JSON.parse( @results['Get Task Activity Monitoring Values']['Source Data'] )
+assignment_logic_output = JSON.parse( @results['Assignment Logic']['output'] )
+work_note_description = "Alerting Result - Error"
+
+{
+  "Incident Entry ID" =&gt; source_data[integration_config['Field 1 Database Name']],
+  "Secure Work Log" =&gt; "Yes",
+  "View Access" =&gt; "Internal",
+  "Communication Source" =&gt; "Web",
+  "z1D Previous Operation" =&gt; "SET",
+  "Status" =&gt; "Enabled",
+  "Work Log Type" =&gt; "General Information",
+  "Incident Number" =&gt; source_data[integration_config['Display Reference Field Database Name']],
+  "Description" =&gt; work_note_description,
+  "Detailed Description" =&gt; @results['Assemble Work Note - Error']['output'],
+  "Work Log Date" =&gt; Time.now().iso8601
+}.to_json
+%&gt;</parameter>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task name="OnSolve Error Notification" id="routine_onsolve_error_v1_46" definition_id="routine_onsolve_error_v1" x="452" y="264">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
+uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
+
+"Unable to retrieve 'Integration Results' report from MIR3 for UUID: #{uuid} (Integration Name: #{integration_config['Name']}, client reference: #{client_reference})"
+%&gt;</parameter>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">&lt;%=
+results = JSON.parse(@results['Get Integration Report Results']['Output'])['Full Output JSON']
+results['message']
+%&gt;</parameter>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu=""/>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu="">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu="">&lt;%=JSON.parse( @source['Data'] )['Integration Configuration']['Error Notification Email']%&gt;</parameter>
+            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
+            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
+        </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_47" name="Update Submission Activity - Error" x="1205" y="22">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."/>
+        <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+        <parameter id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Submission Activity']['Id']%&gt;</parameter>
+        <parameter id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Completed</parameter>
+        <parameter id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity.">Source Name: &lt;%=@source['Name']%&gt;
+Source Group: &lt;%=@source['Group']%&gt;
+Source Id: &lt;%=@source['Id']%&gt;
+Run Id: &lt;%=@run['Id']%&gt;</parameter>
+        <parameter id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Completed</parameter>
+        <parameter id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Completed",
+  "Comments" =&gt; "Alert Results: #{@results['Assemble Work Note - Error']['output']}"
+}.to_json
+%&gt;</parameter>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="If result config" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">remedy_generic_create_v2_45</task></dependents>
     </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>

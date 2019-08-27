@@ -7,7 +7,7 @@
     <name>Micro Focus OBM Standard Notification Initiation Process</name>
     <author/>
     <notes/>
-    <lastID>102</lastID>
+    <lastID>107</lastID>
     <request>
         <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
             <version>1</version>
@@ -45,7 +45,7 @@
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Placeholder: SWN Routine / Tree / Handler" x="333" y="395">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Placeholder: SWN Routine / Tree / Handler" x="539" y="387">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -61,13 +61,13 @@
       </messages>
       <dependents>
                 
-            <task label="" type="Complete" value="">system_noop_v1_54</task>
-            </dependents>
+            
+            <task type="Complete" label="" value="">system_junction_v1_14</task><task type="Complete" label="" value="">system_noop_v1_54</task></dependents>
     </task>
       
         
       
-        <task definition_id="system_junction_v1" id="system_junction_v1_14" name="Junction" x="497" y="264">
+        <task definition_id="system_junction_v1" id="system_junction_v1_14" name="Junction" x="727" y="320">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -83,15 +83,15 @@
             
                 
             
-            <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_101</task>
-            </dependents>
+            
+            <task type="Complete" label="" value="">utilities_create_trigger_v1_94</task></dependents>
     </task>
       
         
       
         
       
-        <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1175" y="264">
+        <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1264" y="319">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -140,7 +140,7 @@
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_35" name="Process Placeholders" x="170" y="253">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_35" name="Process Placeholders" x="185" y="303">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -211,7 +211,7 @@ placeholders.to_json
       
         
       
-        <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_41" name="Retrieve Notification XML" x="10" y="253">
+        <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_41" name="Retrieve Notification XML" x="11" y="306">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -260,7 +260,7 @@ placeholders.to_json
       
         
       
-        <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="495" y="101">
+        <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="726" y="153">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -288,11 +288,11 @@ placeholders.to_json
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="" type="Complete" value="">system_junction_v1_14</task>
-            </dependents>
+                
+            <task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_101</task></dependents>
     </task>
       
-        <task definition_id="system_noop_v1" id="system_noop_v1_54" name="Placeholder: Update Submission w/SWN ID" x="495" y="406">
+        <task definition_id="system_noop_v1" id="system_noop_v1_54" name="Placeholder: Update Submission w/SWN ID" x="539" y="550">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -305,7 +305,6 @@ placeholders.to_json
         <message type="Complete"/>
       </messages>
       <dependents>
-                <task label="" type="Complete" value="">system_junction_v1_14</task>
             </dependents>
     </task>
       
@@ -371,7 +370,7 @@ placeholders.to_json
       
         
       
-        <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_86" name="MIR3 One Step Notification" x="330" y="101">
+        <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_86" name="MIR3 One Step Notification" x="539" y="230">
       <version>1</version>
       <configured>true</configured>
       <defers>true</defers>
@@ -401,14 +400,14 @@ end
       </messages>
       <dependents>
                 
-                <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_53</task>
+                
             
-            <task label="" type="Complete" value="">obm_event_annotation_add_v1_102</task></dependents>
+            <task type="Complete" label="Unsuccessful" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_103</task><task type="Complete" label="" value="">system_junction_v1_14</task><task type="Complete" label="Successful" value="@results['MIR3 One Step Notification']['Success'] == &quot;true&quot;">kinetic_request_ce_submission_update_v1_53</task><task type="Complete" label="Unsuccessful" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">kinetic_request_ce_submission_update_v1_104</task></dependents>
     </task>
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_88" name="Do Recipient Replacements" x="333" y="242">
+        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_88" name="Do Recipient Replacements" x="365" y="297">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -472,7 +471,7 @@ recipients
       
         
       
-        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_94" name="Return Trigger" x="804" y="253">
+        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_94" name="Return Trigger" x="900" y="313">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -483,6 +482,7 @@ recipients
         <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['Deferral Token']%&gt;</parameter>
         <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;results&gt;
   &lt;result name="Onsolve Notification UUID"&gt;&lt;%=@results['MIR3 One Step Notification']['Notification Report UUID']%&gt;&lt;/result&gt;
+  &lt;result name="Success"&gt;&lt;%=@results['MIR3 One Step Notification']['Success']%&gt;&lt;/result&gt;
 &lt;/results&gt;</parameter>
         <parameter id="message" label="Message" menu="" required="false" tooltip=""/>
     </parameters>
@@ -498,7 +498,7 @@ recipients
             </dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_95" name="Add Task Run Cleanup Entry" x="923" y="352">
+        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_95" name="Add Task Run Cleanup Entry" x="1001" y="428">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -535,7 +535,7 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
       
         
       
-        <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_99" name="Add Activity Record" x="11" y="119">
+        <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_99" name="Add Activity Record" x="11" y="153">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -565,7 +565,7 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
             </dependents>
     </task>
       
-        <task definition_id="system_junction_v1" id="system_junction_v1_100" name="Junction: End" x="1033" y="253">
+        <task definition_id="system_junction_v1" id="system_junction_v1_100" name="Junction: End" x="1094" y="308">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -582,7 +582,7 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
             </dependents>
     </task>
       
-        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_101" name="Update Activity Record" x="650" y="243">
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_101" name="Update Activity Record" x="902" y="153">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -611,12 +611,10 @@ comments = "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notification Re
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents>
-                <task label="" type="Complete" value="">utilities_create_trigger_v1_94</task>
-            </dependents>
+      <dependents><task type="Complete" label="If updates configured" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">obm_event_annotation_add_v1_102</task></dependents>
     </task>
       
-        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_102" name="Add Annotation" x="176" y="109">
+        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_102" name="Add Annotation" x="1087" y="165">
       <version>1</version>
       <configured>true</configured>
       <defers>false</defers>
@@ -633,6 +631,136 @@ comments = "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notification Re
       </messages>
       <dependents/>
     </task>
+      
+        <task name="OnSolve Error Notification" id="routine_onsolve_error_v1_103" definition_id="routine_onsolve_error_v1" x="366" y="143">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+source_data = JSON.parse( @source['Data'] )['Source Data']
+client_reference = source_data[integration_config['Display Reference Field Database Name']]
+
+"Unable to initiate notification in MIR3 for #{client_reference} (integration: #{integration_config['Name']})"
+%&gt;</parameter>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])['Full Output JSON']
+results['message']
+%&gt;</parameter>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu=""/>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu="">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu="">&lt;%=JSON.parse( @source['Data'] )['Integration Configuration']['Error Notification Email']%&gt;</parameter>
+            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
+            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
+        </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_104" name="Update Submission with UUID - Error" x="727" y="45">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+        <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= JSON.parse( @source['Data'] )['Task Activity Monitor Submission']%&gt;</parameter>
+        <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
+        <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{
+ "Onsolve Status" =&gt; "Initiation Error"
+}.to_json
+%&gt;</parameter>
+        <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
+        <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
+        <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."/>
+        <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."/>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">kinetic_request_ce_submission_activity_update_v1_105</task></dependents>
+    </task>
+      
+        <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_105" name="Update Activity Record - Error" x="903" y="35">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."/>
+        <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+        <parameter id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Activity Record']['Id']%&gt;</parameter>
+        <parameter id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation - Error</parameter>
+        <parameter id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."/>
+        <parameter id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated Error</parameter>
+        <parameter id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])['Full Output JSON']
+comments = "MIR3 Initiation Error:\n" &lt;&lt; results['message']
+
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Errored",
+  "Comments" =&gt; comments
+}.to_json
+%&gt;</parameter>
+    </parameters>
+            <messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">obm_event_annotation_add_v1_106</task></dependents>
+    </task>
+      
+        <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_106" name="Add Annotation - Error" x="1088" y="44">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>false</visible>
+      <parameters>
+        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+        <parameter id="event_id" label="Event Id" menu="" required="true" tooltip="The Event Id to which this annotation will be attached.">&lt;%=JSON.parse( @source['Data'] )['Source Id']%&gt;</parameter>
+        <parameter id="annotation_content" label="Annotation Content" menu="" required="true" tooltip="The annotation content to be added to the event.">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])['Full Output JSON']
+
+"Callout notification was unsuccessful:\n#{results['message']}"
+%&gt;</parameter>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
+      
+        <task name="Dev Notes - 01" id="utilities_echo_v1_107" definition_id="utilities_echo_v1" x="1264" y="110">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>false</defers>
+      <deferrable>false</deferrable>
+      <visible>true</visible>
+      <parameters>
+        <parameter id="input" label="Input" required="true" tooltip="" menu="">Decision was made to *always* update the Remedy ticket if there was an error in initiating the notification.  For successful, we follow the configuration meaning we only post an update to the Remedy ticket if the configuration so indicates.</parameter>
+    </parameters><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents/>
+    </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>

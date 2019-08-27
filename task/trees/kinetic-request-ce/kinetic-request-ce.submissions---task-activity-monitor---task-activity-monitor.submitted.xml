@@ -231,7 +231,7 @@ duration = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['T
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="Interim Updates" type="Complete" value="JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Interim Notification Updates'] == &quot;Yes&quot;">system_wait_v1_63</task></dependents>
+      <dependents><task label="Interim Updates" type="Complete" value="#JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Interim Notification Updates'] == &quot;Yes&quot;&#xA;[&quot;Standard Reporting&quot;,&quot;Custom Action&quot;].include?( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Interim Update Action'] )">system_wait_v1_63</task></dependents>
     </task>
       
         <task definition_id="utilities_defer_v1" id="utilities_defer_v1_43" name="Defer" x="460" y="254">
@@ -273,7 +273,7 @@ duration = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['T
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="No Resp Expected" type="Complete" value="@values['Response Expected'] != &quot;Yes&quot;">system_junction_v1_74</task><task label="Resp Expected" type="Complete" value="@values['Response Expected'] == &quot;Yes&quot;">utilities_defer_v1_79</task></dependents>
+      <dependents><task label="No Resp Expected" type="Complete" value="#@values['Response Expected'] != &quot;Yes&quot;&#xA;JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Notification Result Action'] == &quot;None&quot;">system_junction_v1_74</task><task label="Resp Expected" type="Complete" value="#@values['Response Expected'] == &quot;Yes&quot;&#xA;JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Notification Result Action'] != &quot;None&quot;">utilities_defer_v1_79</task></dependents>
     </task>
       
         
@@ -643,7 +643,7 @@ duration = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['T
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="Standard Process" type="Create" value="JSON( @results['Retrieve Integration Config']['Values JSON'] )['Notification Initiation Action'] != &quot;Custom Action&quot;">kinetic_task_tree_run_v2_94</task><task label="Resp Expected" type="Complete" value="@values['Response Expected'] == &quot;Yes&quot;">utilities_defer_v1_43</task><task label="No Resp Expected" type="Complete" value="!@values['Response Expected'] == &quot;Yes&quot;">system_junction_v1_61</task><task label="Custom Process" type="Create" value="JSON( @results['Retrieve Integration Config']['Values JSON'] )['Notification Initiation Action'] == &quot;Custom Action&quot;">kinetic_task_tree_run_v2_98</task></dependents>
+      <dependents><task label="Standard Process" type="Create" value="JSON( @results['Retrieve Integration Config']['Values JSON'] )['Notification Initiation Action'] != &quot;Custom Action&quot;">kinetic_task_tree_run_v2_94</task><task label="Resp Expected" type="Complete" value="#@values['Response Expected'] == &quot;Yes&quot; &amp;&amp; @results['Defer: Initial Notification Process']['Success'] == &quot;true&quot;&#xA;( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Interim Update Action'] != &quot;None&quot; || JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Notification Result Action'] != &quot;None&quot; ) &amp;&amp; @results['Defer: Initial Notification Process']['Success'] == &quot;true&quot;">utilities_defer_v1_43</task><task label="No Resp Expected" type="Complete" value="#!@values['Response Expected'] == &quot;Yes&quot; &amp;&amp; @results['Defer: Initial Notification Process']['Success'] == &quot;true&quot;&#xA;( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Interim Update Action'] == &quot;None&quot; &amp;&amp; JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Notification Result Action'] == &quot;None&quot; ) &amp;&amp; @results['Defer: Initial Notification Process']['Success'] == &quot;true&quot;">system_junction_v1_61</task><task label="Custom Process" type="Create" value="JSON( @results['Retrieve Integration Config']['Values JSON'] )['Notification Initiation Action'] == &quot;Custom Action&quot;">kinetic_task_tree_run_v2_98</task><task type="Complete" label="Unsuccessful" value="@results['Defer: Initial Notification Process']['Success'] != &quot;true&quot;">system_junction_v1_74</task></dependents>
     </task>
       
         

@@ -898,8 +898,8 @@
                       "value": "username"
                     },
                     {
-                      "label": "employeId",
-                      "value": "employeId"
+                      "label": "employeeId",
+                      "value": "employeeId"
                     },
                     {
                       "label": "userUUID",
@@ -1970,7 +1970,7 @@
                     },
                     {
                       "label": "Standard Reporting",
-                      "value": "Standard Action"
+                      "value": "Standard Reporting"
                     },
                     {
                       "label": "Custom Action",
@@ -2305,8 +2305,8 @@
                       "value": "Status Only"
                     },
                     {
-                      "label": "Standard Action",
-                      "value": "Standard Action"
+                      "label": "Standard Reporting",
+                      "value": "Standard Reporting"
                     },
                     {
                       "label": "Custom Action",

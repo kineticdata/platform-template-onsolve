@@ -7,7 +7,7 @@
     <name>OnSolve Integration - BMC Remedy</name>
     <author/>
     <notes/>
-    <lastID>88</lastID>
+    <lastID>90</lastID>
     <request>
         <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
             <version>1</version>
@@ -19,8 +19,8 @@
             <messages/>
             <dependents>
                 
-            <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
-                <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+            <task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                <task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
             </dependents>
         </task>
     
@@ -276,57 +276,13 @@ results
             </dependents>
     </task>
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_24" name="Questions" x="298" y="22">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">1.  Querying - If we use the "minutely" approach from Robot, it'll only trigger when a previous run returns.  If we (a) change how minutely works in Robot or want to always trigger this every x minutes regardless of whether a previous run has completed, we'd need to be clever about querying -- looking at dates of previous runs to make sure we don't retrieve the same record.
-
-2.  Regarding using routines for retrieving attributes -- no one is monitoring queue for these actions.  The current Never Drop / Never Fail will not be monitored.  Therefore, I didn't use the routines, but just used the native handler.
-
-3.  If we use Runs to retrieve space attributes, we need to "clean up" those runs as along with the parent run.  If we make the blanket statement to "remove children" we *don't* want to necessarily delete the SWN / MIR3 runs.  (We could use Trees instead of Routines for the SWN/MIR3 functions to avoid this -- but I don't want to do that ONLY so the delete function doesn't delete that data).  Unless we take the approach that we're going to delete the data at the same time no matter what.  If we hold it for 90 days, that's it ... we delete everything after 90 days.
-
-4.  How do we handle the notification data?  If we do everything in one tree we don't need to store the data we process form the notifications.  If we retrieve it in each routine, we're retrieving the same data againa and again.  If we retrieve it one, but use routines for SWN and MIR3, we're possibly passing the data around to multiple actions again and again...  Do we care / have any concerns?
-
-5.</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
+        
       
         
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_27" name="Developer Note-03" x="681" y="24">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">Error handling - if a retrieval query errors, should we: 
-(1) try again in a few seconds, 
-(2) mark the integration as "in error"
-(3) when it is set to "in error" initially, it should notify someone.  after that, it still attempts to poll, but doesn't notify.  Once successful, it should reset the 'in error'' flag
-(4) too many records?
-
-In doing so, we need this to be in a routine.</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
+        
       
         
       
@@ -573,7 +529,7 @@ query
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="No error" type="Complete" value="@results['Remedy Search']['Handler Error Message'].nil?">system_loop_head_v1_5</task><task label="" type="Complete" value="">system_join_v1_82</task><task label="Has error" type="Complete" value="!@results['Remedy Search']['Handler Error Message'].nil?">routine_onsolve_error_v1_87</task></dependents>
+      <dependents><task label="No error" type="Complete" value="@results['Remedy Search']['Handler Error Message'].nil?">system_loop_head_v1_5</task><task label="" type="Complete" value="">system_join_v1_82</task><task type="Complete" label="Has error" value="!@results['Remedy Search']['Handler Error Message'].nil?">routine_onsolve_error_v1_90</task></dependents>
     </task>
       
         
@@ -592,7 +548,7 @@ query
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="" type="Complete" value="">system_join_v1_82</task><task label="No Remedy Search result" type="Complete" value="!@results.has_key?(&quot;Remedy Search&quot;)">routine_onsolve_error_v1_88</task></dependents>
+      <dependents><task label="" type="Complete" value="">system_join_v1_82</task><task type="Complete" label="No Remedy Search result" value="!@results.has_key?(&quot;Remedy Search&quot;)">routine_onsolve_error_v1_89</task></dependents>
     </task>
       
         <task definition_id="system_join_v1" id="system_join_v1_82" name="Join" x="726" y="241">
@@ -609,7 +565,7 @@ query
         <message type="Update"/>
         <message type="Complete"/>
       </messages>
-      <dependents><task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_junction_v1_45</task><task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">utilities_create_trigger_v1_15</task></dependents>
+      <dependents><task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">system_junction_v1_45</task><task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">utilities_create_trigger_v1_15</task></dependents>
     </task>
       
         
@@ -620,18 +576,24 @@ query
       
         
       
-        <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_87" name="Error Notification: Remedy Search Error" x="1056" y="101">
+        
+      
+        
+      
+        <task name="Error Notification: Remedy Timeout" id="routine_onsolve_error_v1_89" definition_id="routine_onsolve_error_v1" x="301" y="220">
       <version>1</version>
       <configured>true</configured>
       <defers>true</defers>
       <deferrable>true</deferrable>
       <visible>false</visible>
       <parameters>
-            <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Remedy Retrieve Error</parameter>
-            <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['Remedy Search']['Handler Error Message']%&gt;</parameter>
-            <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
-            <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
-            <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">Remedy Retrieve Error</parameter>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">No Remedy response after three minutes.</parameter>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu="">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu=""/>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu=""/>
+            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
+            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
         </parameters><messages>
         <message type="Create"/>
         <message type="Update"/>
@@ -640,18 +602,20 @@ query
       <dependents/>
     </task>
       
-        <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_88" name="Error Notification: Remedy Timeout" x="300" y="216">
+        <task name="Error Notification: Remedy Search Error" id="routine_onsolve_error_v1_90" definition_id="routine_onsolve_error_v1" x="1053" y="99">
       <version>1</version>
       <configured>true</configured>
       <defers>true</defers>
       <deferrable>true</deferrable>
       <visible>false</visible>
       <parameters>
-            <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Remedy Retrieve Error</parameter>
-            <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">No Remedy response after three minutes.</parameter>
-            <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
-            <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
-            <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">Remedy Retrieve Error</parameter>
+            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">&lt;%=@results['Remedy Search']['Handler Error Message']%&gt;</parameter>
+            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu="">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu=""/>
+            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu=""/>
+            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
+            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
         </parameters><messages>
         <message type="Create"/>
         <message type="Update"/>
@@ -660,5 +624,4 @@ query
       <dependents/>
     </task>
       </request>
-</taskTree>
-</tree>
+</taskTree></tree>
