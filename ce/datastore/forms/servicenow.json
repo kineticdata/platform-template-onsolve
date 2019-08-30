@@ -176,13 +176,6 @@
       "unique": false
     },
     {
-      "name": "values[Escalation Level Dropdown]",
-      "parts": [
-        "values[Escalation Level Dropdown]"
-      ],
-      "unique": false
-    },
-    {
       "name": "values[Escalation Level]",
       "parts": [
         "values[Escalation Level]"
@@ -249,13 +242,6 @@
       "name": "values[Interim Custom Action Task Tree]",
       "parts": [
         "values[Interim Custom Action Task Tree]"
-      ],
-      "unique": false
-    },
-    {
-      "name": "values[Interim Notification Updates]",
-      "parts": [
-        "values[Interim Notification Updates]"
       ],
       "unique": false
     },
@@ -333,13 +319,6 @@
       "name": "values[Notification Method]",
       "parts": [
         "values[Notification Method]"
-      ],
-      "unique": false
-    },
-    {
-      "name": "values[Notification Response Expected]",
-      "parts": [
-        "values[Notification Response Expected]"
       ],
       "unique": false
     },
@@ -985,7 +964,7 @@
                   "name": "Polling Info",
                   "title": "",
                   "visible": "values('Polling') === \"Yes\"",
-                  "omitWhenHidden": true,
+                  "omitWhenHidden": false,
                   "renderAttributes": {
                   },
                   "elements": [
@@ -1103,7 +1082,7 @@
                       "name": "Recurrence Details Container Body",
                       "title": "",
                       "visible": "values('Polling') === \"Yes\"",
-                      "omitWhenHidden": true,
+                      "omitWhenHidden": false,
                       "renderAttributes": {
                         "class": "card-body"
                       },
@@ -1352,7 +1331,7 @@
                       "name": "Enable / Disable Recipient Fields and Set Escalation Level to 1",
                       "type": "Change",
                       "action": "Custom",
-                      "code": "//bundle.ext.forms[K('form').slug()].enableFields();\nbundle.ext.forms[K('form').slug()].populateRecipientData();",
+                      "code": "bundle.ext.forms[K('form').slug()].populateRecipientData();",
                       "runIf": ""
                     }
                   ],
@@ -1568,86 +1547,13 @@
                               "name": "Populate Notification Recipients",
                               "type": "Change",
                               "action": "Custom",
-                              "code": "var escalationLevels = JSON.parse( K('field[Recipients JSON]').value() || \"{}\");\nif ( escalationLevels[values('Escalation Level')] ) {\n  var maxResponse = escalationLevels[values('Escalation Level')]['maxResponse'],\n      individuals = escalationLevels[values('Escalation Level')]['individuals'],\n      groups = escalationLevels[values('Escalation Level')]['groups'],\n      schedules = escalationLevels[values('Escalation Level')]['schedules'];\n\tK('field[Max Response Time]').value(maxResponse);\n  K('field[Individuals]').value(individuals);\n\tK('field[Groups]').value(groups);\n\tK('field[Schedules]').value(schedules);\n} else {\n  K('field[Max Response Time]').value( null );\n  K('field[Individuals]').value( null );\n\tK('field[Groups]').value( null );\n\tK('field[Schedules]').value( null );\n}\n/*\n\nK('field[Max Response Time]').disable();\nK('field[Individuals]').disable();\nK('field[Groups]').disable();\nK('field[Schedules]').disable();\n*/"
+                              "code": "var escalationLevels = JSON.parse( K('field[Recipients JSON]').value() || \"{}\");\nif ( escalationLevels[values('Escalation Level')] ) {\n  var maxResponse = escalationLevels[values('Escalation Level')]['maxResponse'],\n      individuals = escalationLevels[values('Escalation Level')]['individuals'],\n      groups = escalationLevels[values('Escalation Level')]['groups'],\n      schedules = escalationLevels[values('Escalation Level')]['schedules'];\n\tK('field[Max Response Time]').value(maxResponse);\n  K('field[Individuals]').value(individuals);\n\tK('field[Groups]').value(groups);\n\tK('field[Schedules]').value(schedules);\n} else {\n  K('field[Max Response Time]').value( null );\n  K('field[Individuals]').value( null );\n\tK('field[Groups]').value( null );\n\tK('field[Schedules]').value( null );\n}"
                             }
                           ],
                           "renderAttributes": {
                           },
                           "dataType": "string",
                           "renderType": "radio",
-                          "choicesResourceName": null,
-                          "choicesRunIf": null,
-                          "choices": [
-                            {
-                              "label": "1",
-                              "value": "Escalation Level 1"
-                            },
-                            {
-                              "label": "2",
-                              "value": "Escalation Level 2"
-                            },
-                            {
-                              "label": "3",
-                              "value": "Escalation Level 3"
-                            },
-                            {
-                              "label": "4",
-                              "value": "Escalation Level 4"
-                            },
-                            {
-                              "label": "5",
-                              "value": "Escalation Level 5"
-                            },
-                            {
-                              "label": "6",
-                              "value": "Escalation Level 6"
-                            },
-                            {
-                              "label": "7",
-                              "value": "Escalation Level 7"
-                            },
-                            {
-                              "label": "8",
-                              "value": "Escalation Level 8"
-                            },
-                            {
-                              "label": "9",
-                              "value": "Escalation Level 9"
-                            },
-                            {
-                              "label": "10",
-                              "value": "Escalation Level 10"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "field",
-                          "name": "Escalation Level Dropdown",
-                          "label": "Escalation Level",
-                          "key": "f31",
-                          "defaultValue": null,
-                          "defaultResourceName": null,
-                          "visible": "1==2 && (values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\")",
-                          "enabled": true,
-                          "required": false,
-                          "requiredMessage": null,
-                          "omitWhenHidden": true,
-                          "pattern": null,
-                          "constraints": [
-
-                          ],
-                          "events": [
-                            {
-                              "name": "Populate Notification Recipients",
-                              "type": "Change",
-                              "action": "Custom",
-                              "code": "var escalationLevels = JSON.parse( K('field[Recipients JSON]').value() || \"{}\");\nif ( escalationLevels[values('Escalation Level')] ) {\n  var maxResponse = escalationLevels[values('Escalation Level')]['maxResponse'],\n      individuals = escalationLevels[values('Escalation Level')]['individuals'],\n      groups = escalationLevels[values('Escalation Level')]['groups'],\n      schedules = escalationLevels[values('Escalation Level')]['schedules'];\n\tK('field[Max Response Time]').value(maxResponse);\n  K('field[Individuals]').value(individuals);\n\tK('field[Groups]').value(groups);\n\tK('field[Schedules]').value(schedules);\n} else {\n  K('field[Max Response Time]').value( null );\n  K('field[Individuals]').value( null );\n\tK('field[Groups]').value( null );\n\tK('field[Schedules]').value( null );\n}\n\nK('field[Max Response Time]').disable();\nK('field[Individuals]').disable();\nK('field[Groups]').disable();\nK('field[Schedules]').disable();"
-                            }
-                          ],
-                          "renderAttributes": {
-                          },
-                          "dataType": "string",
-                          "renderType": "dropdown",
                           "choicesResourceName": null,
                           "choicesRunIf": null,
                           "choices": [
@@ -1702,25 +1608,6 @@
                           "renderAttributes": {
                             "style": "margin-top: -5px; margin-bottom: 10px"
                           }
-                        },
-                        {
-                          "type": "button",
-                          "label": "Edit Recipients",
-                          "name": "Edit Recipients",
-                          "visible": "1==2 && (values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\")",
-                          "enabled": true,
-                          "renderType": "custom",
-                          "renderAttributes": {
-                          },
-                          "events": [
-                            {
-                              "name": "Edit fields",
-                              "type": "Click",
-                              "action": "Custom",
-                              "code": "K('field[Max Response Time]').enable();\nK('field[Individuals]').enable();\nK('field[Groups]').enable();\nK('field[Schedules]').enable();",
-                              "runIf": "1==2 && values('Escalation Level') !== null"
-                            }
-                          ]
                         },
                         {
                           "type": "field",
@@ -1849,25 +1736,6 @@
                           "dataType": "string",
                           "renderType": "text",
                           "rows": 1
-                        },
-                        {
-                          "type": "button",
-                          "label": "Apply",
-                          "name": "Apply",
-                          "visible": "1==2 && (values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\")",
-                          "enabled": true,
-                          "renderType": "custom",
-                          "renderAttributes": {
-                          },
-                          "events": [
-                            {
-                              "name": "Apply Escalation Recipients",
-                              "type": "Click",
-                              "action": "Custom",
-                              "code": "bundle.ext.forms[K('form').slug()].applyEscalationRecipientData();",
-                              "runIf": "values('Escalation Level') !== null"
-                            }
-                          ]
                         },
                         {
                           "type": "field",
@@ -2125,7 +1993,7 @@
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": true,
-                  "required": "values('Notification Result Action') === \"Standard Action\"",
+                  "required": "values('Notification Result Action') === \"Standard Reporting\"",
                   "requiredMessage": null,
                   "omitWhenHidden": false,
                   "pattern": null,
@@ -2146,7 +2014,7 @@
                   "renderType": null,
                   "name": "Initiation Standard Action Parameters Container",
                   "title": null,
-                  "visible": "values('Notification Initiation Action') === \"Standard Action\"",
+                  "visible": "values('Notification Initiation Action') === \"Standard Reporting\"",
                   "omitWhenHidden": false,
                   "renderAttributes": {
                     "class": "card"
@@ -2156,7 +2024,7 @@
                       "type": "content",
                       "renderType": "html",
                       "name": "Initiation Standard Action Parameters Container Header",
-                      "text": "<div class=\"h6\">Standard Action Parameters</div>",
+                      "text": "<div class=\"h6\">Standard Reporting Parameters</div>",
                       "visible": true,
                       "renderAttributes": {
                         "class": "card-header bg-warning"
@@ -2178,7 +2046,7 @@
                           "renderType": "html",
                           "name": "Initiation Standard Action Parameter Display",
                           "text": "<div id=\"initiation-standard-action-params\"></div>",
-                          "visible": "values('Notification Initiation Action') === \"Standard Action\"",
+                          "visible": "values('Notification Initiation Action') === \"Standard Reporting\"",
                           "renderAttributes": {
                           }
                         }
@@ -2222,54 +2090,6 @@
                 "class": "card-body"
               },
               "elements": [
-                {
-                  "type": "field",
-                  "name": "Notification Response Expected",
-                  "label": "Notification Response Expected",
-                  "key": "f16",
-                  "defaultValue": null,
-                  "defaultResourceName": null,
-                  "visible": false,
-                  "enabled": true,
-                  "required": false,
-                  "requiredMessage": null,
-                  "omitWhenHidden": true,
-                  "pattern": null,
-                  "constraints": [
-
-                  ],
-                  "events": [
-                    {
-                      "name": "No Response Expected",
-                      "type": "Change",
-                      "action": "Set Fields",
-                      "mappings": [
-                        {
-                          "field": "Notification Result Action",
-                          "value": "${null}",
-                          "visible": null
-                        }
-                      ],
-                      "runIf": "values('Notification Response Expected') === \"No\""
-                    }
-                  ],
-                  "renderAttributes": {
-                  },
-                  "dataType": "string",
-                  "renderType": "radio",
-                  "choicesResourceName": null,
-                  "choicesRunIf": null,
-                  "choices": [
-                    {
-                      "label": "Yes",
-                      "value": "Yes"
-                    },
-                    {
-                      "label": "No",
-                      "value": "No"
-                    }
-                  ]
-                },
                 {
                   "type": "field",
                   "name": "Notification Result Action",
@@ -2323,7 +2143,7 @@
                   "defaultResourceName": null,
                   "visible": "(values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\") && values('Notification Result Action') !== \"None\"",
                   "enabled": true,
-                  "required": false,
+                  "required": "(values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\") && values('Notification Result Action') !== \"None\"",
                   "requiredMessage": null,
                   "omitWhenHidden": true,
                   "pattern": null,
@@ -2497,7 +2317,7 @@
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": true,
-                  "required": "values('Notification Result Action') === \"Standard Action\"",
+                  "required": "values('Notification Result Action') === \"Standard Reporting\"",
                   "requiredMessage": null,
                   "omitWhenHidden": false,
                   "pattern": null,
@@ -2518,7 +2338,7 @@
                   "renderType": null,
                   "name": "Result Standard Action Parameters Container",
                   "title": null,
-                  "visible": "values('Notification Result Action') === \"Standard Action\"",
+                  "visible": "values('Notification Result Action') === \"Standard Reporting\"",
                   "omitWhenHidden": false,
                   "renderAttributes": {
                     "class": "card"
@@ -2528,7 +2348,7 @@
                       "type": "content",
                       "renderType": "html",
                       "name": "Result Standard Action Paramaters Container Header",
-                      "text": "<div class=\"h5\">Standard Action Parameters</div>",
+                      "text": "<div class=\"h5\">Standard Reporting Parameters</div>",
                       "visible": true,
                       "renderAttributes": {
                         "class": "card-header bg-warning"
@@ -2550,7 +2370,7 @@
                           "renderType": "html",
                           "name": "Result Standard Action Parameters Display",
                           "text": "<div id=\"result-standard-action-params\"></div>",
-                          "visible": "values('Notification Result Action') === \"Standard Action\"",
+                          "visible": "values('Notification Result Action') === \"Standard Reporting\"",
                           "renderAttributes": {
                           }
                         }
@@ -2587,56 +2407,6 @@
               "type": "section",
               "renderType": null,
               "name": "Interim Notification Container Body A",
-              "title": null,
-              "visible": false,
-              "omitWhenHidden": true,
-              "renderAttributes": {
-                "class": "card-body",
-                "style": "padding-bottom: 0px"
-              },
-              "elements": [
-                {
-                  "type": "field",
-                  "name": "Interim Notification Updates",
-                  "label": "Interim Notification Updates",
-                  "key": "f22",
-                  "defaultValue": "No",
-                  "defaultResourceName": null,
-                  "visible": "values('Notification Response Expected') === \"Yes\"",
-                  "enabled": true,
-                  "required": false,
-                  "requiredMessage": null,
-                  "omitWhenHidden": true,
-                  "pattern": null,
-                  "constraints": [
-
-                  ],
-                  "events": [
-
-                  ],
-                  "renderAttributes": {
-                  },
-                  "dataType": "string",
-                  "renderType": "radio",
-                  "choicesResourceName": null,
-                  "choicesRunIf": null,
-                  "choices": [
-                    {
-                      "label": "Yes",
-                      "value": "Yes"
-                    },
-                    {
-                      "label": "No",
-                      "value": "No"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "section",
-              "renderType": null,
-              "name": "Interim Notification Container Body B",
               "title": null,
               "visible": true,
               "omitWhenHidden": null,
@@ -2677,7 +2447,7 @@
                     },
                     {
                       "label": "Standard Reporting",
-                      "value": "Standard Action"
+                      "value": "Standard Reporting"
                     },
                     {
                       "label": "Custom Action",
@@ -2860,7 +2630,7 @@
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": true,
-                  "required": "values('Interim Update Action') === \"Standard Action\"",
+                  "required": "values('Interim Update Action') === \"Standard Reporting\"",
                   "requiredMessage": null,
                   "omitWhenHidden": false,
                   "pattern": null,
@@ -2881,7 +2651,7 @@
                   "renderType": null,
                   "name": "Interim Standard Action Parameters Container",
                   "title": null,
-                  "visible": "values('Interim Update Action') === \"Standard Action\"",
+                  "visible": "values('Interim Update Action') === \"Standard Reporting\"",
                   "omitWhenHidden": false,
                   "renderAttributes": {
                     "class": "card"
@@ -2891,7 +2661,7 @@
                       "type": "content",
                       "renderType": "html",
                       "name": "Interim Standard Action Parameters Container Header",
-                      "text": "<div class=\"h6\">Standard Action Parameters</div>",
+                      "text": "<div class=\"h6\">Standard Reporting Parameters</div>",
                       "visible": true,
                       "renderAttributes": {
                         "class": "card-header bg-warning"
@@ -2913,7 +2683,7 @@
                           "renderType": "html",
                           "name": "Interim Standard Action Parameters Display",
                           "text": "<div id=\"interim-standard-action-params\"></div>",
-                          "visible": "values('Interim Update Action') === \"Standard Action\"",
+                          "visible": "values('Interim Update Action') === \"Standard Reporting\"",
                           "renderAttributes": {
                           }
                         }
@@ -2986,7 +2756,7 @@
           "name": "Get Last Execution",
           "type": "Load",
           "action": "Custom",
-          "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n/*\n$('#last-poll').html( \"Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")\" + \": \" + ( resource[ 'Output' ] || {\"message\":\"No output\"} ) );\n*/\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);",
+          "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);",
           "runIf": "values('Polling') === \"Yes\"",
           "bridgedResourceName": "Last Robot Execution"
         }

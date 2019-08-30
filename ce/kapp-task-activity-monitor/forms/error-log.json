@@ -21,8 +21,8 @@
       "elements": [
         {
           "type": "field",
-          "name": "Error Date time",
-          "label": "Error Date time",
+          "name": "Error Date Time",
+          "label": "Error Date Time",
           "key": "f3",
           "defaultValue": null,
           "defaultResourceName": null,
@@ -123,6 +123,31 @@
           "name": "Integration Name",
           "label": "Integration Name",
           "key": "f7",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Task Activity Monitor Submission Id",
+          "label": "Task Activity Monitor Submission Id",
+          "key": "f8",
           "defaultValue": null,
           "defaultResourceName": null,
           "visible": true,

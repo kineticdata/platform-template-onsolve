@@ -5,57 +5,48 @@
 <type>Global Routine</type>
 <status>Active</status>
 <taskTree builder_version="" schema_version="1.0" version="">
-    <name>OnSolve MIR3 One Step Notification</name>
-    <author/>
-    <notes/>
-    <lastID>14</lastID>
-    <taskDefinition id="routine_onsolve_mir3_one_step_notification_v1" name="OnSolve MIR3 One Step Notification" schema_version="1.0" version="1">
-        <visible>false</visible>
-        <deferrable>true</deferrable>
-        <parameters>
-            <parameter id="Notification Detail" label="Notification Detail" required="true" tooltip="The title of the notification to be found and retrieved"/>
-            <parameter id="Placeholder JSON" label="Placeholder JSON" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]"/>
-            <parameter id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">employeeId</parameter>
-            <parameter id="Recipients JSON" label="Recipients JSON" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}"/>
-            <parameter id="OnCall JSON" label="OnCall JSON" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}"/>
-        </parameters>
-        <handler name="system_tree_call" version="1"/>
-        <results format="xml">
-            <result name="Success" tooltip="'true' or 'false'"/>
-            <result name="Notification Report UUID" tooltip="The UUID of the notification from MIR3"/>
-            <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"/>
-        </results>
-    </taskDefinition>
-    <request>
-        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
-            <version>1</version>
-            <configured>true</configured>
-            <defers>false</defers>
-            <deferrable>false</deferrable>
+        <name>OnSolve MIR3 One Step Notification</name>
+        <author/>
+        <notes/>
+        <lastID>14</lastID>
+        <taskDefinition id="routine_onsolve_mir3_one_step_notification_v1" name="OnSolve MIR3 One Step Notification" schema_version="1.0" version="1">
             <visible>false</visible>
-            <parameters/>
-            <messages/>
-            <dependents>
-                
-            
-            <task label="" type="Complete" value="">utilities_echo_v1_12</task>
-            </dependents>
-        </task>
-    
-        
-      
-        
-      
-        
-      
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Parse or handle output" x="327" y="90">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Notification Detail" label="Notification Detail" required="true" tooltip="The title of the notification to be found and retrieved"/>
+                <parameter id="Placeholder JSON" label="Placeholder JSON" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]"/>
+                <parameter id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">employeeId</parameter>
+                <parameter id="Recipients JSON" label="Recipients JSON" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}"/>
+                <parameter id="OnCall JSON" label="OnCall JSON" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}"/>
+            </parameters>
+            <handler name="system_tree_call" version="1"/>
+            <results format="xml">
+                <result name="Success" tooltip="'true' or 'false'"/>
+                <result name="Notification Report UUID" tooltip="The UUID of the notification from MIR3"/>
+                <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"/>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_12</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Parse or handle output" x="327" y="90">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 response = JSON.parse(@results['MIR3 Call: One Step Notification']['output'])
 
 successful = response['success']
@@ -72,77 +63,63 @@ end
 
 output.to_json
 %&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">system_tree_return_v1_11</task>
-            </dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_9" name="MIR3 Call: One Step Notification" x="166" y="88">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
-        <parameter id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
-        <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">one_step_notification_op</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">utilities_echo_v1_4</task>
-            </dependents>
-    </task>
-      
-        
-      
-        <task definition_id="system_tree_return_v1" id="system_tree_return_v1_11" name="Return" x="491" y="111">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
-        <parameter id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Notification Report UUID']%&gt;</parameter>
-        <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON']%&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Generate XML Body" x="9" y="101">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_11</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_9" name="MIR3 Call: One Step Notification" x="166" y="88">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">one_step_notification_op</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_4</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_11" name="Return" x="491" y="111">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
+                    <parameter id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Notification Report UUID']%&gt;</parameter>
+                    <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Generate XML Body" x="9" y="101">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 oncall = JSON.parse( @inputs['OnCall JSON'] || "{}")
 
 require 'rexml/document'
@@ -327,20 +304,15 @@ doc.write(output)
 
 output
 %&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
-            </dependents>
-    </task>
-      
-        
-      
-        
-      </request>
-</taskTree>
-</tree>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree></tree>

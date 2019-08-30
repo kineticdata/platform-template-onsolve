@@ -7,7 +7,7 @@
     <name>OnSolve - Summarize Activity - Hourly</name>
     <author/>
     <notes/>
-    <lastID>53</lastID>
+    <lastID>54</lastID>
     <request>
         <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
             <version>1</version>
@@ -21,8 +21,8 @@
                 
             <task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
                 
-            <task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">utilities_echo_v1_41</task>
-            </dependents>
+            
+            <task type="Complete" label="Not from Robot" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">routine_onsolve_get_active_integrations_v1_54</task></dependents>
         </task>
     
         <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="14" y="99">
@@ -47,8 +47,8 @@
       </messages>
       <dependents>
                 
-            <task label="" type="Complete" value="">utilities_echo_v1_41</task>
-            </dependents>
+            
+            <task type="Complete" label="" value="">routine_onsolve_get_active_integrations_v1_54</task></dependents>
     </task>
       
         
@@ -166,24 +166,7 @@
       
         
       
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_41" name="Placeholder: Integration Source List" x="168" y="111">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;formSlugs&gt;&lt;formSlug&gt;Incident Management Test&lt;/formSlug&gt;&lt;/formSlugs&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">utilities_echo_v1_44</task>
-            </dependents>
-    </task>
+        
       
         <task definition_id="system_loop_head_v1" id="system_loop_head_v1_42" name="Loop Begin" x="497" y="132">
       <version>1</version>
@@ -192,9 +175,13 @@
       <deferrable>false</deferrable>
       <visible>false</visible>
       <parameters>
-        <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Placeholder: Integration Source List']['output']%&gt;</parameter>
-        <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/formSlugs/formSlug</parameter>
-        <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">formSlug</parameter>
+        <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=
+integrations = JSON.parse( @results['Get Active Integrations']['JSON Output'] )
+
+"&lt;integrationNames&gt;#{integrations.map{|integration| "&lt;integrationName&gt;#{integration['name']}&lt;/integrationName&gt;"}.join}&lt;/integrationNames&gt;"
+%&gt;</parameter>
+        <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/integrationNames/integrationName</parameter>
+        <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">integrationName</parameter>
     </parameters>
             <messages>
         <message type="Create"/>
@@ -396,6 +383,20 @@ time_bucket.push(t.strftime("%FT#{JSON.parse(@results['Determine Start and End T
         <message type="Complete"/>
       </messages>
       <dependents><task type="Complete" label="" value="">kinetic_request_ce_submission_create_v1_46</task></dependents>
+    </task>
+      
+        <task name="Get Active Integrations" id="routine_onsolve_get_active_integrations_v1_54" definition_id="routine_onsolve_get_active_integrations_v1" x="165" y="120">
+      <version>1</version>
+      <configured>true</configured>
+      <defers>true</defers>
+      <deferrable>true</deferrable>
+      <visible>false</visible>
+      <parameters/><messages>
+        <message type="Create"/>
+        <message type="Update"/>
+        <message type="Complete"/>
+      </messages>
+      <dependents><task type="Complete" label="" value="">utilities_echo_v1_44</task></dependents>
     </task>
       </request>
 </taskTree></tree>

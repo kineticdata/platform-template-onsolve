@@ -595,7 +595,7 @@ query
         <task name="Error Notification: ServiceNow Timeout" id="routine_onsolve_error_v1_79" definition_id="routine_onsolve_error_v1" x="393" y="229">
       <version>1</version>
       <configured>true</configured>
-      <defers>true</defers>
+      <defers>false</defers>
       <deferrable>true</deferrable>
       <visible>false</visible>
       <parameters>
@@ -617,7 +617,7 @@ query
         <task name="Error Notification: ServiceNow Search Error" id="routine_onsolve_error_v1_80" definition_id="routine_onsolve_error_v1" x="973" y="-22">
       <version>1</version>
       <configured>true</configured>
-      <defers>true</defers>
+      <defers>false</defers>
       <deferrable>true</deferrable>
       <visible>false</visible>
       <parameters>
