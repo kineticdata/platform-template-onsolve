@@ -84,7 +84,7 @@ query%&gt;</parameter>
                     <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp the submission is for.">task-activity-monitor</parameter>
                     <parameter id="form_slug" label="Form Slug" menu="" required="true" tooltip="The slug of the form the submission is for.">task-activity-monitor</parameter>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%= 
-integration_config = JSON.parse( @inputs['Integration Config Values'] )
+integration_details = JSON.parse( @inputs['Integration Config Values'] )
 details = JSON.parse( @results['XML to JSON']['output'] )
 response_expected = "Yes"
 if integration_details['Interim Update Action'] == "None" &amp;&amp; integration_details['Notification Result Action'] == "None"
@@ -92,12 +92,12 @@ if integration_details['Interim Update Action'] == "None" &amp;&amp; integration
 end
 
 {
-  "Integration Name" =&gt; integration_config['Name'],
+  "Integration Name" =&gt; integration_details['Name'],
   "Integration Id" =&gt; @inputs['Integration Config Id'],
   "Response Expected" =&gt; response_expected,
-  "Message" =&gt; "Remedy Ticket: #{details['Incident Number']}",
-  "Source Id" =&gt; details[integration_config['Field 1 Database Name']],
-  "Source Reference Id" =&gt; details[integration_config['Display Reference Field Database Name']],
+  "Message" =&gt; "Remedy Ticket: #{details[integration_details['External Unique Key Field Name']]}",
+  "Source Id" =&gt; details[integration_details['Field 1 Database Name']],
+  "Source Reference Id" =&gt; details[integration_details['External Unique Key Field Name']],
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
 }.to_json%&gt;</parameter>
@@ -286,7 +286,7 @@ existing_activity_record[0]['values']['Deferral Token']
                     <parameter id="form_slug" label="Form Slug" menu="" required="true" tooltip="The slug of the form the submission is for.">task-activity-monitor</parameter>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%= 
 integration_details = JSON.parse( @inputs['Integration Config Values'] )
-details = JSON.parse( @inputs['Source Data'] )
+details = JSON.parse( @results['XML to JSON']['output'] )
 response_expected = "Yes"
 if integration_details['Interim Update Action'] == "None" &amp;&amp; integration_details['Notification Result Action'] == "None"
   response_expected = "No"
@@ -296,9 +296,9 @@ end
   "Integration Name" =&gt; integration_details['Name'],
   "Integration Id" =&gt; @inputs['Integration Config Id'],
   "Response Expected" =&gt; response_expected,
-  "Message" =&gt; "Remedy Ticket: #{details['Incident Number']}",
-  "Source Id" =&gt; details['Request ID'],
-  "Source Reference Id" =&gt; details['Incident Number'],
+  "Message" =&gt; "Remedy Ticket: #{details[integration_details['External Unique Key Field Name']]}",
+  "Source Id" =&gt; details[integration_details['Field 1 Database Name']],
+  "Source Reference Id" =&gt; details[integration_details['External Unique Key Field Name']],
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
 }.to_json%&gt;</parameter>

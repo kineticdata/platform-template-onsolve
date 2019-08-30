@@ -12,12 +12,6 @@
       "values": [
         "30"
       ]
-    },
-    {
-      "name": "Unique Individual Identifier Field",
-      "values": [
-        "employeeId"
-      ]
     }
   ],
   "bundlePath": null,

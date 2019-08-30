@@ -464,7 +464,7 @@ responderType = JSON.parse( @results['Assignment Logic']['output'] )['responderT
 responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responderValue']
 
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-lookup_field = integration_config['Unique Individual Identifier Field']
+lookup_field = integration_config['User Field Containing Match to OnSolve Users']
 
 case responderType
 when "1"
