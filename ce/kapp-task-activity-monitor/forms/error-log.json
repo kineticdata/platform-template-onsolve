@@ -222,7 +222,7 @@
           "type": "button",
           "label": "Submit",
           "name": "Submit Button",
-          "visible": "1===2",
+          "visible": false,
           "enabled": true,
           "renderType": "submit-page",
           "renderAttributes": {

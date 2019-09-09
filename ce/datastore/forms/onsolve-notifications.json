@@ -142,7 +142,7 @@
               "name": "Set Fields and Save",
               "type": "Click",
               "action": "Custom",
-              "code": "K('field[Refresh]').value(\"Refresh\");\n//K('form').save();\nK('form').submitPage();\n\n//https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\n//window.location = \"#/kapps/task-activity-monitor/settings/message_templates\";\nwindow.location = \"https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\""
+              "code": "K('field[Refresh]').value(\"Refresh\");\n//K('form').save();\nK('form').submitPage();\n\n//https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\n//window.location = \"#/kapps/task-activity-monitor/settings/message_templates\";\n//window.location = \"https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\""
             }
           ]
         },
