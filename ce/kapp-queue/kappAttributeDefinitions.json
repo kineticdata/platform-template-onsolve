@@ -26,6 +26,11 @@
   },
   {
     "allowsMultiple": false,
+    "description": "True or False.",
+    "name": "Hidden"
+  },
+  {
+    "allowsMultiple": false,
     "description": null,
     "name": "Icon"
   },

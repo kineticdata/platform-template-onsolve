@@ -14,6 +14,12 @@
       ]
     },
     {
+      "name": "Hidden",
+      "values": [
+        "True"
+      ]
+    },
+    {
       "name": "Icon",
       "values": [
         "fa-list-ul"
