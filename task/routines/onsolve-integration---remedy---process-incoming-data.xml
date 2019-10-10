@@ -13,7 +13,7 @@
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Request Id" label="Request Id" required="true" tooltip="The Request Id of the ticket"/>
+                <parameter id="Source Data" label="Source Data" required="true" tooltip="A JSON object of the ServiceNow ticket details"/>
                 <parameter id="Integration Config Id" label="Integration Config Id" required="true" tooltip="The Submission Id of the Integration Config datastore submission"/>
                 <parameter id="Integration Config Values" label="Integration Config Values" required="true" tooltip="A JSON object of the integration configuration values"/>
             </parameters>
@@ -32,7 +32,7 @@
                 <parameters/>
                 <messages/>
                 <dependents>
-                    <task label="" type="Complete" value="">remedy_generic_retrieve_v2_13</task>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_1</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_1" name="Active Alerts" x="162" y="88">
@@ -48,7 +48,8 @@
                     <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
                     <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%=
 integration_config = JSON.parse( @inputs['Integration Config Values'] )
-details = JSON.parse( @results['XML to JSON']['output'] )
+#details = JSON.parse( @results['XML to JSON']['output'] )
+details = JSON.parse( @inputs['Source Data'] )
 
 query_addendum = ""
 if integration_config['Notify more than once per record'] == "Yes"
@@ -85,7 +86,8 @@ query%&gt;</parameter>
                     <parameter id="form_slug" label="Form Slug" menu="" required="true" tooltip="The slug of the form the submission is for.">task-activity-monitor</parameter>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%= 
 integration_details = JSON.parse( @inputs['Integration Config Values'] )
-details = JSON.parse( @results['XML to JSON']['output'] )
+#details = JSON.parse( @results['XML to JSON']['output'] )
+details = JSON.parse( @inputs['Source Data'] )
 response_expected = "Yes"
 if integration_details['Interim Update Action'] == "None" &amp;&amp; integration_details['Notification Result Action'] == "None"
   response_expected = "No"
@@ -286,7 +288,8 @@ existing_activity_record[0]['values']['Deferral Token']
                     <parameter id="form_slug" label="Form Slug" menu="" required="true" tooltip="The slug of the form the submission is for.">task-activity-monitor</parameter>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%= 
 integration_details = JSON.parse( @inputs['Integration Config Values'] )
-details = JSON.parse( @results['XML to JSON']['output'] )
+#details = JSON.parse( @results['XML to JSON']['output'] )
+details = JSON.parse( @inputs['Source Data'] )
 response_expected = "Yes"
 if integration_details['Interim Update Action'] == "None" &amp;&amp; integration_details['Notification Result Action'] == "None"
   response_expected = "No"
@@ -501,64 +504,6 @@ existing_activity_record[0]['values']['Deferral Token']
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
-            </task>
-            <task definition_id="remedy_generic_retrieve_v2" id="remedy_generic_retrieve_v2_13" name="Get Ticket Details" x="11" y="88">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%=( JSON.parse( @inputs['Integration Config Values'] )['Schema Name'] )%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to retrieve">&lt;%=@inputs['Request Id']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">utilities_echo_v1_14</task>
-                </dependents>
-            </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_14" name="XML to JSON" x="16.300003051757812" y="195.6999969482422">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
-require 'rexml/document'
-str_xml = @results['Get Ticket Details']['field_list']
-str_xml = str_xml.gsub("&amp;","&amp;amp;")
-#doc = REXML::Document.new(KineticTask::Utils.decode(str_xml))
-doc = REXML::Document.new(str_xml)
-
-if doc.nil?
- raise("Document is nil when attempting to convert retrieved Remedy data to XML.")
-end
-
-xpath_str = "/field_list/field"
-
-field_json = {}
-
-doc.elements.each(xpath_str) {|e|
-  field_json[e.attributes["id"]] = e.text
-}
-
-field_json.to_json
-
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_1</task>
-                </dependents>
             </task>
         </request>
     </taskTree>
