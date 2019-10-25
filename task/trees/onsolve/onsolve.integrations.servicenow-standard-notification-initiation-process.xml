@@ -7,7 +7,7 @@
         <name>ServiceNow Standard Notification Initiation Process</name>
         <author/>
         <notes/>
-        <lastID>112</lastID>
+        <lastID>113</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -150,7 +150,7 @@ placeholders.to_json
                     <task label="" type="Complete" value="">utilities_echo_v1_35</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="1121" y="363">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="962" y="413">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -178,7 +178,7 @@ placeholders.to_json
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_97</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_113</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_54" name="Placeholder: Update Submission w/SWN ID" x="1417" y="770">
@@ -197,7 +197,7 @@ placeholders.to_json
                     <task label="" type="Complete" value="">system_junction_v1_14</task>
                 </dependents>
             </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_84" name="Update ServiceNow - Alerting Initiated" x="1276" y="516">
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_84" name="Update ServiceNow - Alerting Initiated" x="1276" y="573">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -207,10 +207,7 @@ placeholders.to_json
                     <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%= JSON.parse( @source['Data'] )['Integration Configuration']['Schema Name']%&gt;</parameter>
                     <parameter id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%= JSON.parse( @source['Data'] )['Source Id']%&gt;</parameter>
                     <parameter id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%=
-work_notes = ["Alerting Initiated"]
-work_notes.push( "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notification Report UUID']}" )
-
-{ "work_notes" =&gt; work_notes.join("\n") }.to_json
+{ "work_notes" =&gt; @results['Work Note Content']['output'] }.to_json
 %&gt;</parameter>
                 </parameters>
                 <messages>
@@ -353,7 +350,7 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
                     <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_41</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_97" name="Update Activity Record" x="1274" y="363">
+            <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_97" name="Update Activity Record" x="1276" y="423">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -368,12 +365,10 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
                     <parameter id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."/>
                     <parameter id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
                     <parameter id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
-comments = "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notification Report UUID']}" if @results.has_key? ('MIR3 One Step Notification')
-
 {
   "Task Run Id" =&gt; @run['Id'],
   "Status" =&gt; "Completed",
-  "Comments" =&gt; comments
+  "Comments" =&gt; @results['Work Note Content']['output']
 }.to_json
 %&gt;</parameter>
                 </parameters>
@@ -604,7 +599,7 @@ end
                     <task label="" type="Complete" value="">utilities_echo_v1_12</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_108" name="Update Submission with UUID - Error" x="1123" y="193">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_108" name="Update Submission with UUID - Error" x="1133" y="273">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -682,7 +677,11 @@ results['error'].each{|key,value|
                     <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%= JSON.parse( @source['Data'] )['Integration Configuration']['Schema Name']%&gt;</parameter>
                     <parameter id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%= JSON.parse( @source['Data'] )['Source Id']%&gt;</parameter>
                     <parameter id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%=
-work_notes = ["Alerting Initiation Error"]
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
 results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
 results['error'].each{|key,value|
   work_notes.push( "#{key}: #{value}" )
@@ -698,7 +697,7 @@ results['error'].each{|key,value|
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_111" name="OnSolve Error Notification" x="957" y="142">
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_111" name="OnSolve Error Notification" x="957" y="121">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -748,6 +747,48 @@ comments
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_113" name="Work Note Content" x="1131" y="429">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+# Build note
+work_notes = ["#{notification_method} Notification"]
+work_notes.push( "\"#{integration_config['Notification Message Template']}\"" )
+work_notes.push( "(UUID #{@results['MIR3 One Step Notification']['Notification Report UUID']})" )
+work_notes.push( "was successfully initiated" )
+
+recipients = JSON.parse(@results['Do Recipient Replacements']['output'])
+if notification_method == "Callout" || notification_method == "First Response"
+  if recipients.has_key?("Escalation Level 1") &amp;&amp; !recipients['Escalation Level 1']['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['Escalation Level 1']['groups']}" )
+  end
+end
+if notification_method == "Broadcast" || notification_method == "Bulletin Board"
+  if recipients.has_key?("groups") &amp;&amp; !recipients['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['groups']}" )
+  end
+end
+
+work_notes.join(" ")+"."
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_97</task>
+                </dependents>
             </task>
         </request>
     </taskTree>

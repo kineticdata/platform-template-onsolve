@@ -7,7 +7,7 @@
         <name>BMC Remedy Standard Notification Initiation Process</name>
         <author/>
         <notes/>
-        <lastID>106</lastID>
+        <lastID>107</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -139,7 +139,7 @@ placeholders.to_json
                     <task label="" type="Complete" value="">utilities_echo_v1_35</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="726" y="311">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="546" y="348">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -167,7 +167,7 @@ placeholders.to_json
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_101</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_107</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_54" name="Placeholder: Update Submission w/SWN ID" x="1034" y="601">
@@ -327,8 +327,6 @@ parameters["Work Log Form"]
                     <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 source_data = JSON.parse( @source['Data'] )['Source Data']
-work_notes = ["Alerting Initiated"]
-work_notes.push( "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notification Report UUID']}" )
 
 {
   "Incident Entry ID" =&gt; source_data[integration_config['Field 1 Database Name']],
@@ -340,7 +338,7 @@ work_notes.push( "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notificat
   "Work Log Type" =&gt; "General Information",
   "Incident Number" =&gt; source_data[integration_config['External Unique Key Field Name']],
   "Description" =&gt; "Alerting Initiated",
-  "Detailed Description" =&gt; work_notes.join("\n"),
+  "Detailed Description" =&gt; @results['Work Note Content']['output'],
   "Work Log Date" =&gt; Time.now().iso8601
 }.to_json
 %&gt;</parameter>
@@ -432,12 +430,10 @@ work_notes.push( "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notificat
                     <parameter id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."/>
                     <parameter id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
                     <parameter id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
-comments = "MIR3 UUID: #{@results['MIR3 One Step Notification']['Notification Report UUID']}" if @results.has_key? ('MIR3 One Step Notification')
-
 {
   "Task Run Id" =&gt; @run['Id'],
   "Status" =&gt; "Completed",
-  "Comments" =&gt; comments
+  "Comments" =&gt; @results['Work Note Content']['output']
 }.to_json
 %&gt;</parameter>
                 </parameters>
@@ -569,8 +565,11 @@ parameters["Work Log Form"]
                     <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 source_data = JSON.parse( @source['Data'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
 results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
-work_notes = ["Alerting Initiation Error"]
 results['error'].each{|key,value|
   work_notes.push( "#{key}: #{value}" )
 }
@@ -612,6 +611,48 @@ results['error'].each{|key,value|
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_107" name="Work Note Content" x="737" y="360">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+# Build note
+work_notes = ["#{notification_method} Notification"]
+work_notes.push( "\"#{integration_config['Notification Message Template']}\"" )
+work_notes.push( "(UUID #{@results['MIR3 One Step Notification']['Notification Report UUID']})" )
+work_notes.push( "was successfully initiated" )
+
+recipients = JSON.parse(@results['Do Recipient Replacements']['output'])
+if notification_method == "Callout" || notification_method == "First Response"
+  if recipients.has_key?("Escalation Level 1") &amp;&amp; !recipients['Escalation Level 1']['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['Escalation Level 1']['groups']}" )
+  end
+end
+if notification_method == "Broadcast" || notification_method == "Bulletin Board"
+  if recipients.has_key?("groups") &amp;&amp; !recipients['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['groups']}" )
+  end
+end
+
+work_notes.join(" ")+"."
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_101</task>
+                </dependents>
             </task>
         </request>
     </taskTree>

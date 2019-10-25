@@ -94,14 +94,18 @@ JSON.parse(@source['Data'])['Deferral Token']
                 <visible>true</visible>
                 <parameters>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_note_text = "#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) status update:"
+
 report_output = JSON.parse(@results['Get Integration Report Results']['Output'])
 report_result = report_output['execute_custom_report_response']['report_detail']
 headers = report_result['header']['column_name']
 rows = []
 rows = report_result['row'] if report_result['row'].is_a? (Array)
 rows = [report_result['row']] if report_result['row'].is_a? (Hash)
-
-work_note_text = "Alerting interim update (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
 
 display_line_index = headers.find_index('DISPLAYLINE');
 rows.each{|row|
@@ -611,7 +615,12 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                 <visible>true</visible>
                 <parameters>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
-work_notes = ["Alerting interim update was unsuccessful (will try again at the next interval) (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"]
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_notes = "Kinetic was unable to retrieve a status update for #{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}). It will try again at the next update interval.  Error Message (if applicable):"
+
 results = JSON.parse(@results['Get Integration Report Results']['Output'])
 results['error'].each{|key,value|
   work_notes.push( "#{key}: #{value}" )

@@ -7,7 +7,7 @@
         <name>Micro Focus OBM Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>51</lastID>
+        <lastID>52</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -273,9 +273,9 @@ rows = report_result['row'] if report_result['row'].is_a? (Array)
 rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 
 display_line_assignee = headers.find_index('ASSIGNEE')
+display_line_assignee_name = headers.find_index('ASSIGNEENAME')
 display_line_responder_primary_key = headers.find_index('RESPONDERPRIMARYKEY')
 display_line_status = headers.find_index('STATUS')
-display_line_assignee_response = headers.find_index('ASSIGNEERESPONSE')
 
 ## if zero, we don't want to assign
 ## if 1, 2, 3, 4 we need to report the value
@@ -288,10 +288,14 @@ else
   assignee = rows.first['value'][display_line_assignee]
 end
 notification_status = rows.first['value'][display_line_status]
-assignee_response = rows.first['value'][display_line_assignee_response]
+assignee_name = rows.first['value'][display_line_assignee_name]
 
-output = {"notificationStatus" =&gt; notification_status, "responderType" =&gt; successResponderType, "responderValue" =&gt; assignee, "responderResponse" =&gt; assignee_response}.to_json
-
+output = {
+  "notificationStatus" =&gt; notification_status, 
+  "responderType" =&gt; successResponderType, 
+  "responderValue" =&gt; assignee, 
+  "responderName" =&gt; assignee_name
+}.to_json
 %&gt;</parameter>
                 </parameters>
                 <messages>
@@ -329,6 +333,8 @@ output = {"notificationStatus" =&gt; notification_status, "responderType" =&gt; 
                 <parameters>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
 assignment_logic_output = JSON.parse( @results['Assignment Logic']['output'] )
 report_output = JSON.parse(@results['Get Integration Report Results']['Output'])
 report_result = report_output['execute_custom_report_response']['report_detail']
@@ -337,38 +343,33 @@ rows = report_result['row'] if report_result['row'].is_a? (Array)
 rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 
 assignment_status = nil
-### Need to 1: Determine if they want it assigned, or the type of notification was a callout
-# Determine if notification was designed to capture a responder.
-#if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']  # This line is previous logic.
-if integration_config['Assign Responder'] == "Yes"
-  # Determine if this configuration expects a responder
-  if !assignment_logic_output['responderType'].nil? &amp;&amp; assignment_logic_output['responderType'] != "0"
-    # Determine if assignment was RESPONDED or TIME_OUT
-    if assignment_logic_output['notificationStatus'] == "RESPONDED"
-      # If has error in setting status
-      # indicate failure to set status
-      if @results['Update Event']['Handler Error Message'].nil? 
-        assignment_status = "Notification UUID #{@results['Get Task Activity Monitoring Values']['Onsolve Id']} completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}. Event status was updated to In Progress."
-      else
-        assignment_status = "Notification UUID #{@results['Get Task Activity Monitoring Values']['Onsolve Id']} completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}. Event status could not be updated to In Progress."
-      end
-    elsif assignment_logic_output['notificationStatus'] == "TIME_OUT"
-      assignment_status = "Notification UUID #{@results['Get Task Activity Monitoring Values']['Onsolve Id']} completed but no responder was identified."
-    end
+if assignment_logic_output['notificationStatus'] == "RESPONDED" &amp;&amp; !['Broadcast','Bulletin Board'].include?(notification_method)
+  # If has error in setting status
+  # indicate failure to set status
+  if @results['Update Event']['Handler Error Message'].nil? 
+    assignment_status = "completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}. Event status was updated to In Progress."
   else
-    #assignment_status = "Assignment not attempted per configuration."
-    assignment_status = nil
+    assignment_status = "completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}. Event status could not be updated to In Progress."
   end
+elsif assignment_logic_output['notificationStatus'] == "RESPONDED"
+  assignment_status = "completed."
+elsif assignment_logic_output['notificationStatus'] == "TERMINATED"
+  assignment_status = "was manually cancelled by an administrator."
+elsif assignment_logic_output['notificationStatus'] == "TIME_OUT" &amp;&amp; !['Broadcast','Bulletin Board'].include?(notification_method)
+  assignment_status = "completed but no responder was identified."
+elsif assignment_logic_output['notificationStatus'] == "TIME_OUT"
+  assignment_status = "completed."
 else
-  #assignment_status = "Assignment not expected."
-  assignment_status = nil
+  assignment_status = "completed."
 end
 
-work_note_text = "Alerting Result (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}): #{assignment_logic_output['notificationStatus']}"
-work_note_text += "\n#{assignment_status}" if !assignment_status.nil?
+#work_note_text = "Alerting Result (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}): #{assignment_logic_output['notificationStatus']}"
+work_note_text = "#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
+work_note_text += " #{assignment_status}" if !assignment_status.nil?
 
 if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
-  work_note_text += "\nStatus update through completion:" if !assignment_status.nil?
+  work_note_text += "  Status update through completion:" if (!assignment_status.nil? &amp;&amp; assignment_logic_output['notificationStatus'] != "TERMINATED")
+  work_note_text += "  Status update through termination:" if (!assignment_status.nil? &amp;&amp; assignment_logic_output['notificationStatus'] == "TERMINATED")
   display_line_index = headers.find_index('DISPLAYLINE');
   rows.each{|row|
     work_note_text += "\n#{row['value'][display_line_index]}"
@@ -547,10 +548,20 @@ output%&gt;</parameter>
                 <visible>true</visible>
                 <parameters>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
 client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
 uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
 
-"Alerting complete, but unable to retrieve details from MIR3 for #{client_reference} (UUID: #{uuid})"
+work_notes = ["#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) completed, however Kinetic was unable to retrieve the details. Error Message (if applicable):"]
+
+results = JSON.parse(@results['Get Integration Report Results']['Output'])
+results['error'].each{|key,value|
+  work_notes.push( "#{key}: #{value}" )
+}
+
+work_notes.join("\n")
 %&gt;</parameter>
                 </parameters>
                 <messages>
@@ -648,6 +659,71 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                 <dependents>
                     <task label="If result config" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">obm_event_annotation_add_v1_49</task>
                 </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_52" name="Old Work Note Logic" x="1058.300048828125" y="252.00001525878906">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+assignment_logic_output = JSON.parse( @results['Assignment Logic']['output'] )
+report_output = JSON.parse(@results['Get Integration Report Results']['Output'])
+report_result = report_output['execute_custom_report_response']['report_detail']
+headers = report_result['header']['column_name']
+rows = report_result['row'] if report_result['row'].is_a? (Array)
+rows = [report_result['row']] if report_result['row'].is_a? (Hash)
+
+assignment_status = nil
+### Need to 1: Determine if they want it assigned, or the type of notification was a callout
+# Determine if notification was designed to capture a responder.
+#if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']  # This line is previous logic.
+if integration_config['Assign Responder'] == "Yes"
+  # Determine if this configuration expects a responder
+  if !assignment_logic_output['responderType'].nil? &amp;&amp; assignment_logic_output['responderType'] != "0"
+    # Determine if assignment was RESPONDED or TIME_OUT
+    if assignment_logic_output['notificationStatus'] == "RESPONDED"
+      # If has error in setting status
+      # indicate failure to set status
+      if @results['Update Event']['Handler Error Message'].nil? 
+        assignment_status = "Notification UUID #{@results['Get Task Activity Monitoring Values']['Onsolve Id']} completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}. Event status was updated to In Progress."
+      else
+        assignment_status = "Notification UUID #{@results['Get Task Activity Monitoring Values']['Onsolve Id']} completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}. Event status could not be updated to In Progress."
+      end
+    elsif assignment_logic_output['notificationStatus'] == "TIME_OUT"
+      assignment_status = "Notification UUID #{@results['Get Task Activity Monitoring Values']['Onsolve Id']} completed but no responder was identified."
+    end
+  else
+    #assignment_status = "Assignment not attempted per configuration."
+    assignment_status = nil
+  end
+else
+  #assignment_status = "Assignment not expected."
+  assignment_status = nil
+end
+
+work_note_text = "Alerting Result (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}): #{assignment_logic_output['notificationStatus']}"
+work_note_text += "\n#{assignment_status}" if !assignment_status.nil?
+
+if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
+  work_note_text += "\nStatus update through completion:" if !assignment_status.nil?
+  display_line_index = headers.find_index('DISPLAYLINE');
+  rows.each{|row|
+    work_note_text += "\n#{row['value'][display_line_index]}"
+  }
+end
+
+work_note_text
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
             </task>
         </request>
     </taskTree>
