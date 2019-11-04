@@ -1,15 +1,15 @@
 <tree schema_version="1.0">
 <sourceName>-</sourceName>
 <sourceGroup>-</sourceGroup>
-<definitionId>routine_onsolve_integration_servicenow_process_incoming_data_v1</definitionId>
+<definitionId>routine_onsolve_integration_cherwell_process_incoming_data_v1</definitionId>
 <type>Global Routine</type>
 <status>Active</status>
 <taskTree builder_version="" schema_version="1.0" version="">
-        <name>OnSolve Integration - ServiceNow - Process Incoming Data</name>
+        <name>OnSolve Integration - Cherwell - Process Incoming Data</name>
         <author/>
         <notes/>
         <lastID>12</lastID>
-        <taskDefinition id="routine_onsolve_integration_servicenow_process_incoming_data_v1" name="OnSolve Integration - ServiceNow - Process Incoming Data" schema_version="1.0" version="1">
+        <taskDefinition id="routine_onsolve_integration_cherwell_process_incoming_data_v1" name="OnSolve Integration - Cherwell - Process Incoming Data" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
@@ -94,11 +94,12 @@ end
 source_id = details[integration_details['Internal Unique Key Field Name']]['value'] || details[integration_details['Internal Unique Key Field Name']]
 source_ref_id = details[integration_details['External Unique Key Field Name']]['value'] || details[integration_details['External Unique Key Field Name']]
 
+
 {
   "Integration Name" =&gt; integration_details['Name'],
   "Integration Id" =&gt; @inputs['Integration Config Id'],
   "Response Expected" =&gt; response_expected,
-  "Message" =&gt; "Service Now Ticket: #{source_ref_id}",
+  "Message" =&gt; "Cherwell Ticket: #{source_ref_id}",
   "Source Id" =&gt; source_id,
   "Source Reference Id" =&gt; source_ref_id,
   "Onsolve Status" =&gt; "Pending",
@@ -206,18 +207,22 @@ def evaluate(field_input, check)
   old_data = JSON.parse( existing_activity_record[0]['values']['Source Data'] )
   new_data = JSON.parse( @inputs['Source Data'] )
 
+  # Be able to handle if the data uses field qualifiers or not
+  new_field_value = new_data[field][field_qualifier] || new_data[field]
+  old_field_value = old_data[field][field_qualifier] || old_data[field]
+
   evaluation_result = false
   case check
   when "{{Different}}"
-    evaluation_result = true if new_data[field][field_qualifier] != old_data[field][field_qualifier]
+    evaluation_result = true if new_field_value != old_field_value
   when "{{Different Not Empty}}"
-    evaluation_result = true if new_data[field][field_qualifier] != old_data[field][field_qualifier] &amp;&amp; !new_data[field][field_qualifier].to_s.empty?
+    evaluation_result = true if new_field_value != old_field_value &amp;&amp; !new_field_value.to_s.empty?
   when "{{Empty}}"
-    evaluation_result = true if new_data[field][field_qualifier].to_s.empty?
+    evaluation_result = true if new_field_value.to_s.empty?
   when "{{Not Empty}}"
-    evaluation_result = true if !new_data[field][field_qualifier].to_s.empty?
+    evaluation_result = true if !new_field_value.to_s.empty?
   else
-    evaluation_result = true if new_data[field][field_qualifier] == check
+    evaluation_result = true if new_field_value == check
   end
   return evaluation_result
 end
@@ -301,7 +306,7 @@ source_ref_id = details[integration_details['External Unique Key Field Name']]['
   "Integration Name" =&gt; integration_details['Name'],
   "Integration Id" =&gt; @inputs['Integration Config Id'],
   "Response Expected" =&gt; response_expected,
-  "Message" =&gt; "Service Now Ticket: #{source_ref_id}",
+  "Message" =&gt; "Cherwell Ticket: #{source_ref_id}",
   "Source Id" =&gt; source_id,
   "Source Reference Id" =&gt; source_ref_id,
   "Onsolve Status" =&gt; "Pending",
@@ -392,18 +397,22 @@ def evaluate(field_input, check)
   old_data = JSON.parse( existing_activity_record[0]['values']['Source Data'] )
   new_data = JSON.parse( @inputs['Source Data'] )
 
+  # Be able to handle if the data uses field qualifiers or not
+  new_field_value = new_data[field][field_qualifier] || new_data[field]
+  old_field_value = old_data[field][field_qualifier] || old_data[field]
+
   evaluation_result = false
   case check
   when "{{Different}}"
-    evaluation_result = true if new_data[field][field_qualifier] != old_data[field][field_qualifier]
+    evaluation_result = true if new_field_value != old_field_value
   when "{{Different Not Empty}}"
-    evaluation_result = true if new_data[field][field_qualifier] != old_data[field][field_qualifier] &amp;&amp; !new_data[field][field_qualifier].to_s.empty?
+    evaluation_result = true if new_field_value != old_field_value &amp;&amp; !new_field_value.to_s.empty?
   when "{{Empty}}"
-    evaluation_result = true if new_data[field][field_qualifier].to_s.empty?
+    evaluation_result = true if new_field_value.to_s.empty?
   when "{{Not Empty}}"
-    evaluation_result = true if !new_data[field][field_qualifier].to_s.empty?
+    evaluation_result = true if !new_field_value.to_s.empty?
   else
-    evaluation_result = true if new_data[field][field_qualifier] == check
+    evaluation_result = true if new_field_value == check
   end
   return evaluation_result
 end

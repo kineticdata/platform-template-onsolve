@@ -7,7 +7,7 @@
         <name>ServiceNow Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>41</lastID>
+        <lastID>43</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -414,7 +414,7 @@ integration_config['Schema Name']
                     <task label="" type="Complete" value="">system_junction_v1_28</task>
                 </dependents>
             </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_30" name="Update SNow - WorkLog" x="1403" y="132">
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_30" name="Update SNow - WorkLog" x="1498" y="132">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -486,8 +486,7 @@ else
   assignment_status = "completed."
 end
 
-#work_note_text = "Alerting Result (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}): #{assignment_logic_output['notificationStatus']}"
-work_note_text = "#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
+work_note_text = "#{notification_method} Notification \"#{@results['Get Task Activity Monitoring Values']['OnSolve Notification Title']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
 work_note_text += " #{assignment_status}" if !assignment_status.nil?
 
 if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
@@ -593,7 +592,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="If result config" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">servicenow_object_update_v1_30</task>
+                    <task label="If result config" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_43</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_37" name="OnSolve Error Notification" x="451" y="266">
@@ -631,7 +630,7 @@ comments
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_38" name="Update SNow - WorkLog - Error" x="1406" y="11">
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_38" name="Update SNow - WorkLog - Error" x="1496" y="-9">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -669,7 +668,7 @@ notification_method = notification_method_options[integration_config['Notificati
 client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
 uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
 
-work_notes = ["#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) completed, however Kinetic was unable to retrieve the details. Error Message (if applicable):"]
+work_notes = ["#{notification_method} Notification \"#{@results['Get Task Activity Monitoring Values']['OnSolve Notification Title']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) completed, however Kinetic was unable to retrieve the details. Error Message (if applicable):"]
 
 results = JSON.parse(@results['Get Integration Report Results']['Output'])
 results['error'].each{|key,value|
@@ -719,7 +718,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="If result config" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">servicenow_object_update_v1_38</task>
+                    <task label="If result config" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_42</task>
                 </dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_41" name="Old Assemble Note Logic" x="1065.300048828125" y="242.00001525878906">
@@ -799,6 +798,102 @@ end
 
 work_note_text
 %&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_42" name="Outbound Activity - Update SNow - WorkLog - Error" x="1408" y="-9">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+source_id = @results['Get Task Activity Monitoring Values']['Source Id']
+source_type_id = integration_config['Schema Type Id']
+journal_type_id = parameters['Journal Object Type Id']
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+  "Source Reference Id" =&gt;  @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+  "UUID" =&gt; @results['Get Task Activity Monitoring Values']['Onsolve Id'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Submission Activity']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+    "object_json" =&gt; { 
+      "work_notes" =&gt; @results['Assemble Work Note - Error']['output'],
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_43" name="Outbound Activity - Update SNow - WorkLog" x="1410" y="133">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+source_id = @results['Get Task Activity Monitoring Values']['Source Id']
+source_type_id = integration_config['Schema Type Id']
+journal_type_id = parameters['Journal Object Type Id']
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+  "Source Reference Id" =&gt;  @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+  "UUID" =&gt; @results['Get Task Activity Monitoring Values']['Onsolve Id'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Submission Activity']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+    "json_body" =&gt; { 
+      "work_notes" =&gt; @results['Assemble Work Note']['output'],
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

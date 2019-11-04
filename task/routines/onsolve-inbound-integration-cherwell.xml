@@ -1,0 +1,79 @@
+<tree schema_version="1.0">
+<sourceName>-</sourceName>
+<sourceGroup>-</sourceGroup>
+<definitionId>routine_onsolve_inbound_integration_cherwell_v1</definitionId>
+<type>Global Routine</type>
+<status>Active</status>
+<taskTree builder_version="" schema_version="1.0" version="">
+        <name>OnSolve Inbound Integration Cherwell</name>
+        <author/>
+        <notes/>
+        <lastID>3</lastID>
+        <taskDefinition id="routine_onsolve_inbound_integration_cherwell_v1" name="OnSolve Inbound Integration Cherwell" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Action" label="Action" required="true" tooltip=""/>
+                <parameter id="Data" label="Data" required="true" tooltip=""/>
+            </parameters>
+            <handler name="system_tree_call" version="1"/>
+            <results format="xml"/>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents>
+                    <task label="All Items" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="42" y="128">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Query</parameter><!-- Retrieve By Query parameters -->
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query">cherwell</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval">values[Name]</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission">values[Name]="&lt;%=@inputs['Action']%&gt;"</parameter><!-- Retrieve By Id parameters -->
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved."/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_integration_cherwell_process_incoming_data_v1_3</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration_cherwell_process_incoming_data_v1" id="routine_onsolve_integration_cherwell_process_incoming_data_v1_3" name="Process Data - Cherwell" x="209" y="133">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=@inputs['Data']%&gt;</parameter>
+                    <parameter id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+        </request>
+    </taskTree>
+</tree>

@@ -48,15 +48,15 @@
                     <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
                     <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%=
 integration_config = JSON.parse( @inputs['Integration Config Values'] )
-#details = JSON.parse( @results['XML to JSON']['output'] )
 details = JSON.parse( @inputs['Source Data'] )
+source_id_value = details[integration_config['Internal Unique Key Field Name']]['value'] || details[integration_config['Internal Unique Key Field Name']]
 
 query_addendum = ""
 if integration_config['Notify more than once per record'] == "Yes"
   query_addendum = %|AND values[Onsolve Status] IN ("Pending","Open")|
 end
 
-query = %|include=details,values&amp;q=values[Integration Id]="#{@inputs['Integration Config Id']}" AND values[Source Id]="#{details[integration_config['Field 1 Database Name']]}" #{query_addendum}| 
+query = %|include=details,values&amp;q=values[Integration Id]="#{@inputs['Integration Config Id']}" AND values[Source Id]="#{source_id_value}" #{query_addendum}| 
 
 query%&gt;</parameter>
                     <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."/>
@@ -98,7 +98,7 @@ end
   "Integration Id" =&gt; @inputs['Integration Config Id'],
   "Response Expected" =&gt; response_expected,
   "Message" =&gt; "Remedy Ticket: #{details[integration_details['External Unique Key Field Name']]}",
-  "Source Id" =&gt; details[integration_details['Field 1 Database Name']],
+  "Source Id" =&gt; details[integration_details['Internal Unique Key Field Name']],
   "Source Reference Id" =&gt; details[integration_details['External Unique Key Field Name']],
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
@@ -300,7 +300,7 @@ end
   "Integration Id" =&gt; @inputs['Integration Config Id'],
   "Response Expected" =&gt; response_expected,
   "Message" =&gt; "Remedy Ticket: #{details[integration_details['External Unique Key Field Name']]}",
-  "Source Id" =&gt; details[integration_details['Field 1 Database Name']],
+  "Source Id" =&gt; details[integration_details['Internal Unique Key Field Name']],
   "Source Reference Id" =&gt; details[integration_details['External Unique Key Field Name']],
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details

@@ -13,5 +13,10 @@
     "allowsMultiple": false,
     "description": "The field in the OnSolve tool that will uniquely identify this user. Either 'username' or 'employeeId' or 'userId'. Must match the spelling and case exactly.",
     "name": "Unique Individual Identifier Field"
+  },
+  {
+    "allowsMultiple": false,
+    "description": "True or False if this client uses the Kinetic agent",
+    "name": "Uses Kinetic Agent"
   }
 ]

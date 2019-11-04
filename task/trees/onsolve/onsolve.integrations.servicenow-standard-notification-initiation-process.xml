@@ -7,7 +7,7 @@
         <name>ServiceNow Standard Notification Initiation Process</name>
         <author/>
         <notes/>
-        <lastID>113</lastID>
+        <lastID>118</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -19,24 +19,6 @@
                 <messages/>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_create_v1_96</task>
-                </dependents>
-            </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Placeholder: SWN Routine / Tree / Handler" x="803" y="755">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">*No action: Placeholder*</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_noop_v1_54</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_14" name="Junction" x="1417" y="308">
@@ -105,7 +87,7 @@ placeholders.each_index{|i|
       end
 
       if source_data.keys.include?(field)
-        source_data[field][field_qualifier]
+        source_data[field][field_qualifier] || source_data[field]
       else
         match
       end
@@ -162,9 +144,17 @@ placeholders.to_json
                     <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= JSON.parse( @source['Data'] )['Task Activity Monitor Submission']%&gt;</parameter>
                     <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+if @results['MIR3 One Step Notification']['Title'].to_s.empty?
+  notification_title = integration_config['Notification Message Template']
+else
+  notification_title = @results['MIR3 One Step Notification']['Title']
+end
+
 {
  "Onsolve Id" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
- "Onsolve Status" =&gt; "Open"
+ "Onsolve Status" =&gt; "Open",
+ "OnSolve Notification Title" =&gt; notification_title
 }.to_json
 %&gt;</parameter>
                     <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
@@ -181,23 +171,7 @@ placeholders.to_json
                     <task label="" type="Complete" value="">utilities_echo_v1_113</task>
                 </dependents>
             </task>
-            <task definition_id="system_noop_v1" id="system_noop_v1_54" name="Placeholder: Update Submission w/SWN ID" x="1417" y="770">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters/>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_junction_v1_14</task>
-                </dependents>
-            </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_84" name="Update ServiceNow - Alerting Initiated" x="1276" y="573">
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_84" name="Update ServiceNow - Alerting Initiated" x="1191" y="572">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -246,7 +220,7 @@ if !recipients.nil?
     end
 
     if source_data.keys.include?(field)
-      source_data[field][field_qualifier]
+      source_data[field][field_qualifier] || source_data[field]
     else
       match
     end
@@ -264,7 +238,6 @@ recipients
                 <dependents>
                     <task label="Uses ServiceNow OnCall" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Use ServiceNow Oncall'].to_s == &quot;Yes&quot; &amp;&amp; !JSON.parse( @source['Data'] )['Integration Configuration']['OnCall Support Group Id'].to_s.empty?">servicenow_oncall_retrieve_v1_100</task>
                     <task label="MIR3" type="Complete" value="JSON.parse( @source['Data'] )['Onsolve Product'] === &quot;MIR3&quot;">system_junction_v1_106</task>
-                    <task label="SWN" type="Complete" value="JSON.parse( @source['Data'] )['Onsolve Product'] === &quot;SWN&quot;">system_junction_v1_107</task>
                 </dependents>
             </task>
             <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_94" name="Return Trigger" x="1574" y="300">
@@ -292,7 +265,7 @@ recipients
                     <task label="Forever" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Keep Task History'] != &quot;Not Forever&quot;">system_junction_v1_99</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_95" name="Add Task Run Cleanup Entry" x="1573" y="440">
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_95" name="Add Task Run Cleanup Entry" x="1573" y="450">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -378,8 +351,8 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="If updates configured" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">servicenow_object_update_v1_84</task>
                     <task label="" type="Complete" value="">system_junction_v1_14</task>
+                    <task label="If updates configured" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_117</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_99" name="Junction: End" x="1736" y="462">
@@ -429,7 +402,7 @@ if !oncall.nil?
     end
 
     if source_data.keys.include?(field)
-      source_data[field][field_qualifier]
+      source_data[field][field_qualifier] || source_data[field]
     else
       match
     end
@@ -525,46 +498,6 @@ simplified_oncall.to_json
                 </messages>
                 <dependents>
                     <task label="MIR3" type="Complete" value="JSON.parse( @source['Data'] )['Onsolve Product'] === &quot;MIR3&quot;">system_junction_v1_106</task>
-                    <task label="SWN" type="Complete" value="JSON.parse( @source['Data'] )['Onsolve Product'] === &quot;SWN&quot;">system_junction_v1_107</task>
-                </dependents>
-            </task>
-            <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_105" name="MIR3 One Step Notification" x="953" y="272">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>true</defers>
-                <deferrable>true</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%=JSON.parse(@results['Retrieve Notification XML']['Values JSON'])['Notification XML']%&gt;</parameter>
-                    <parameter id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]">&lt;%=@results['Process Placeholders']['output']%&gt;</parameter>
-                    <parameter id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" menu="" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">&lt;%= 
-default = "username"
-unique_field = JSON.parse( @source['Data'] )['MIR3 Unique User Match Field']
-
-if unique_field.to_s.empty?
-  default
-else
-  unique_field
-end
-%&gt;
-
-</parameter>
-                    <parameter id="Recipients JSON" label="Recipients JSON" menu="" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}">&lt;%=@results['Do Recipient Replacements']['output']%&gt;</parameter>
-                    <parameter id="OnCall JSON" label="OnCall JSON" menu="" required="false" tooltip="JSON object corresponding to ServiceNow Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}">&lt;%=
-if @results.has_key? ('Simplify OnCall')
-  @results['Simplify OnCall']['output']
-end
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="Successful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] == &quot;true&quot;">kinetic_request_ce_submission_update_v1_53</task>
-                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">kinetic_request_ce_submission_update_v1_108</task>
-                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_111</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_106" name="Junction: SNow OnCall" x="803" y="271">
@@ -580,23 +513,7 @@ end
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">routine_onsolve_mir3_one_step_notification_v1_105</task>
-                </dependents>
-            </task>
-            <task definition_id="system_junction_v1" id="system_junction_v1_107" name="Junction: SWN OnCall" x="803" y="588">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters/>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">utilities_echo_v1_12</task>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_one_step_notification_v1_115</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_108" name="Update Submission with UUID - Error" x="1133" y="273">
@@ -663,11 +580,11 @@ results['error'].each{|key,value|
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">servicenow_object_update_v1_110</task>
                     <task label="" type="Complete" value="">system_junction_v1_14</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_116</task>
                 </dependents>
             </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_110" name="Update ServiceNow - Alerting Initiated - Error" x="1276" y="23">
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_110" name="Update ServiceNow - Alerting Initiated - Error" x="1183" y="23">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -732,7 +649,7 @@ comments
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_112" name="Dev Notes - 01" x="1360" y="127">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_112" name="Dev Notes - 01" x="1472" y="132">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -762,7 +679,11 @@ notification_method = notification_method_options[integration_config['Notificati
 
 # Build note
 work_notes = ["#{notification_method} Notification"]
-work_notes.push( "\"#{integration_config['Notification Message Template']}\"" )
+if @results['MIR3 One Step Notification']['Title'].to_s.empty?
+  work_notes.push( "\"#{integration_config['Notification Message Template']}\"" )
+else
+  work_notes.push( "\"#{@results['MIR3 One Step Notification']['Title']}\"" )
+end
 work_notes.push( "(UUID #{@results['MIR3 One Step Notification']['Notification Report UUID']})" )
 work_notes.push( "was successfully initiated" )
 
@@ -789,6 +710,218 @@ work_notes.join(" ")+"."
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_97</task>
                 </dependents>
+            </task>
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_114" name="Update ServiceNow Record" x="1542" y="572">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+integration_config['Schema Name']
+%&gt;</parameter>
+                    <parameter id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%=
+source_id = JSON.parse( @source['Data'] )['Source Id']
+%&gt;</parameter>
+                    <parameter id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+integration_config['Fields to Update Upon Notification']
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_115" name="MIR3 One Step Notification" x="958" y="264">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%=JSON.parse(@results['Retrieve Notification XML']['Values JSON'])['Notification XML']%&gt;</parameter>
+                    <parameter id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]">&lt;%=@results['Process Placeholders']['output']%&gt;</parameter>
+                    <parameter id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" menu="" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">&lt;%= 
+default = "username"
+unique_field = JSON.parse( @source['Data'] )['MIR3 Unique User Match Field']
+
+if unique_field.to_s.empty?
+  default
+else
+  unique_field
+end
+%&gt;
+
+</parameter>
+                    <parameter id="Recipients JSON" label="Recipients JSON" menu="" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}">&lt;%=@results['Do Recipient Replacements']['output']%&gt;</parameter>
+                    <parameter id="OnCall JSON" label="OnCall JSON" menu="" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}">&lt;%=
+if @results.has_key? ('Simplify OnCall')
+  @results['Simplify OnCall']['output']
+end
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_111</task>
+                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">kinetic_request_ce_submission_update_v1_108</task>
+                    <task label="Successful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] == &quot;true&quot;">kinetic_request_ce_submission_update_v1_53</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_116" name="Outbound Activity - Update ServiceNow - Alerting Initiated - Error" x="1275" y="22">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+results['error'].each{|key,value|
+  work_notes.push( "#{key}: #{value}" )
+}
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; JSON.parse( @source['Data'] )['Source Id'],
+  "Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; JSON.parse( @source['Data'] )['Source Id'],
+    "json_body" =&gt; {
+      "work_notes" =&gt; work_notes.join("\n"),
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_117" name="Outbound Activity - Update ServiceNow - Alerting Initiated" x="1276" y="573">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; JSON.parse( @source['Data'] )['Source Id'],
+  "Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; JSON.parse( @source['Data'] )['Source Id'],
+    "json_body" =&gt; {
+      "work_notes" =&gt; @results['Work Note Content']['output']
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="Update Source Record?" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;&#10;integration_config['Polling'] == &quot;Yes&quot; &amp;&amp; !integration_config['Fields to Update Upon Notification'].to_s.empty?">routine_kinetic_submission_create_v1_118</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_118" name="Outbound Activity - Update ServiceNow Record" x="1452" y="573">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; JSON.parse( @source['Data'] )['Source Id'],
+  "Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; JSON.parse( @source['Data'] )['Source Id']
+    "json_body" =&gt; integration_config['Fields to Update Upon Notification']
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
             </task>
         </request>
     </taskTree>

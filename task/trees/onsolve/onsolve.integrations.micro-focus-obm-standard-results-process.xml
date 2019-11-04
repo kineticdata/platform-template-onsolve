@@ -7,7 +7,7 @@
         <name>Micro Focus OBM Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>52</lastID>
+        <lastID>54</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -363,8 +363,7 @@ else
   assignment_status = "completed."
 end
 
-#work_note_text = "Alerting Result (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}): #{assignment_logic_output['notificationStatus']}"
-work_note_text = "#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
+work_note_text = "#{notification_method} Notification \"#{@results['Get Task Activity Monitoring Values']['OnSolve Notification Title']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
 work_note_text += " #{assignment_status}" if !assignment_status.nil?
 
 if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
@@ -489,7 +488,9 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents/>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_54</task>
+                </dependents>
             </task>
             <task definition_id="obm_event_retrieve_v1" id="obm_event_retrieve_v1_45" name="Retrieve Event" x="726" y="295">
                 <version>1</version>
@@ -554,7 +555,7 @@ notification_method = notification_method_options[integration_config['Notificati
 client_reference = @results['Get Task Activity Monitoring Values']['Source Reference Id']
 uuid = @results['Get Task Activity Monitoring Values']['Onsolve Id']
 
-work_notes = ["#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) completed, however Kinetic was unable to retrieve the details. Error Message (if applicable):"]
+work_notes = ["#{notification_method} Notification \"#{@results['Get Task Activity Monitoring Values']['OnSolve Notification Title']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) completed, however Kinetic was unable to retrieve the details. Error Message (if applicable):"]
 
 results = JSON.parse(@results['Get Integration Report Results']['Output'])
 results['error'].each{|key,value|
@@ -589,7 +590,9 @@ work_notes.join("\n")
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents/>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_53</task>
+                </dependents>
             </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_50" name="OnSolve Error Notification" x="451" y="267">
                 <version>1</version>
@@ -717,6 +720,90 @@ end
 
 work_note_text
 %&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_53" name="Outbound Activity - Add Event Annotation - Error" x="1520.2999877929688" y="15.416671752929688">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "OBM",
+  "Source Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+  "Source Reference Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+  "UUID" =&gt; @results['Get Task Activity Monitoring Values']['Onsolve Id'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Submission Activity']['Id'],
+  "Action" =&gt; "Annotation Add",
+  "Payload" =&gt; {
+    "event_id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+    "annotation_content" =&gt; @results['Assemble Work Note - Error']['output']
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_54" name="Outbound Activity - Add Event Annotation" x="1518" y="122">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "OBM",
+  "Source Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+  "Source Reference Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+  "UUID" =&gt; @results['Get Task Activity Monitoring Values']['Onsolve Id'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Submission Activity']['Id'],
+  "Action" =&gt; "Annotation Add",
+  "Payload" =&gt; {
+    "event_id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+    "annotation_content" =&gt; @results['Assemble Work Note']['output']
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

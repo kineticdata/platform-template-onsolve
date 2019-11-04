@@ -3,6 +3,7 @@
   "description": "Handlers in the system",
   "type": "Stored",
   "handlers": [
+    "kinetic_agent_handler_execute_v1",
     "kinetic_core_api_v1",
     "kinetic_discussions_api_v1",
     "kinetic_request_ce_cascading_attribute_value_retrieve_v2",

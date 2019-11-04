@@ -103,7 +103,7 @@
     }
   ],
   "customHeadContent": "<style>\n  /*\n  .bg-primary {\n    background-color: #0c8795 !important;\n  }\n  .bg-warning {\n    background-color: #ffff59 !important;\n  }\n  */\n  section {\n    margin-top: 20px;\n  }\n  section.card-body {\n    margin-top: 0px;\n  }\n  section.card-body .form-group {\n    margin-bottom: .5rem;\n  }\n  div.card-header > div.h5, div.card-header > div.h6 {\n    margin-bottom: 0px;\n  }\n\n  .modal-dialog .modal-content .modal-body, .modal-dialog .modal-content .modal-header, .modal-dialog .modal-content .modal-footer{\n    padding:1rem;\n  }\n  \n  .configured-level{\n    font-weight: bold;\n  }\n</style>\n\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" integrity=\"sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q\" crossorigin=\"anonymous\"></script>\n<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" integrity=\"sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl\" crossorigin=\"anonymous\"></script>",
-  "description": "The form used to define the configuration for BMC Remedy Integrations",
+  "description": "The form used to define the configuration for Cherwell Integrations",
   "indexDefinitions": [
     {
       "name": "createdAt",
@@ -309,11 +309,11 @@
       "unique": false
     },
     {
-      "name": "values[Name]",
+      "name": "values[Name]:UNIQUE",
       "parts": [
         "values[Name]"
       ],
-      "unique": false
+      "unique": true
     },
     {
       "name": "values[Notification Initiation Action]",
@@ -449,6 +449,13 @@
       "unique": false
     },
     {
+      "name": "values[Schema Type Id]",
+      "parts": [
+        "values[Schema Type Id]"
+      ],
+      "unique": false
+    },
+    {
       "name": "values[Status]",
       "parts": [
         "values[Status]"
@@ -477,7 +484,7 @@
       "unique": false
     }
   ],
-  "name": "BMC Remedy",
+  "name": "Cherwell",
   "notes": null,
   "pages": [
     {
@@ -668,7 +675,7 @@
                   "type": "field",
                   "name": "Error Notification Email",
                   "label": "Error Notification Email (comma separated list of SMTP addresses)",
-                  "key": "f47",
+                  "key": "f46",
                   "defaultValue": null,
                   "defaultResourceName": null,
                   "visible": true,
@@ -696,7 +703,7 @@
         {
           "type": "section",
           "renderType": null,
-          "name": "Integration Source Details Container",
+          "name": "Integration Source Container",
           "title": null,
           "visible": true,
           "omitWhenHidden": null,
@@ -707,7 +714,7 @@
             {
               "type": "content",
               "renderType": "html",
-              "name": "Integration Soure Details Container Header",
+              "name": "Integration Source Container Header",
               "text": "<div class=\"h5\">Integration Source Details</div>",
               "visible": true,
               "renderAttributes": {
@@ -717,8 +724,8 @@
             {
               "type": "section",
               "renderType": null,
-              "name": "Integration Source Details Container Body",
-              "title": "",
+              "name": "Integration Source Container Body",
+              "title": null,
               "visible": true,
               "omitWhenHidden": null,
               "renderAttributes": {
@@ -728,13 +735,63 @@
                 {
                   "type": "field",
                   "name": "Schema Name",
-                  "label": "Form / Schema Name",
+                  "label": "Business Object Type",
                   "key": "f7",
-                  "defaultValue": null,
+                  "defaultValue": "Incident",
                   "defaultResourceName": null,
                   "visible": true,
                   "enabled": true,
-                  "required": true,
+                  "required": "values('Polling') === \"Yes\"",
+                  "requiredMessage": null,
+                  "omitWhenHidden": null,
+                  "pattern": null,
+                  "constraints": [
+
+                  ],
+                  "events": [
+                    {
+                      "name": "Set Schema Id if Incident",
+                      "type": "Change",
+                      "action": "Set Fields",
+                      "mappings": [
+                        {
+                          "field": "Schema Type Id",
+                          "value": "6dd53665c0c24cab86870a21cf6434ae",
+                          "visible": null
+                        }
+                      ],
+                      "runIf": "values('Schema Name') !== null && values('Schema Name').toLowerCase() == \"incident\""
+                    },
+                    {
+                      "name": "Clear Schema Id if not Incident",
+                      "type": "Change",
+                      "action": "Set Fields",
+                      "mappings": [
+                        {
+                          "field": "Schema Type Id",
+                          "value": "${null}",
+                          "visible": null
+                        }
+                      ],
+                      "runIf": "values('Schema Name') === null || values('Schema Name').toLowerCase() !== \"incident\""
+                    }
+                  ],
+                  "renderAttributes": {
+                  },
+                  "dataType": "string",
+                  "renderType": "text",
+                  "rows": 1
+                },
+                {
+                  "type": "field",
+                  "name": "Schema Type Id",
+                  "label": "Business Object Type Id",
+                  "key": "f50",
+                  "defaultValue": "6dd53665c0c24cab86870a21cf6434ae",
+                  "defaultResourceName": null,
+                  "visible": true,
+                  "enabled": true,
+                  "required": false,
                   "requiredMessage": null,
                   "omitWhenHidden": null,
                   "pattern": null,
@@ -754,7 +811,7 @@
                   "type": "field",
                   "name": "Notify more than once per record",
                   "label": "Notify more than once per Form/Schema record?",
-                  "key": "f46",
+                  "key": "f43",
                   "defaultValue": "Yes",
                   "defaultResourceName": null,
                   "visible": true,
@@ -789,9 +846,9 @@
                 {
                   "type": "field",
                   "name": "Internal Unique Key Field Name",
-                  "label": "Internal Unique Key Field Name (e.g., Field 1 Name -- Request ID, Entry Id)",
-                  "key": "f41",
-                  "defaultValue": "Request ID",
+                  "label": "Internal Unique Key Field Name (holding the RecID value)",
+                  "key": "f52",
+                  "defaultValue": "busObRecId",
                   "defaultResourceName": null,
                   "visible": true,
                   "enabled": true,
@@ -814,9 +871,9 @@
                 {
                   "type": "field",
                   "name": "External Unique Key Field Name",
-                  "label": "Form/Schema External Unique Key Field Name (e.g., Incident Number, Work Order ID)",
-                  "key": "f42",
-                  "defaultValue": "Incident Number",
+                  "label": "Form/Schema External Unique Key Field Name",
+                  "key": "f40",
+                  "defaultValue": "busObPublicId",
                   "defaultResourceName": null,
                   "visible": true,
                   "enabled": true,
@@ -840,7 +897,7 @@
                   "type": "field",
                   "name": "User Field Containing Match to OnSolve Users",
                   "label": "User Field Containing Match to OnSolve Users",
-                  "key": "f43",
+                  "key": "f41",
                   "defaultValue": null,
                   "defaultResourceName": null,
                   "visible": true,
@@ -865,17 +922,17 @@
                   "type": "content",
                   "renderType": "html",
                   "name": "Unique Individual Identifier Field Note",
-                  "text": "<small>What field (database name, not visible name) from <strong>CTM:People</strong> form is used to uniquely identify an individual user?  Ex: Remedy Login ID<small>",
+                  "text": "<small>What field from <strong>sys_user</strong> table is used to uniquely identify an individual user?<small>",
                   "visible": true,
                   "renderAttributes": {
-                    "style": "margin-top:-10px"
+                    "class": "margin-top:-10px;"
                   }
                 },
                 {
                   "type": "field",
                   "name": "MIR3 Unique User Match Field",
                   "label": "MIR3 Unique User Match Field",
-                  "key": "f48",
+                  "key": "f47",
                   "defaultValue": null,
                   "defaultResourceName": null,
                   "visible": true,
@@ -1022,10 +1079,10 @@
                       "type": "content",
                       "renderType": "html",
                       "name": "Qualification Note",
-                      "text": "<small>Use {{Start Date}} and {{End Date}} to have Kinetic automatically replace them with Remedy formatted date/time values since the last run time.<br />Example query: '6'&gt=\"{{Start Date}}\" AND '6'&lt\"{{End Date}}\"<br /><i>Note:  Any time the last run is greater than 60 minutes ago is considered a problem, and the times will be reset to the current time.</i><small>",
+                      "text": "<small>Limitation of the Cherwell API system prevent using date/times as search criteria (i.e., you cannot do \"between\" operators, or \"greather than or equal to\" AND \"less than\" comparison for the same field in the same filter/qualification; nor can you do \"does not equal\" operations).  Therefore filters/qualifications are limited to equality comparisons, and best suited for using a checkbox or other \"true/false\" flag within Cherwell.</small>",
                       "visible": true,
                       "renderAttributes": {
-                        "style": "margin-top:-15px"
+                        "style": "margin-top:-10px"
                       }
                     },
                     {
@@ -1060,11 +1117,11 @@
                       "key": "f33",
                       "defaultValue": null,
                       "defaultResourceName": null,
-                      "visible": true,
+                      "visible": false,
                       "enabled": true,
                       "required": false,
                       "requiredMessage": null,
-                      "omitWhenHidden": null,
+                      "omitWhenHidden": true,
                       "pattern": null,
                       "constraints": [
 
@@ -1085,11 +1142,11 @@
                       "key": "f34",
                       "defaultValue": null,
                       "defaultResourceName": null,
-                      "visible": true,
+                      "visible": false,
                       "enabled": true,
                       "required": false,
                       "requiredMessage": null,
-                      "omitWhenHidden": null,
+                      "omitWhenHidden": true,
                       "pattern": null,
                       "constraints": [
 
@@ -1119,7 +1176,7 @@
                     {
                       "type": "content",
                       "renderType": "html",
-                      "name": "Recurrent Details Container Header",
+                      "name": "Recurrence Details Container Header",
                       "text": "<div class=\"h5\">Recurrence Details</div>",
                       "visible": true,
                       "renderAttributes": {
@@ -1280,7 +1337,7 @@
               "type": "content",
               "renderType": "html",
               "name": "Notification Message Details Container Header",
-              "text": "<div class=\"h5\">Notification Message Details</div>",
+              "text": "<div class=\"h6\">Notification Message Details</div>",
               "visible": true,
               "renderAttributes": {
                 "class": "card-header bg-primary text-white"
@@ -1289,7 +1346,7 @@
             {
               "type": "section",
               "renderType": null,
-              "name": "Notification Message Details Container Body",
+              "name": "Notification Message Details Body",
               "title": "",
               "visible": true,
               "omitWhenHidden": null,
@@ -1381,7 +1438,8 @@
                       "name": "Enable / Disable Recipient Fields and Set Escalation Level to 1",
                       "type": "Change",
                       "action": "Custom",
-                      "code": "K('field[Recipients JSON]').value( null );\nbundle.ext.forms[K('form').slug()].populateRecipientData();"
+                      "code": "K('field[Recipients JSON]').value( null );\nbundle.ext.forms[K('form').slug()].populateRecipientData();",
+                      "runIf": ""
                     }
                   ],
                   "renderAttributes": {
@@ -1405,7 +1463,7 @@
                       "type": "content",
                       "renderType": "html",
                       "name": "Placeholders Header",
-                      "text": "<div class=\"h5\">Placeholders</h5>",
+                      "text": "<div class=\"h6\">Placeholders</div>",
                       "visible": true,
                       "renderAttributes": {
                         "class": "card-header bg-warning"
@@ -1472,7 +1530,7 @@
                 {
                   "type": "section",
                   "renderType": null,
-                  "name": "Recipients",
+                  "name": "Recipients Container",
                   "title": null,
                   "visible": true,
                   "omitWhenHidden": null,
@@ -1483,8 +1541,8 @@
                     {
                       "type": "content",
                       "renderType": "html",
-                      "name": "Recipients Header",
-                      "text": "<div class=\"h5\">Recipients</div>\n<div>Use this syntax to replace a value with a field from Remedy:  {{Remedy Field Name}}</div>",
+                      "name": "Recipients Container Header",
+                      "text": "<div class=\"h5\">Recipients</div>\n<div>Use this syntax to replace a value with a field from ServiceNow:  {{ServiceNow Field Name}}</div>",
                       "visible": true,
                       "renderAttributes": {
                         "class": "card-header bg-warning"
@@ -1493,7 +1551,7 @@
                     {
                       "type": "section",
                       "renderType": null,
-                      "name": "Recipients Body",
+                      "name": "Recipients Container Body",
                       "title": "",
                       "visible": true,
                       "omitWhenHidden": null,
@@ -1505,7 +1563,7 @@
                           "type": "field",
                           "name": "Escalation Level",
                           "label": "Escalation Level",
-                          "key": "f49",
+                          "key": "f48",
                           "defaultValue": null,
                           "defaultResourceName": null,
                           "visible": "values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\"",
@@ -1749,7 +1807,7 @@
           "type": "section",
           "renderType": null,
           "name": "Notification Initiation Container",
-          "title": null,
+          "title": "",
           "visible": true,
           "omitWhenHidden": null,
           "renderAttributes": {
@@ -1760,7 +1818,7 @@
               "type": "content",
               "renderType": "html",
               "name": "Notification Initiation Container Header",
-              "text": "<div class=\"h5\">Initiation Update to Remedy</div>",
+              "text": "<div class=\"h5\">Initiation Update to Cherwell</div>",
               "visible": true,
               "renderAttributes": {
                 "class": "card-header bg-primary text-white"
@@ -1770,7 +1828,7 @@
               "type": "section",
               "renderType": null,
               "name": "Notification Initiation Container Body",
-              "title": "",
+              "title": null,
               "visible": true,
               "omitWhenHidden": null,
               "renderAttributes": {
@@ -1780,7 +1838,7 @@
                 {
                   "type": "field",
                   "name": "Notification Initiation Action",
-                  "label": "Initiation Work Log Update",
+                  "label": "Initiation Journal Update",
                   "key": "f35",
                   "defaultValue": "None",
                   "defaultResourceName": null,
@@ -1885,7 +1943,7 @@
                     {
                       "type": "content",
                       "renderType": "html",
-                      "name": "Initiation Customer Action Parameter Container Header",
+                      "name": "Initiation Custom Action Parameters Container Header",
                       "text": "<div class=\"h6\">Custom Action Parameters</div>",
                       "visible": true,
                       "renderAttributes": {
@@ -1895,7 +1953,7 @@
                     {
                       "type": "section",
                       "renderType": null,
-                      "name": "Initiation Custom Action Parameters Container Body",
+                      "name": "Initiation Custom Action Parameters Body",
                       "title": null,
                       "visible": true,
                       "omitWhenHidden": null,
@@ -1939,7 +1997,7 @@
                   "name": "Initiation Standard Action Task Tree",
                   "label": "Standard Action Task Tree",
                   "key": "f36",
-                  "defaultValue": "BMC Remedy Standard Notification Initiation Process",
+                  "defaultValue": "Cherwell Standard Notification Initiation Process",
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": false,
@@ -1963,12 +2021,12 @@
                   "type": "field",
                   "name": "Initiation Standard Action Parameters",
                   "label": "Standard Action Parameters",
-                  "key": "f40",
-                  "defaultValue": "{\"Updates To\":\"Work Log\", \"Work Log Form\":\"HPD:WorkLog\", \"Ticket Field\":\"\"}",
+                  "key": "f42",
+                  "defaultValue": "{\"Report Name\":\"Kinetic Notification Results\", \"Timezone\":\"UTC\", \"Responses Used\":\"1\", \"Success Responder Type\":\"3\", \"Detail Level\":\"1\",\"Journal Type\":\"JournalNote\",\"Journal Object Type Id\":\"934d8181ba9d3a6a506d7643e1bc71f70fa9b47412\"}",
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": true,
-                  "required": false,
+                  "required": "values('Notification Result Action') === \"Standard Reporting\"",
                   "requiredMessage": null,
                   "omitWhenHidden": false,
                   "pattern": null,
@@ -1982,7 +2040,7 @@
                   },
                   "dataType": "string",
                   "renderType": "text",
-                  "rows": 1
+                  "rows": 2
                 },
                 {
                   "type": "section",
@@ -2048,7 +2106,7 @@
               "type": "content",
               "renderType": "html",
               "name": "Notification Result Container Header",
-              "text": "<div class=\"h5\">Completion Update to Remedy</div>\t",
+              "text": "<div class=\"h5\">Completion Update to Cherwell</div>\t",
               "visible": true,
               "renderAttributes": {
                 "class": "card-header bg-primary text-white"
@@ -2068,7 +2126,7 @@
                 {
                   "type": "field",
                   "name": "Notification Result Action",
-                  "label": "Completion Work Log Update",
+                  "label": "Completion Journal Update",
                   "key": "f11",
                   "defaultValue": "None",
                   "defaultResourceName": null,
@@ -2113,7 +2171,7 @@
                   "type": "field",
                   "name": "Assign Responder",
                   "label": "Assign Responder",
-                  "key": "f50",
+                  "key": "f49",
                   "defaultValue": null,
                   "defaultResourceName": null,
                   "visible": "(values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\") && values('Notification Result Action') !== \"None\"",
@@ -2209,7 +2267,7 @@
                     {
                       "type": "content",
                       "renderType": "html",
-                      "name": "Result Custom Action Parameters Container Header",
+                      "name": "Result Customer Action Parameters Container Header",
                       "text": "<div class=\"h5\">Custom Action Parameters</div>",
                       "visible": true,
                       "renderAttributes": {
@@ -2219,7 +2277,7 @@
                     {
                       "type": "section",
                       "renderType": null,
-                      "name": "Result Custom Action Parameters Container Body",
+                      "name": "Result Customer Action Parameters Container Body",
                       "title": null,
                       "visible": true,
                       "omitWhenHidden": null,
@@ -2263,7 +2321,7 @@
                   "name": "Result Standard Action Task Tree",
                   "label": "Standard Action Task Tree",
                   "key": "f21",
-                  "defaultValue": "BMC Remedy Standard Results Process",
+                  "defaultValue": "Cherwell Standard Results Process",
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": false,
@@ -2288,7 +2346,7 @@
                   "name": "Result Standard Action Parameters",
                   "label": "Standard Action Parameters",
                   "key": "f12",
-                  "defaultValue": "{\"Report Name\":\"Kinetic Notification Results\",\"Timezone\":\"UTC\",\"Responses Used\":\"1\",\"Success Responder Type\":\"3\",\"Detail Level\":\"1\",\"Updates To\":\"Work Log\",\"Work Log Form\":\"HPD:WorkLog\",\"Ticket Field\":\"\"}",
+                  "defaultValue": "{\"Report Name\":\"Kinetic Notification Results\", \"Timezone\":\"UTC\", \"Responses Used\":\"1\", \"Success Responder Type\":\"3\", \"Detail Level\":\"1\",\"Journal Type\":\"JournalNote\",\"Journal Object Type Id\":\"934d8181ba9d3a6a506d7643e1bc71f70fa9b47412\"}",
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": true,
@@ -2322,7 +2380,7 @@
                     {
                       "type": "content",
                       "renderType": "html",
-                      "name": "Result Standard Action Parameters Container Header",
+                      "name": "Result Standard Action Paramaters Container Header",
                       "text": "<div class=\"h5\">Standard Reporting Parameters</div>",
                       "visible": true,
                       "renderAttributes": {
@@ -2372,7 +2430,7 @@
               "type": "content",
               "renderType": "html",
               "name": "Interim Notification Container Header",
-              "text": "<div class=\"h5\">Interim Updates to Remedy</div>",
+              "text": "<div class=\"h5\">Interim Updates to Cherwell</div>",
               "visible": true,
               "renderAttributes": {
                 "class": "card-header bg-primary text-white"
@@ -2387,13 +2445,13 @@
               "omitWhenHidden": null,
               "renderAttributes": {
                 "class": "card-body",
-                "style": "padding-top:0px"
+                "style": "padding-top: 0px"
               },
               "elements": [
                 {
                   "type": "field",
                   "name": "Interim Update Action",
-                  "label": "Interim Work Log Updates",
+                  "label": "Interim Journal Updates",
                   "key": "f26",
                   "defaultValue": "None",
                   "defaultResourceName": null,
@@ -2532,7 +2590,7 @@
                     {
                       "type": "section",
                       "renderType": null,
-                      "name": "Interim Custom Action Parameters Card Body",
+                      "name": "Interim Custom Action Parameter Container Body",
                       "title": null,
                       "visible": true,
                       "omitWhenHidden": null,
@@ -2576,7 +2634,7 @@
                   "name": "Interim Standard Action Task Tree",
                   "label": "Interim Standard Action Task Tree",
                   "key": "f24",
-                  "defaultValue": "BMC Remedy Standard Interim Results Process",
+                  "defaultValue": "Cherwell Standard Interim Results Process",
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": false,
@@ -2601,7 +2659,7 @@
                   "name": "Interim Standard Action Parameters",
                   "label": "Interim Standard Action Parameters",
                   "key": "f25",
-                  "defaultValue": "{\"Report Name\":\"Kinetic Notification Results\",\"Timezone\":\"UTC\",\"Responses Used\":\"1\",\"Success Responder Type\":\"3\",\"Detail Level\":\"1\",\"Updates To\":\"Work Log\",\"Work Log Form\":\"HPD:WorkLog\",\"Ticket Field\":\"\"}",
+                  "defaultValue": "{\"Report Name\":\"Kinetic Notification Results\", \"Timezone\":\"UTC\", \"Responses Used\":\"1\", \"Success Responder Type\":\"3\", \"Detail Level\":\"1\",\"Journal Type\":\"JournalNote\",\"Journal Object Type Id\":\"934d8181ba9d3a6a506d7643e1bc71f70fa9b47412\"}",
                   "defaultResourceName": null,
                   "visible": false,
                   "enabled": true,
@@ -2698,7 +2756,7 @@
           "name": "Load Custom Page Code",
           "type": "Load",
           "action": "Custom",
-          "code": "var formSlug = K('form').slug();\n// Confirm bundle.ext exists, or create it\nbundle.ext = bundle.ext || {};\n// Confirm bundle.ext.forms.<form_slug> exists, or create it\nbundle.ext.forms = bundle.ext.forms || {};\nbundle.ext.forms[formSlug] = bundle.ext.forms[formSlug] || {};\n\n// Create variable to custom appointment\nvar integration = bundle.ext.forms[formSlug];\n//var integration = bundle.ext.forms.servicenow;\n\nintegration.getPlaceholders = function() {\n  // Clear placeholders\n  $('div.placeholders').empty();\n\n  // Retrieve Notification Placeholders\n  K('bridgedResource[Onsolve Notification Placeholders]').load({\n    success: function(bridgedData) {\n      if (bridgedData.length > 0) {\n        K('section[Placeholders Container]').show();\n      }\n      $.each( bridgedData, function( k, v ) {\n        var help_array = [];\n        help_array.push( 'Optional: ' + v['Optional'] );\n        \n        //if checkbox, value must result in true or false\n        if ( v['Placeholder Type'] === \"checkbox\" ) {\n          help_array.push( \"Note: When populated, field must evaluate to 'true' or 'false'\" );\n        };\n        \n        //if multiple choice, value must result in one of these options\n        if ( v['Placeholder Type'] === \"multipleChoice\" ) {\n          var metaData = JSON.parse( v['Meta Data'] );\n          if ( metaData['Options'] ) {\n            var optionsArray = [];\n            $.each( metaData['Options'], function( i, v ) {\n              optionsArray.push( v['value'] );\n            });\n            help_array.push( \"Note: When populated, field must evaluate to one of these values: \" + optionsArray.join(\", \") );\n          };\n        };\n        var help_el = '<small id=\"' + v['Id'] + '-help\" class=\"form-text text-muted\">' + help_array.join(\"; \") + '</small>';\n        var ph_container_el = $('<div class=\"placeholder\"></div>');\n        var ph_el = $('<div class=\"form-group\"></div>');\n        ph_el.append('<label for=\"' + v['Id'] + '\">'+ v['Placeholder Name'] + '</label>');\n        ph_el.append('<input type=\"text\" data-placeholdername=\"' + v['Placeholder Name'] + '\" class=\"form-control\" id=\"' + v['Id'] + '\" placeholder=\"' + v['Default Value'] + '\">');\n        ph_el.append(help_el);\n        ph_container_el.append(ph_el);\n        $('div.placeholders').append(ph_container_el);\n\n        // Populate the placeholder values with data.\n        $.each( JSON.parse( K('field[Placeholder Data]').value() || \"[]\" ), function( i, v ) {\n          $( 'div.placeholders input[data-placeholdername=\"' + v['name'] + '\"]' ).val( v['value'] );\n        });\n      }); \n    }\n  });\n}\nintegration.savePlaceholders = function() {\n  // Write to Notification Placeholder Values\n  var placeholderData=[];\n  $('.placeholders .placeholder input').each( function() {\n    var phName = $(this).data('placeholdername');\n    var phValue = $(this).val();\n    placeholderData.push( {\"name\": phName, \"value\": phValue} )\n  })\n  K('field[Placeholder Data]').value( JSON.stringify(placeholderData) );\n}\n\nintegration.enableFields = function() {\n  // Update to always make fields enabled\n  /*\n  // If the Notification Method is already populated, and of certain types, \n  // make the recipients field editable.\n  if ( K('field[Notification Method]').value() === \"broadcastInfo\" || K('field[Notification Method]').value() === \"bulletinBoardInfo\" ) {\n    K('field[Max Response Time]').disable();  //always disabled initially.\n    K('field[Individuals]').enable();\n    K('field[Groups]').enable();\n    K('field[Schedules]').enable();\n  } else {\n    K('field[Max Response Time]').disable();\n    K('field[Individuals]').disable();\n    K('field[Groups]').disable();\n    K('field[Schedules]').disable();\n  }\n  */\n}\n\nintegration.applyEscalationRecipientData = function() {\n  // Set fields read only\n  /*\n  K('field[Max Response Time]').disable();\n  K('field[Individuals]').disable();\n  K('field[Groups]').disable();\n  K('field[Schedules]').disable();\n  */\n\n  // store information\n\n  var escalationLevels = JSON.parse( K('field[Recipients JSON]').value() || \"{}\" ),\n      maxResponse = K('field[Max Response Time]').value(),\n      individuals = K('field[Individuals]').value(),\n      groups = K('field[Groups]').value(),\n      schedules = K('field[Schedules]').value();\n\n  if ( (!individuals || individuals.trim() === \"\") && (!groups || groups.trim() === \"\") && (!schedules || schedules.trim() === \"\") ) {\n    // delete element from hash in javascript\n    delete escalationLevels[ K('field[Escalation Level]').value() ];\n  } else {\n    // only populate the values that have content\n    escalationLevels[ K('field[Escalation Level]').value() ] = {}\n    if (maxResponse && maxResponse.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"maxResponse\"] = maxResponse;\n    }\n    if (individuals && individuals.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"individuals\"] = individuals;\n    }\n    if (groups && groups.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"groups\"] = groups;\n    }\n    if (schedules && schedules.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"schedules\"] = schedules;\n    }\n  }\n\n  K('field[Recipients JSON]').value( JSON.stringify(escalationLevels) );\n  \n  integration.populateConfiguredEscalationLevels();\n}\n\nintegration.consolidateRecipientData = function() {\n  var maxResponse = K('field[Max Response Time]').value(),\n      individuals = K('field[Individuals]').value(),\n      groups = K('field[Groups]').value(),\n      schedules = K('field[Schedules]').value(),\n      recipientData = {};\n\n  // only populate the values that have content\n\tif (maxResponse && maxResponse.trim() !== \"\") {\n    recipientData[\"maxResponse\"] = maxResponse;\n  }\n  if (individuals && individuals.trim() !== \"\") {\n    recipientData[\"individuals\"] = individuals;\n  }\n  if (groups && groups.trim() !== \"\") {\n    recipientData[\"groups\"] = groups;\n  }\n  if (schedules && schedules.trim() !== \"\") {\n    recipientData[\"schedules\"] = schedules;\n  }\n\n  K('field[Recipients JSON]').value( JSON.stringify(recipientData) );\n}\n\nintegration.populateRecipientData = function() {\n  if( K('field[Notification Method]').value() === \"broadcastInfo\" || K('field[Notification Method]').value() === \"bulletinBoardInfo\" ) {\n    var recipientData = JSON.parse( K('field[Recipients JSON]').value() || \"{}\" );\n    K('field[Individuals]').value( recipientData['individuals'] );\n    K('field[Groups]').value( recipientData['groups'] );\n    K('field[Schedules]').value( recipientData['schedules'] );\n  }\n  // Set the escalation level to 1, to display the first set of recipients (if any)\n  if ( K('field[Notification Method]').value() === \"firstResponseInfo\" || K('field[Notification Method]').value() === \"calloutInfo\" ) {\n    K('field[Escalation Level]').value('Escalation Level 1');\n    //Populate the Escalations currently identified\n    integration.populateConfiguredEscalationLevels();\n  }\n}\n\nintegration.populateConfiguredEscalationLevels = function() {\n  var recipients = JSON.parse( K('field[Recipients JSON]').value() || \"{}\" ),\n      configuredLevels = [];\n  // Clear current listing\n  $('#escalation-levels').empty();\n  \n  // Loop over configured listing and populate\n  $.each( recipients, function( k, v ) {\n    configuredLevels.push( '<span class=\"configured-level\">' + k + '</span>' );\n  })\n  \n  if (configuredLevels.length > 0) {\n    $('#escalation-levels').html(configuredLevels.join(\", \"));\n  } else {\n    $('#escalation-levels').html('<span class=\"configured-level\">None</span>');\n  }\n}\n\nintegration.getRecurrenceStatus = function() {\n  if ( K('field[Recurrence Submission Id]').value() !== null ) {\n    K('bridgedResource[Robot by Id]').load({\n      success: function(bridgedData) {\n        K('field[Recurrence Status]').value(bridgedData['Status']);\n      }\n    })\n  }\n}\n\nintegration.createJsonInputs = function(jsonField, container, allowDelete) {\n  $('#'+container).on('click','.delete', function() {\n    var json_el = $(this).closest('.json-container'),\n        json_el_key = json_el.find('.json-key').val();\n    result = confirm(\"Are you sure you want to remove the \" + json_el_key + \" parameter?\");\n    if ( result === true ) {\n        json_el.remove();\n    }\n  });\n  \n  $.each( JSON.parse( K('field['+jsonField+']').value() || \"{}\" ), function( k, v ) {\n    var container_el = $('<div class=\"json-container\"></div>'),\n        el = $('<div class=\"form-group\"></div>'),\n        el_input_group = $('<div class=\"input-group\">');\n    //allow delete means users can edit the key value as well\n    if ( allowDelete === true) {\n      el_input_group.append('<input type=\"text\" class=\"form-control json-key\" value=\"' + k + '\">');\n    } else {\n\t    el_input_group.append('<input type=\"text\" readonly=\"true\" class=\"form-control json-key\" value=\"' + k + '\">');\n    }\n    el_input_group.append('<input type=\"text\" class=\"form-control json-value\" value=\"' + v + '\">');\n    if ( allowDelete === true) {\n      el_input_group.append('<div class=\"input-group-append\"><span class=\"input-group-text delete bg-danger\"></i><i class=\"fa fa-close fa-fw\"></i></span></div>');\n    }\n    container_el.append( el.append( el_input_group ) );\n    $('#'+container).append( container_el );\n  });\n}\n\nintegration.addJsonInput = function(container, allowDelete) {\n  var container_el = $('<div class=\"json-container\"></div>'),\n      el = $('<div class=\"form-group\"></div>'),\n      el_input_group = $('<div class=\"input-group\">');\n  el_input_group.append('<input type=\"text\" class=\"form-control json-key\" placeholder=\"key\">');\n  el_input_group.append('<input type=\"text\" class=\"form-control json-value\" placeholder=\"value\">');\n  if ( allowDelete === true) {\n    el_input_group.append('<div class=\"input-group-append\"><span class=\"input-group-text delete bg-danger\"><i class=\"fa fa-close fa-fw\"></i></span></div>');\n  }\n  container_el.append( el.append( el_input_group ) );\n  $('#'+container).append( container_el );\n}\n\nintegration.storeJsonInputs = function(jsonField, container) {\n  //$.each( JSON.parse( K('field['+jsonField+']').value() || \"{}\" ), function( k, v ) {\n  var obj = {};\n  $('#' + container + ' div.json-container').each(function(){\n    var key = $(this).find('input.json-key').val();\n        value = $(this).find('input.json-value').val();\n    obj[key] = value;\n  });\n  K('field['+jsonField+']').value( JSON.stringify( obj ) );\n}\n\n\nif ( K('submission').id() !== null ) {\n  integration.getRecurrenceStatus();\n  integration.getPlaceholders();\n  //integration.enableFields();\n  integration.populateRecipientData();\n  integration.createJsonInputs(\"Initiation Custom Action Parameters\",\"initiation-custom-action-params\", true);\n  integration.createJsonInputs(\"Result Custom Action Parameters\",\"result-custom-action-params\", true);\n  integration.createJsonInputs(\"Interim Custom Action Parameters\",\"interim-custom-action-params\", true);\n};\n\n// Generate standard action params display\nintegration.createJsonInputs(\"Initiation Standard Action Parameters\",\"initiation-standard-action-params\");\nintegration.createJsonInputs(\"Result Standard Action Parameters\",\"result-standard-action-params\");\nintegration.createJsonInputs(\"Interim Standard Action Parameters\",\"interim-standard-action-params\");"
+          "code": "var formSlug = K('form').slug();\n// Confirm bundle.ext exists, or create it\nbundle.ext = bundle.ext || {};\n// Confirm bundle.ext.forms.<form_slug> exists, or create it\nbundle.ext.forms = bundle.ext.forms || {};\nbundle.ext.forms[formSlug] = bundle.ext.forms[formSlug] || {};\n\n// Create variable to custom appointment\nvar integration = bundle.ext.forms[formSlug];\n//var integration = bundle.ext.forms.servicenow;\n\nintegration.getPlaceholders = function() {\n  // Clear placeholders\n  $('div.placeholders').empty();\n\n  // Retrieve Notification Placeholders\n  K('bridgedResource[Onsolve Notification Placeholders]').load({\n    success: function(bridgedData) {\n      if (bridgedData.length > 0) {\n        K('section[Placeholders Container]').show();\n      }\n      $.each( bridgedData, function( k, v ) {\n        var help_array = [];\n        help_array.push( 'Optional: ' + v['Optional'] );\n        \n        //if checkbox, value must result in true or false\n        if ( v['Placeholder Type'] === \"checkbox\" ) {\n          help_array.push( \"Note: When populated, field must evaluate to 'true' or 'false'\" );\n        };\n        \n        //if multiple choice, value must result in one of these options\n        if ( v['Placeholder Type'] === \"multipleChoice\" ) {\n          var metaData = JSON.parse( v['Meta Data'] );\n          if ( metaData['Options'] ) {\n            var optionsArray = [];\n            $.each( metaData['Options'], function( i, v ) {\n              optionsArray.push( v['value'] );\n            });\n            help_array.push( \"Note: When populated, field must evaluate to one of these values: \" + optionsArray.join(\", \") );\n          };\n        };\n        var help_el = '<small id=\"' + v['Id'] + '-help\" class=\"form-text text-muted\">' + help_array.join(\"; \") + '</small>';\n        var ph_container_el = $('<div class=\"placeholder\"></div>');\n        var ph_el = $('<div class=\"form-group\"></div>');\n        ph_el.append('<label for=\"' + v['Id'] + '\">'+ v['Placeholder Name'] + '</label>');\n        ph_el.append('<input type=\"text\" data-placeholdername=\"' + v['Placeholder Name'] + '\" class=\"form-control\" id=\"' + v['Id'] + '\" placeholder=\"' + v['Default Value'] + '\">');\n        ph_el.append(help_el);\n        ph_container_el.append(ph_el);\n        $('div.placeholders').append(ph_container_el);\n\n        // Populate the placeholder values with data.\n        $.each( JSON.parse( K('field[Placeholder Data]').value() || \"[]\" ), function( i, v ) {\n          $( 'div.placeholders input[data-placeholdername=\"' + v['name'] + '\"]' ).val( v['value'] );\n        });\n      }); \n    }\n  });\n  // Render\n  // Retrieve Notification Placeholder Values and populate\n}\nintegration.savePlaceholders = function() {\n  // Write to Notification Placeholder Values\n  var placeholderData=[];\n  $('.placeholders .placeholder input').each( function() {\n    var phName = $(this).data('placeholdername');\n    var phValue = $(this).val();\n    placeholderData.push( {\"name\": phName, \"value\": phValue} )\n  })\n  K('field[Placeholder Data]').value( JSON.stringify(placeholderData) );\n}\n\nintegration.enableFields = function() {\n  // Update to always make fields enabled\n  /*\n  // If the Notification Method is already populated, and of certain types, \n  // make the recipients field editable.\n  if ( K('field[Notification Method]').value() === \"broadcastInfo\" || K('field[Notification Method]').value() === \"bulletinBoardInfo\" ) {\n    K('field[Max Response Time]').disable();  //always disabled initially.\n    K('field[Individuals]').enable();\n    K('field[Groups]').enable();\n    K('field[Schedules]').enable();\n  } else {\n    K('field[Max Response Time]').disable();\n    K('field[Individuals]').disable();\n    K('field[Groups]').disable();\n    K('field[Schedules]').disable();\n  }\n  */\n}\n\nintegration.applyEscalationRecipientData = function() {\n  // Set fields read only\n  /*\n  K('field[Max Response Time]').disable();\n  K('field[Individuals]').disable();\n  K('field[Groups]').disable();\n  K('field[Schedules]').disable();\n  */\n  \n  // store information\n\n  var escalationLevels = JSON.parse( K('field[Recipients JSON]').value() || \"{}\" ),\n      maxResponse = K('field[Max Response Time]').value(),\n      individuals = K('field[Individuals]').value(),\n      groups = K('field[Groups]').value(),\n      schedules = K('field[Schedules]').value(),\n      oncall = K('field[OnCall Support Group Id]').value();\n\n  if ( (!individuals || individuals.trim() === \"\") && (!groups || groups.trim() === \"\") && (!schedules || schedules.trim() === \"\") ) {\n    // delete element from hash in javascript\n    delete escalationLevels[ K('field[Escalation Level]').value() ];\n  } else {\n    // only populate the values that have content\n    escalationLevels[ K('field[Escalation Level]').value() ] = {}\n    if (maxResponse && maxResponse.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"maxResponse\"] = maxResponse;\n    }\n    if (individuals && individuals.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"individuals\"] = individuals;\n    }\n    if (groups && groups.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"groups\"] = groups;\n    }\n    if (schedules && schedules.trim() !== \"\") {\n      escalationLevels[ K('field[Escalation Level]').value() ][\"schedules\"] = schedules;\n    }\n  }\n  \n  K('field[Recipients JSON]').value( JSON.stringify(escalationLevels) );\n  \n  integration.populateConfiguredEscalationLevels();\n}\n\nintegration.consolidateRecipientData = function() {\n  var maxResponse = K('field[Max Response Time]').value(),\n      individuals = K('field[Individuals]').value(),\n      groups = K('field[Groups]').value(),\n      schedules = K('field[Schedules]').value(),\n      recipientData = {};\n\n  // only populate the values that have content\n\tif (maxResponse && maxResponse.trim() !== \"\") {\n    recipientData[\"maxResponse\"] = maxResponse;\n  }\n  if (individuals && individuals.trim() !== \"\") {\n    recipientData[\"individuals\"] = individuals;\n  }\n  if (groups && groups.trim() !== \"\") {\n    recipientData[\"groups\"] = groups;\n  }\n  if (schedules && schedules.trim() !== \"\") {\n    recipientData[\"schedules\"] = schedules;\n  }\n\n  K('field[Recipients JSON]').value( JSON.stringify(recipientData) );\n}\n\nintegration.populateRecipientData = function() {\n  if( K('field[Notification Method]').value() === \"broadcastInfo\" || K('field[Notification Method]').value() === \"bulletinBoardInfo\" ) {\n    var recipientData = JSON.parse( K('field[Recipients JSON]').value() || \"{}\" );\n    K('field[Individuals]').value( recipientData['individuals'] );\n    K('field[Groups]').value( recipientData['groups'] );\n    K('field[Schedules]').value( recipientData['schedules'] );\n  }\n  // Set the escalation level to 1, to display the first set of recipients (if any)\n  if ( K('field[Notification Method]').value() === \"firstResponseInfo\" || K('field[Notification Method]').value() === \"calloutInfo\" ) {\n    K('field[Escalation Level]').value('Escalation Level 1');\n    //Populate the Escalations currently identified\n    integration.populateConfiguredEscalationLevels();\n  }\n}\n\nintegration.populateConfiguredEscalationLevels = function() {\n  var recipients = JSON.parse( K('field[Recipients JSON]').value() || \"{}\" ),\n      configuredLevels = [];\n  // Clear current listing\n  $('#escalation-levels').empty();\n  \n  // Loop over configured listing and populate\n  $.each( recipients, function( k, v ) {\n    configuredLevels.push( '<span class=\"configured-level\">' + k + '</span>' );\n  })\n  \n  if (configuredLevels.length > 0) {\n    $('#escalation-levels').html(configuredLevels.join(\", \"));\n  } else {\n    $('#escalation-levels').html('<span class=\"configured-level\">None</span>');\n  }\n}\n\nintegration.getRecurrenceStatus = function() {\n  if ( K('field[Recurrence Submission Id]').value() !== null ) {\n    K('bridgedResource[Robot by Id]').load({\n      success: function(bridgedData) {\n        K('field[Recurrence Status]').value(bridgedData['Status']);\n      }\n    })\n  }\n}\n\nintegration.createJsonInputs = function(jsonField, container, allowDelete) {\n  $('#'+container).on('click','.delete', function() {\n    var json_el = $(this).closest('.json-container'),\n        json_el_key = json_el.find('.json-key').val();\n    result = confirm(\"Are you sure you want to remove the \" + json_el_key + \" parameter?\");\n    if ( result === true ) {\n        json_el.remove();\n    }\n  });\n  \n  $.each( JSON.parse( K('field['+jsonField+']').value() || \"{}\" ), function( k, v ) {\n    var container_el = $('<div class=\"json-container\"></div>'),\n        el = $('<div class=\"form-group\"></div>'),\n        el_input_group = $('<div class=\"input-group\">');\n    //allow delete means users can edit the key value as well\n    if ( allowDelete === true) {\n      el_input_group.append('<input type=\"text\" class=\"form-control json-key\" value=\"' + k + '\">');\n    } else {\n\t    el_input_group.append('<input type=\"text\" readonly=\"true\" class=\"form-control json-key\" value=\"' + k + '\">');\n    }\n    el_input_group.append('<input type=\"text\" class=\"form-control json-value\" value=\"' + v + '\">');\n    if ( allowDelete === true) {\n      el_input_group.append('<div class=\"input-group-append\"><span class=\"input-group-text delete bg-danger\"></i><i class=\"fa fa-close fa-fw\"></i></span></div>');\n    }\n    container_el.append( el.append( el_input_group ) );\n    $('#'+container).append( container_el );\n  });\n}\n\nintegration.addJsonInput = function(container, allowDelete) {\n  var container_el = $('<div class=\"json-container\"></div>'),\n      el = $('<div class=\"form-group\"></div>'),\n      el_input_group = $('<div class=\"input-group\">');\n  el_input_group.append('<input type=\"text\" class=\"form-control json-key\" placeholder=\"key\">');\n  el_input_group.append('<input type=\"text\" class=\"form-control json-value\" placeholder=\"value\">');\n  if ( allowDelete === true) {\n    el_input_group.append('<div class=\"input-group-append\"><span class=\"input-group-text delete bg-danger\"><i class=\"fa fa-close fa-fw\"></i></span></div>');\n  }\n  container_el.append( el.append( el_input_group ) );\n  $('#'+container).append( container_el );\n}\n\nintegration.storeJsonInputs = function(jsonField, container) {\n  //$.each( JSON.parse( K('field['+jsonField+']').value() || \"{}\" ), function( k, v ) {\n  var obj = {};\n  $('#' + container + ' div.json-container').each(function(){\n    var key = $(this).find('input.json-key').val();\n        value = $(this).find('input.json-value').val();\n    obj[key] = value;\n  });\n  K('field['+jsonField+']').value( JSON.stringify( obj ) );\n}\n\n\nif ( K('submission').id() !== null ) {\n  integration.getRecurrenceStatus();\n  integration.getPlaceholders();\n  //integration.enableFields();\n  integration.populateRecipientData();\n  integration.createJsonInputs(\"Initiation Custom Action Parameters\",\"initiation-custom-action-params\", true);\n  integration.createJsonInputs(\"Result Custom Action Parameters\",\"result-custom-action-params\", true);\n  integration.createJsonInputs(\"Interim Custom Action Parameters\",\"interim-custom-action-params\", true);\n};\n\n// Generate standard action params display\nintegration.createJsonInputs(\"Initiation Standard Action Parameters\",\"initiation-standard-action-params\");\nintegration.createJsonInputs(\"Result Standard Action Parameters\",\"result-standard-action-params\");\nintegration.createJsonInputs(\"Interim Standard Action Parameters\",\"interim-standard-action-params\");"
         },
         {
           "name": "Save Placeholders",
@@ -2717,38 +2775,23 @@
           "name": "Save Parameter Inputs",
           "type": "Submit",
           "action": "Custom",
-          "code": "bundle.ext.forms[K('form').slug()].storeJsonInputs(\"Initiation Standard Action Parameters\",\"initiation-standard-action-params\");\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Initiation Custom Action Parameters\",\"initiation-custom-action-params\", true);\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Result Standard Action Parameters\",\"result-standard-action-params\");\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Result Custom Action Parameters\",\"result-custom-action-params\", true);\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Interim Standard Action Parameters\",\"interim-standard-action-params\");\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Interim Custom Action Parameters\",\"interim-custom-action-params\", true);",
-          "runIf": ""
+          "code": "bundle.ext.forms[K('form').slug()].storeJsonInputs(\"Initiation Standard Action Parameters\",\"initiation-standard-action-params\");\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Initiation Custom Action Parameters\",\"initiation-custom-action-params\", true);\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Result Standard Action Parameters\",\"result-standard-action-params\");\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Result Custom Action Parameters\",\"result-custom-action-params\", true);\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Interim Standard Action Parameters\",\"interim-standard-action-params\");\nbundle.ext.forms[K('form').slug()].storeJsonInputs(\"Interim Custom Action Parameters\",\"interim-custom-action-params\", true);"
         },
         {
           "name": "Get Next Execution",
           "type": "Load",
           "action": "Custom",
-          "mappings": [
-            {
-              "field": "Next Poll Activity",
-              "value": "${moment(resources('Next Robot Execution:Next Execution')).format(\"L LTS\")} (${moment(resources('Next Robot Execution:Next Execution')).fromNow()})",
-              "visible": true
-            }
-          ],
+          "code": "$('#next-poll').html( \"Next Poll Activity: \" + moment( resource[ 'Next Execution' ] ).format( \"L LTS\" ) + \" (\" + moment( resource[ 'Next Execution' ] ).fromNow() + \")\" );",
           "runIf": "values('Polling') === \"Yes\"",
-          "bridgedResourceName": "Next Robot Execution",
-          "code": "$('#next-poll').html( \"Next Poll Activity: \" + moment( resource[ 'Next Execution' ] ).format( \"L LTS\" ) + \" (\" + moment( resource[ 'Next Execution' ] ).fromNow() + \")\" );"
+          "bridgedResourceName": "Next Robot Execution"
         },
         {
           "name": "Get Last Execution",
           "type": "Load",
           "action": "Custom",
-          "mappings": [
-            {
-              "field": "Last Poll Activity",
-              "value": "${moment(resources('Last Robot Execution:End')).format('L LTS')} (${moment(resources('Last Robot Execution:End')).fromNow()}): ${resources('Last Robot Execution:Output') || \"No output\"}",
-              "visible": true
-            }
-          ],
+          "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);",
           "runIf": "values('Polling') === \"Yes\"",
-          "bridgedResourceName": "Last Robot Execution",
-          "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);"
+          "bridgedResourceName": "Last Robot Execution"
         }
       ],
       "name": "Page 1",
@@ -2759,7 +2802,7 @@
   "securityPolicies": [
 
   ],
-  "slug": "bmc-remedy",
+  "slug": "cherwell",
   "status": "Active",
   "submissionLabelExpression": "${values('Name')}"
 }

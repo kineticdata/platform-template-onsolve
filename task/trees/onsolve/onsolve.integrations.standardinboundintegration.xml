@@ -7,7 +7,7 @@
         <name>StandardInboundIntegration</name>
         <author/>
         <notes/>
-        <lastID>74</lastID>
+        <lastID>79</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -18,10 +18,14 @@
                 <parameters/>
                 <messages/>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+                    <task label="Test" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;test&quot;">routine_onsolve_integration_test_process_incoming_data_v1_74</task>
+                    <task label="Cherwell" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;cherwell&quot;">routine_onsolve_inbound_integration_cherwell_v1_76</task>
+                    <task label="ServiceNow" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;servicenow&quot;">routine_onsolve_inbound_integration_servicenow_v1_77</task>
+                    <task label="BMC Remedy" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;bmc-remedy&quot;">routine_onsolve_inbound_integration_remedy_v1_78</task>
+                    <task label="OBM / OMi" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;obm&quot;">routine_onsolve_inbound_integration_obm_v1_79</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="304" y="263">
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="693" y="112">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -41,13 +45,9 @@
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="ServiceNow" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;servicenow&quot;">routine_onsolve_integration_servicenow_process_incoming_data_v1_67</task>
-                    <task label="BMC Remedy" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;bmc-remedy&quot;">routine_onsolve_integration_remedy_process_incoming_data_v1_70</task>
-                    <task label="OBM / OMi" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;obm&quot;">routine_onsolve_integration_micro_focus_obm_process_incoming_data_v1_71</task>
-                </dependents>
+                <dependents/>
             </task>
-            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="933" y="305">
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1069" y="297">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -61,7 +61,7 @@
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_22" name="Get Onsolve Product Setting" x="11" y="249">
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_22" name="Get Onsolve Product Setting" x="1001" y="23">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -83,11 +83,9 @@
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_23</task>
-                </dependents>
+                <dependents/>
             </task>
-            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_23" name="Get Polling Artifact Cleanup Setting" x="143" y="249">
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_23" name="Get Polling Artifact Cleanup Setting" x="793" y="265">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -110,11 +108,10 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Not Test" type="Complete" value="!JSON.parse( @source['Data'].downcase )['source'] == &quot;test&quot;">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
-                    <task label="Test" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;test&quot;">routine_onsolve_integration_test_process_incoming_data_v1_74</task>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="791" y="272">
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="914" y="264">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -140,7 +137,7 @@
                     <task label="" type="Complete" value="">system_noop_v1_17</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_integration_servicenow_process_incoming_data_v1" id="routine_onsolve_integration_servicenow_process_incoming_data_v1_67" name="Process Data - ServiceNow" x="495" y="170">
+            <task definition_id="routine_onsolve_integration_servicenow_process_incoming_data_v1" id="routine_onsolve_integration_servicenow_process_incoming_data_v1_67" name="Process Data - ServiceNow" x="740" y="20">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -156,9 +153,7 @@
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_join_v1_69</task>
-                </dependents>
+                <dependents/>
             </task>
             <task definition_id="system_join_v1" id="system_join_v1_69" name="Join" x="649" y="294">
                 <version>1</version>
@@ -176,10 +171,10 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_23</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_integration_remedy_process_incoming_data_v1" id="routine_onsolve_integration_remedy_process_incoming_data_v1_70" name="Process Data - Remedy" x="492" y="287">
+            <task definition_id="routine_onsolve_integration_remedy_process_incoming_data_v1" id="routine_onsolve_integration_remedy_process_incoming_data_v1_70" name="Process Data - Remedy" x="825" y="26">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -195,11 +190,9 @@
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_join_v1_69</task>
-                </dependents>
+                <dependents/>
             </task>
-            <task definition_id="routine_onsolve_integration_micro_focus_obm_process_incoming_data_v1" id="routine_onsolve_integration_micro_focus_obm_process_incoming_data_v1_71" name="Process Data - OBM" x="490" y="409">
+            <task definition_id="routine_onsolve_integration_micro_focus_obm_process_incoming_data_v1" id="routine_onsolve_integration_micro_focus_obm_process_incoming_data_v1_71" name="Process Data - OBM" x="915" y="27">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -223,11 +216,27 @@ source_data.elements["//event/id"].text
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_integration_test_process_incoming_data_v1" id="routine_onsolve_integration_test_process_incoming_data_v1_74" name="Test" x="507" y="22">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_join_v1_69</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_integration_test_process_incoming_data_v1" id="routine_onsolve_integration_test_process_incoming_data_v1_74" name="Test" x="495" y="72">
+            <task definition_id="routine_onsolve_integration_cherwell_process_incoming_data_v1" id="routine_onsolve_integration_cherwell_process_incoming_data_v1_75" name="Process Data - Cherwell" x="654" y="23">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -235,6 +244,82 @@ source_data.elements["//event/id"].text
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                    <parameter id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_inbound_integration_cherwell_v1" id="routine_onsolve_inbound_integration_cherwell_v1_76" name="Cherwell" x="507" y="71">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['activity']%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_69</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_inbound_integration_servicenow_v1" id="routine_onsolve_inbound_integration_servicenow_v1_77" name="ServiceNow" x="501" y="112">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['activity']%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_69</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_inbound_integration_remedy_v1" id="routine_onsolve_inbound_integration_remedy_v1_78" name="Remedy" x="511.29998779296875" y="159.4166717529297">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['activity']%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_69</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_inbound_integration_obm_v1" id="routine_onsolve_inbound_integration_obm_v1_79" name="OBM" x="506" y="199">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['activity']%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

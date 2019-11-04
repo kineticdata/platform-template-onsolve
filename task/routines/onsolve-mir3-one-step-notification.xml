@@ -8,7 +8,7 @@
         <name>OnSolve MIR3 One Step Notification</name>
         <author/>
         <notes/>
-        <lastID>14</lastID>
+        <lastID>20</lastID>
         <taskDefinition id="routine_onsolve_mir3_one_step_notification_v1" name="OnSolve MIR3 One Step Notification" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
@@ -24,6 +24,8 @@
                 <result name="Success" tooltip="'true' or 'false'"/>
                 <result name="Notification Report UUID" tooltip="The UUID of the notification from MIR3"/>
                 <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"/>
+                <result name="Title" tooltip="The notification title"/>
+                <result name="Additional JSON Output" tooltip="Any additional output that coud be included in the future"/>
             </results>
         </taskDefinition>
         <request>
@@ -39,7 +41,7 @@
                     <task label="" type="Complete" value="">utilities_echo_v1_12</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Parse or handle output" x="327" y="90">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Parse or handle output" x="543" y="88">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -48,7 +50,6 @@
                 <parameters>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 response = JSON.parse(@results['MIR3 Call: One Step Notification']['output'])
-
 successful = response['success']
 
 output = {
@@ -70,7 +71,7 @@ output.to_json
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">system_tree_return_v1_11</task>
+                    <task label="" type="Complete" value="">system_tree_return_v1_20</task>
                 </dependents>
             </task>
             <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_9" name="MIR3 Call: One Step Notification" x="166" y="88">
@@ -91,26 +92,9 @@ output.to_json
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">utilities_echo_v1_4</task>
+                    <task label="Successful" type="Complete" value="response = JSON.parse( @results['MIR3 Call: One Step Notification']['output'] )&#10;response['success'] == true">routine_onsolve_mir3_get_notification_reports_v1_15</task>
+                    <task label="Unsuccessful" type="Complete" value="response = JSON.parse( @results['MIR3 Call: One Step Notification']['output'] )&#10;response['success'] != true">system_junction_v1_18</task>
                 </dependents>
-            </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_11" name="Return" x="491" y="111">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
-                    <parameter id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Notification Report UUID']%&gt;</parameter>
-                    <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Generate XML Body" x="9" y="101">
                 <version>1</version>
@@ -314,5 +298,72 @@ output
                     <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
                 </dependents>
             </task>
+            <task definition_id="routine_onsolve_mir3_get_notification_reports_v1" id="routine_onsolve_mir3_get_notification_reports_v1_15" name="Get Notification Report" x="165" y="219">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="UUIDs JSON" label="UUIDs JSON" menu="" required="true" tooltip="A JSON object of open MIR3 Notification UUIDs">&lt;%=
+response = JSON.parse(@results['MIR3 Call: One Step Notification']['output'])
+[ response['one_step_notification_response']['notification_report_uuid'] ].to_json
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_18</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_18" name="Junction" x="359" y="99">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_4</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_20" name="Return" x="719" y="99">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
+                    <parameter id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Notification Report UUID']%&gt;</parameter>
+                    <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
+                    <parameter id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%=
+if @results.has_key?('Get Notification Report')
+  notification_report_response = JSON.parse( @results['Get Notification Report']['Output'] )
+  notification_report_successful = notification_report_response['success']
+
+  if notification_report_successful
+    notification_report_response['get_notification_reports_response']['notification_report']['title']
+  end
+end
+%&gt;</parameter>
+                    <parameter id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
         </request>
-    </taskTree></tree>
+    </taskTree>
+</tree>

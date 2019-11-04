@@ -7,7 +7,7 @@
         <name>BMC Remedy Standard Interim Results Process</name>
         <author/>
         <notes/>
-        <lastID>44</lastID>
+        <lastID>49</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -98,7 +98,7 @@ integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
 notification_method = notification_method_options[integration_config['Notification Method']]
 
-work_note_text = "#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) status update:"
+work_note_text = "#{notification_method} Notification \"#{@results['Get Task Activity Monitoring Values']['OnSolve Notification Title']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}) status update:"
 
 report_output = JSON.parse(@results['Get Integration Report Results']['Output'])
 report_result = report_output['execute_custom_report_response']['report_detail']
@@ -436,7 +436,7 @@ report_name
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_get_answers_v1_5</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_31" name="Add Remedy - WorkInfo" x="1287" y="144">
+            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_31" name="Add Remedy - WorkInfo" x="1375" y="177">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -445,7 +445,7 @@ report_name
                 <parameters>
                     <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
 parameters["Work Log Form"]
 %&gt;</parameter>
                     <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
@@ -537,7 +537,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">remedy_generic_create_v2_31</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_49</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_34" name="Update Submission Activity - Closed" x="440" y="384">
@@ -619,7 +619,7 @@ integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
 notification_method = notification_method_options[integration_config['Notification Method']]
 
-work_notes = "Kinetic was unable to retrieve a status update for #{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}). It will try again at the next update interval.  Error Message (if applicable):"
+work_notes = "Kinetic was unable to retrieve a status update for #{notification_method} Notification \"#{@results['Get Task Activity Monitoring Values']['OnSolve Notification Title']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}). It will try again at the next update interval.  Error Message (if applicable):"
 
 results = JSON.parse(@results['Get Integration Report Results']['Output'])
 results['error'].each{|key,value|
@@ -638,7 +638,7 @@ work_notes.join("\n")
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_39</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_38" name="Add Remedy - WorkInfo - Error" x="1287" y="12">
+            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_38" name="Add Remedy - WorkInfo - Error" x="1372" y="11">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -647,7 +647,7 @@ work_notes.join("\n")
                 <parameters>
                     <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
 parameters["Work Log Form"]
 %&gt;</parameter>
                     <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
@@ -707,7 +707,7 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">remedy_generic_create_v2_38</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_48</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_44" name="OnSolve Error Notification" x="285" y="390">
@@ -736,6 +736,114 @@ comments
                     <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse(@source['Data'])['Integration Configuration']['Error Notification Email']%&gt;</parameter>
                     <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_48" name="Outbound Activity - Add Remedy - WorkInfo - Error" x="1289" y="9">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "Remedy",
+  "Source Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+  "Source Reference Id" =&gt;  @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+  "UUID" =&gt; @results['Get Task Activity Monitoring Values']['Onsolve Id'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Submission Activity']['Id'],
+  "Action" =&gt; "Create",
+  "Payload" =&gt; {
+    "form" =&gt; parameters["Work Log Form"],
+    "field_values" =&gt; {
+      "Incident Entry ID" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+      "Secure Work Log" =&gt; "Yes",
+      "View Access" =&gt; "Internal",
+      "Communication Source" =&gt; "Web",
+      "z1D Previous Operation" =&gt; "SET",
+      "Status" =&gt; "Enabled",
+      "Work Log Type" =&gt; "General Information",
+      "Incident Number" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+      "Description" =&gt; "Alerting Interim Update",
+      "Detailed Description" =&gt; @results['Assemble Work Note - Error']['output'],
+      "Work Log Date" =&gt; Time.now().iso8601
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_49" name="Outbound Activity - Add Remedy - WorkInfo" x="1287" y="142">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
+source_data = JSON.parse( @source['Data'] )['Source Data']
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "Remedy",
+  "Source Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+  "Source Reference Id" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+  "UUID" =&gt; @results['Get Task Activity Monitoring Values']['Onsolve Id'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@source['Data'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Submission Activity']['Id'],
+  "Action" =&gt; "Create",
+  "Payload" =&gt; {
+    "form" =&gt; parameters["Work Log Form"],
+    "field_values" =&gt; {
+      "Incident Entry ID" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
+      "Secure Work Log" =&gt; "Yes",
+      "View Access" =&gt; "Internal",
+      "Communication Source" =&gt; "Web",
+      "z1D Previous Operation" =&gt; "SET",
+      "Status" =&gt; "Enabled",
+      "Work Log Type" =&gt; "General Information",
+      "Incident Number" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
+      "Description" =&gt; "Alerting Interim Update",
+      "Detailed Description" =&gt; @results['Assemble Work Note']['output'],
+      "Work Log Date" =&gt; Time.now().iso8601
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

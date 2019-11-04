@@ -5,56 +5,50 @@
 <type>Global Routine</type>
 <status>Active</status>
 <taskTree builder_version="" schema_version="1.0" version="">
-    <name>OnSolve MIR3 Get Integration Report Results</name>
-    <author/>
-    <notes/>
-    <lastID>18</lastID>
-    <taskDefinition id="routine_onsolve_mir3_get_integration_report_results" name="OnSolve MIR3 Get Integration Report Results" schema_version="1.0" version="1">
-        <visible>false</visible>
-        <deferrable>true</deferrable>
-        <parameters>
-            <parameter id="UUID" label="UUID" required="true" tooltip="The UUID for the MIR3 Notification"/>
-            <parameter id="Timestamp" label="Timestamp" required="true" tooltip="The point after which to return contact attempts and responses from the report"/>
-            <parameter id="Timezone" label="Timezone" required="true" tooltip="Timezone to be used for building display lines that include textual timestamps. Options are CST, EST, PST, UTC, or USER">USER</parameter>
-            <parameter id="Responses Used" label="Responses Used" required="true" tooltip="0 = Do not included responses in results, 1 = Include responses">1</parameter>
-            <parameter id="Success Responder Type" label="Success Responder Type" required="true" tooltip="0 = Not needed, 1 = First and Last Name, 2 = Employee ID,  3 = User Name, 4 = Primary Key">3</parameter>
-            <parameter id="Primary Key Field" label="Primary Key Field" required="false" tooltip="Required only if using Success Responder Type = 4, otherwise not used"/>
-            <parameter id="Detail Level" label="Detail Level" required="true" tooltip="1 = Contact attemptes, responses, and counts, 2 = Responses and counts, 3 = Only 'Success' responses and counts, 4 = Counts only">1</parameter>
-            <parameter id="Report Name" label="Report Name" required="true" tooltip="">Integration Results</parameter>
-        </parameters>
-        <handler name="system_tree_call" version="1"/>
-        <results format="xml">
-            <result name="Success" tooltip="'true' or 'false'"/>
-            <result name="Output" tooltip="The output from the call - either the XML/JSON block, or the error message"/>
-        </results>
-    </taskDefinition>
-    <request>
-        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
-            <version>1</version>
-            <configured>true</configured>
-            <defers>false</defers>
-            <deferrable>false</deferrable>
+        <name>OnSolve MIR3 Get Integration Report Results</name>
+        <author/>
+        <notes/>
+        <lastID>18</lastID>
+        <taskDefinition id="routine_onsolve_mir3_get_integration_report_results" name="OnSolve MIR3 Get Integration Report Results" schema_version="1.0" version="1">
             <visible>false</visible>
-            <parameters/>
-            <messages/>
-            <dependents>
-                
-            
-            
-            <task label="" type="Complete" value="">utilities_echo_v1_15</task>
-            </dependents>
-        </task>
-    
-        
-      
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_2" name="Generate XML Body" x="165" y="98">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="UUID" label="UUID" required="true" tooltip="The UUID for the MIR3 Notification"/>
+                <parameter id="Timestamp" label="Timestamp" required="true" tooltip="The point after which to return contact attempts and responses from the report"/>
+                <parameter id="Timezone" label="Timezone" required="true" tooltip="Timezone to be used for building display lines that include textual timestamps. Options are CST, EST, PST, UTC, or USER">USER</parameter>
+                <parameter id="Responses Used" label="Responses Used" required="true" tooltip="0 = Do not included responses in results, 1 = Include responses">1</parameter>
+                <parameter id="Success Responder Type" label="Success Responder Type" required="true" tooltip="0 = Not needed, 1 = First and Last Name, 2 = Employee ID,  3 = User Name, 4 = Primary Key">3</parameter>
+                <parameter id="Primary Key Field" label="Primary Key Field" required="false" tooltip="Required only if using Success Responder Type = 4, otherwise not used"/>
+                <parameter id="Detail Level" label="Detail Level" required="true" tooltip="1 = Contact attemptes, responses, and counts, 2 = Responses and counts, 3 = Only 'Success' responses and counts, 4 = Counts only">1</parameter>
+                <parameter id="Report Name" label="Report Name" required="true" tooltip="">Integration Results</parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"/>
+            <results format="xml">
+                <result name="Success" tooltip="'true' or 'false'"/>
+                <result name="Output" tooltip="The output from the call - either the XML/JSON block, or the error message"/>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_2" name="Generate XML Body" x="165" y="98">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 require 'rexml/document'
 
 str_xml = "&lt;executeCustomReport&gt;&lt;apiVersion&gt;4.14&lt;/apiVersion&gt;&lt;/executeCustomReport&gt;"
@@ -119,28 +113,24 @@ doc.write(output)
 
 output
 %&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
-            </dependents>
-    </task>
-      
-        
-      
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Parse or handle output" x="506" y="88">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Parse or handle output" x="506" y="88">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 response = JSON.parse(@results['MIR3 Call: Get Integration Report Results']['output'])
 
 successful = response['success']
@@ -152,66 +142,45 @@ output = {
 
 output.to_json
 %&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">system_tree_return_v1_17</task></dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_9" name="MIR3 Call: Get Integration Report Results" x="341" y="66">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
-        <parameter id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
-        <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">execute_custom_report_op</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">utilities_echo_v1_4</task>
-            </dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_15" name="Validate Some Inputs" x="11" y="87">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_9" name="MIR3 Call: Get Integration Report Results" x="341" y="66">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">execute_custom_report_op</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_4</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_15" name="Validate Some Inputs" x="11" y="87">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 errors = []
 
 if !['CST', 'EST', 'PST', 'UTC', 'USER'].include? (@inputs['Timezone'].strip.upcase)
@@ -239,37 +208,33 @@ if !errors.empty?
 end
 
 %&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">utilities_echo_v1_2</task>
-            </dependents>
-    </task>
-      
-        
-      
-        <task definition_id="system_tree_return_v1" id="system_tree_return_v1_17" name="Return" x="683" y="110">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
-        <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML/JSON block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
-    </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      
-        
-      </request>
-</taskTree>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_17" name="Return" x="683" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
+                    <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML/JSON block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+        </request>
+    </taskTree>
 </tree>
