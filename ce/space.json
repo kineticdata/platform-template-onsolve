@@ -164,7 +164,7 @@
   "defaultLocale": "en",
   "defaultTimezone": "America/Chicago",
   "displayType": "Single Page App",
-  "displayValue": "spa.jsp?location=https://s3.amazonaws.com/bundles.kineticdata.com/onSolve/build-2019-09-06",
+  "displayValue": "spa.jsp?location=https://s3.amazonaws.com/bundles.kineticdata.com/onSolve/build-2019-10-23",
   "enabledLocales": [
     "en"
   ],
