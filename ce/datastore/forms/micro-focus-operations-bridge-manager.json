@@ -1496,7 +1496,7 @@
                           "defaultValue": null,
                           "defaultResourceName": null,
                           "visible": "values('Notification Method') === \"firstResponseInfo\" || values('Notification Method') === \"calloutInfo\"",
-                          "enabled": false,
+                          "enabled": true,
                           "required": false,
                           "requiredMessage": null,
                           "omitWhenHidden": true,
