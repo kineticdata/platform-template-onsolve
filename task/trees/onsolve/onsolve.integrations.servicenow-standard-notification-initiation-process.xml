@@ -7,7 +7,7 @@
         <name>ServiceNow Standard Notification Initiation Process</name>
         <author/>
         <notes/>
-        <lastID>118</lastID>
+        <lastID>119</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -236,8 +236,8 @@ recipients
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Uses ServiceNow OnCall" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Use ServiceNow Oncall'].to_s == &quot;Yes&quot; &amp;&amp; !JSON.parse( @source['Data'] )['Integration Configuration']['OnCall Support Group Id'].to_s.empty?">servicenow_oncall_retrieve_v1_100</task>
                     <task label="MIR3" type="Complete" value="JSON.parse( @source['Data'] )['Onsolve Product'] === &quot;MIR3&quot;">system_junction_v1_106</task>
+                    <task label="Uses ServiceNow OnCall" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Use ServiceNow Oncall'].to_s == &quot;Yes&quot; &amp;&amp; !JSON.parse( @source['Data'] )['Integration Configuration']['OnCall Support Group Id'].to_s.empty?">routine_onsolve_servicenow_oncall_retrieve_v1_119</task>
                 </dependents>
             </task>
             <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_94" name="Return Trigger" x="1574" y="300">
@@ -371,7 +371,7 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
                     <task label="" type="Complete" value="">system_noop_v1_17</task>
                 </dependents>
             </task>
-            <task definition_id="servicenow_oncall_retrieve_v1" id="servicenow_oncall_retrieve_v1_100" name="Retrieve OnCall" x="506" y="433">
+            <task definition_id="servicenow_oncall_retrieve_v1" id="servicenow_oncall_retrieve_v1_100" name="Retrieve OnCall-x" x="509" y="509">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -417,9 +417,7 @@ end
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">servicenow_object_query_retrieve_v1_103</task>
-                </dependents>
+                <dependents/>
             </task>
             <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_103" name="Get Oncall Users" x="660" y="429">
                 <version>1</version>
@@ -922,6 +920,56 @@ notification_method = notification_method_options[integration_config['Notificati
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_oncall_retrieve_v1" id="routine_onsolve_servicenow_oncall_retrieve_v1_119" name="Retrieve OnCall" x="506" y="437">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter id="API Route" label="API Route" menu="" required="true" tooltip="">whoisoncall</parameter>
+                    <parameter id="api_parameters" label="api_parameters" menu="" required="true" tooltip="">&lt;%=
+oncall = JSON.parse( @source['Data'] )['Integration Configuration']['OnCall Support Group Id']
+source_data = JSON.parse( @source['Data'] )['Source Data']
+
+#  Do replacements
+if !oncall.nil?
+  oncall.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+    # remove opening and closing brackets from match
+    key = match[2..-3]
+
+    # determine which part of the field to retrieve - the 'display_value' or the 'value'
+    field_qualifier = 'value'
+    field = key
+    field_array = field.split(".")
+    if field_array.length &gt; 0
+      if ["display_value","value"].include? field_array[1]
+        field_qualifier = field_array[1]
+      end
+      field = field_array[0]
+    end
+
+    if source_data.keys.include?(field)
+      source_data[field][field_qualifier] || source_data[field]
+    else
+      match
+    end
+  end
+end
+
+"group_ids=#{oncall}"
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">servicenow_object_query_retrieve_v1_103</task>
+                </dependents>
             </task>
         </request>
     </taskTree>

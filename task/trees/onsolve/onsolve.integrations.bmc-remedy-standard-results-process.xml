@@ -7,7 +7,7 @@
         <name>BMC Remedy Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>50</lastID>
+        <lastID>51</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -305,7 +305,7 @@ output = {
                 </messages>
                 <dependents>
                     <task label="No Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
-                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">remedy_generic_query_retrieve_v2_39</task>
+                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_remedy_data_retrieve_v1_51</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="923" y="152">
@@ -454,54 +454,6 @@ work_note_description = "Alerting Result: #{assignment_logic_output['notificatio
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
-            </task>
-            <task definition_id="remedy_generic_query_retrieve_v2" id="remedy_generic_query_retrieve_v2_39" name="Get Remedy User" x="727" y="295">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">CTM:People</parameter>
-                    <parameter id="request_query" label="Query:" menu="" required="true" tooltip="Advanced Search Query of the record to retrieve">&lt;%= 
-responderType = JSON.parse( @results['Assignment Logic']['output'] )['responderType']
-responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responderValue']
-
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-lookup_field = integration_config['User Field Containing Match to OnSolve Users']
-
-case responderType
-when "1"
-  # 1 means First and Last Name from MIR3 user record. 
-  # Not sure how this would ever be considered unique 
-  # or guaranteed to match what is in ServiceNow.
-  query = "'Full Name'=\"#{responderValue}\""
-when "2"
-  # means employeeId value from MIR3.
-  query = "'#{lookup_field}'=\"#{responderValue}\""
-when "3"
-  # means MIR3 user name.
-  query = "'#{lookup_field}'=\"#{responderValue}\""
-when "4"
-  # means the MIR3 UUID of the user.  Unsure where 
-  # or why this would be stored outside of MIR3. 
-  # Maybe a special field?  For now, we'll use
-  # Remedy Login ID once again.
-  query = "'Remedy Login ID'=\"#{responderValue}\""
-end
-
-query
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="Error Message or no user" type="Complete" value="#!@results['Get Remedy User']['Handler Error Message'].nil? || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;#@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;!@results['Get Remedy User'].has_key?('Remedy Login ID') || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?">system_junction_v1_28</task>
-                    <task label="No Error Message and not empty" type="Complete" value="#@results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;@results['Get Remedy User'].has_key?('Remedy Login ID') &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">remedy_generic_update_v3_40</task>
-                </dependents>
             </task>
             <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_40" name="Assign Remedy" x="924" y="297">
                 <version>3</version>
@@ -931,6 +883,54 @@ source_data = JSON.parse( @source['Data'] )['Source Data']
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_remedy_data_retrieve_v1" id="routine_onsolve_remedy_data_retrieve_v1_51" name="Get Remedy User" x="731" y="297">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Remedy Form" label="Remedy Form" menu="" required="true" tooltip="">CTM:People</parameter>
+                    <parameter id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= 
+responderType = JSON.parse( @results['Assignment Logic']['output'] )['responderType']
+responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responderValue']
+
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+lookup_field = integration_config['User Field Containing Match to OnSolve Users']
+
+case responderType
+when "1"
+  # 1 means First and Last Name from MIR3 user record. 
+  # Not sure how this would ever be considered unique 
+  # or guaranteed to match what is in ServiceNow.
+  query = "'Full Name'=\"#{responderValue}\""
+when "2"
+  # means employeeId value from MIR3.
+  query = "'#{lookup_field}'=\"#{responderValue}\""
+when "3"
+  # means MIR3 user name.
+  query = "'#{lookup_field}'=\"#{responderValue}\""
+when "4"
+  # means the MIR3 UUID of the user.  Unsure where 
+  # or why this would be stored outside of MIR3. 
+  # Maybe a special field?  For now, we'll use
+  # Remedy Login ID once again.
+  query = "'Remedy Login ID'=\"#{responderValue}\""
+end
+
+query
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="No Error Message and not empty" type="Complete" value="#@results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;@results['Get Remedy User'].has_key?('Remedy Login ID') &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">remedy_generic_update_v3_40</task>
+                    <task label="Error Message or no user" type="Complete" value="#!@results['Get Remedy User']['Handler Error Message'].nil? || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;#@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;!@results['Get Remedy User'].has_key?('Remedy Login ID') || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?">system_junction_v1_28</task>
+                </dependents>
             </task>
         </request>
     </taskTree>

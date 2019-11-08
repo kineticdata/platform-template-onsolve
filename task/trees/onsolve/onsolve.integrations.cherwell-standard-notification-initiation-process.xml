@@ -331,7 +331,7 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_14</task>
-                    <task label="If updates configured" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">cherwell_object_create_v1_115</task>
+                    <task label="If updates configured" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_119</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_99" name="Junction: End" x="1386" y="307">
@@ -547,75 +547,6 @@ results['error'].each{|key,value|
                     <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_118</task>
                 </dependents>
             </task>
-            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_115" name="Add Cherwell Journal Entry - Alerting Initiated" x="836" y="523">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-initiation_params = JSON.parse( integration_config['Initiation Standard Action Parameters'] )
-initiation_params['Journal Type']
-%&gt;</parameter>
-                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be created with.">&lt;%=
-source_data = JSON.parse( @source['Data'] )['Source Data']
-source_id = JSON.parse( @source['Data'] )['Source Id']
-source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-initiation_params = JSON.parse( integration_config['Initiation Standard Action Parameters'] )
-journal_type_id = initiation_params['Journal Object Type Id']
-
-# Note: The 'Show In Self Service' is specific to the JournalNote form; shouldn't matter if added to a form where the field doesn't exist.
-{ 
-  "Parent TypeID":source_type_id,
-  "Parent RecID":source_id,
-  "Journal TypeID":journal_type_id,
-  "Details" =&gt; @results['Work Note Content']['output'],
-  "Show In Self Service": "false"
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="Update Source Record?" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;&#10;integration_config['Polling'] == &quot;Yes&quot; &amp;&amp; !integration_config['Fields to Update Upon Notification'].to_s.empty?">cherwell_object_update_v1_116</task>
-                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_119</task>
-                </dependents>
-            </task>
-            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_116" name="Update Cherwell Object" x="1010" y="551">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to update (ie. Incident).">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-integration_config['Schema Name']
-%&gt;</parameter>
-                    <parameter id="object_id" label="Object Id" menu="" required="true" tooltip="Public id for the object that should be updated.">&lt;%=
-source_id = JSON.parse( @source['Data'] )['Source Id']
-%&gt;</parameter>
-                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be updated with.">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-integration_config['Fields to Update Upon Notification']
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_120</task>
-                </dependents>
-            </task>
             <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_117" name="MIR3 One Step Notification" x="474" y="217">
                 <version>1</version>
                 <configured>true</configured>
@@ -711,7 +642,7 @@ results['error'].each{|key,value|
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_119" name="Outbound Activity - Add Cherwell Journal Entry - Alerting Initiated" x="836" y="669">
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_119" name="Outbound Activity - Add Cherwell Journal Entry - Alerting Initiated" x="836" y="527">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -760,9 +691,11 @@ source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents/>
+                <dependents>
+                    <task label="Update Source Record?" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;&#10;integration_config['Polling'] == &quot;Yes&quot; &amp;&amp; !integration_config['Fields to Update Upon Notification'].to_s.empty?">routine_kinetic_submission_create_v1_120</task>
+                </dependents>
             </task>
-            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Cherwell Object" x="1017" y="672">
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Cherwell Object" x="1012" y="541">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>

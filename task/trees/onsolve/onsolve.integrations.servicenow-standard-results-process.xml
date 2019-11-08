@@ -7,7 +7,7 @@
         <name>ServiceNow Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>43</lastID>
+        <lastID>44</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -304,11 +304,11 @@ output = {
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">servicenow_object_query_retrieve_v1_27</task>
                     <task label="No Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
+                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_servicenow_data_retrieve_v1_44</task>
                 </dependents>
             </task>
-            <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_27" name="Get ServiceNow User" x="727" y="296">
+            <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_27" name="Get ServiceNow User-x" x="806" y="356">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -365,10 +365,7 @@ query
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="Error Message or no user" type="Complete" value="!@results['Get ServiceNow User']['Handler Error Message'].nil? || JSON.parse( @results['Get ServiceNow User']['object_json'] ).empty?">system_junction_v1_28</task>
-                    <task label="No Error Message and not empty" type="Complete" value="@results['Get ServiceNow User']['Handler Error Message'].nil? &amp;&amp; !JSON.parse( @results['Get ServiceNow User']['object_json'] ).empty?">servicenow_object_update_v1_29</task>
-                </dependents>
+                <dependents/>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="925" y="154">
                 <version>1</version>
@@ -901,6 +898,65 @@ journal_type_id = parameters['Journal Object Type Id']
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_44" name="Get ServiceNow User" x="726" y="287">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter id="Table" label="Table" menu="" required="true" tooltip="">sys_user</parameter>
+                    <parameter id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= 
+responderType = JSON.parse( @results['Assignment Logic']['output'] )['responderType']
+responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responderValue']
+
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+lookup_field = integration_config['User Field Containing Match to OnSolve Users']
+
+case responderType
+when "1"
+  # 1 means First and Last Name from MIR3 user record. 
+  # Not sure how this would ever be considered unique 
+  # or guarantedd to match what is in ServiceNow.
+  query = "name=#{responderValue}"
+when "2"
+  # means employeeId from MIR3.  Not sure what field 
+  # this would actually tie to, but I'll assume
+  # user_name field in ServiceNow
+  query = "#{lookup_field}=#{responderValue}"
+when "3"
+  # means MIR3 user name.  Not sure what this would 
+  # actually tie to either, but we'll assume user_name 
+  # again
+  query = "#{lookup_field}=#{responderValue}"
+when "4"
+  # means the MIR3 UUID of the user.  Unsure where 
+  # or why this would be stored outside of MIR3. 
+  # Maybe a special field?  For now, we'll use
+  # user_name once again.
+  query = "user_name=#{responderValue}"
+end
+
+query
+%&gt;</parameter>
+                    <parameter id="Display Value" label="Display Value" menu="" required="false" tooltip=""/>
+                    <parameter id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""/>
+                    <parameter id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""/>
+                    <parameter id="Fields" label="Fields" menu="" required="false" tooltip=""/>
+                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip="">1</parameter>
+                    <parameter id="Query Category" label="Query Category" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="No Error Message and not empty" type="Complete" value="@results['Get ServiceNow User']['Handler Error Message'].nil? &amp;&amp; !JSON.parse( @results['Get ServiceNow User']['object_json'] ).empty?">servicenow_object_update_v1_29</task>
+                    <task label="Error Message or no user" type="Complete" value="!@results['Get ServiceNow User']['Handler Error Message'].nil? || JSON.parse( @results['Get ServiceNow User']['object_json'] ).empty?">system_junction_v1_28</task>
+                </dependents>
             </task>
         </request>
     </taskTree>

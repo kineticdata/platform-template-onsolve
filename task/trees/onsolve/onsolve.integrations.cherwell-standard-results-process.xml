@@ -7,7 +7,7 @@
         <name>Cherwell Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>49</lastID>
+        <lastID>50</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -283,7 +283,7 @@ output = {
                 </messages>
                 <dependents>
                     <task label="No Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
-                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">cherwell_user_retrieve_v2_45</task>
+                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_cherwell_user_retrieve_v1_50</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="925" y="154">
@@ -635,7 +635,7 @@ journal_type_id = initiation_params['Journal Object Type Id']
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="cherwell_user_retrieve_v2" id="cherwell_user_retrieve_v2_45" name="Get Cherwell User" x="730" y="286">
+            <task definition_id="cherwell_user_retrieve_v2" id="cherwell_user_retrieve_v2_45" name="Get Cherwell User-x" x="786" y="361">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -677,10 +677,7 @@ responderValue
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="No user" type="Complete" value="JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?">system_junction_v1_28</task>
-                    <task label="Not empty" type="Complete" value="!JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?">cherwell_object_update_v1_47</task>
-                </dependents>
+                <dependents/>
             </task>
             <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_47" name="Assign Cherwell" x="921" y="282">
                 <version>1</version>
@@ -813,6 +810,51 @@ journal_type_id = parameters['Journal Object Type Id']
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_cherwell_user_retrieve_v1" id="routine_onsolve_cherwell_user_retrieve_v1_50" name="Get Cherwell User" x="728" y="285">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter id="Login Id" label="Login Id" menu="" required="true" tooltip="">&lt;%= 
+responderType = JSON.parse( @results['Assignment Logic']['output'] )['responderType']
+responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responderValue']
+
+#case responderType
+#when "1"
+  # 1 means First and Last Name from MIR3 user record. 
+  # Not sure how this would ever be considered unique 
+  # or guaranteed to match what is in Cherwell.
+#  query = responderValue
+#when "2"
+  # means employeeId from MIR3.
+#  query = responderValue
+#when "3"
+  # means MIR3 user name.
+#  query = responderValue
+#when "4"
+  # means the MIR3 UUID of the user.  Unsure where 
+  # or why this would be stored outside of MIR3. 
+#  query = responderValue
+#end
+
+# Cherwell only supports a login name value for querying about the user, so we'll need to use that in all situations.
+responderValue
+%&gt;</parameter>
+                    <parameter id="Login Id Type" label="Login Id Type" menu="" required="true" tooltip="">Internal</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="Not empty" type="Complete" value="!JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?">cherwell_object_update_v1_47</task>
+                    <task label="No user" type="Complete" value="JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?">system_junction_v1_28</task>
+                </dependents>
             </task>
         </request>
     </taskTree>
