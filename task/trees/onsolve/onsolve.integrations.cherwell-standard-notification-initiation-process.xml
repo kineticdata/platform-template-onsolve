@@ -88,6 +88,12 @@ placeholders.each_index{|i|
 
       if source_data.keys.include?(field)
         source_data[field][field_qualifier] || source_data[field]
+      elsif source_data.keys.include?('fields')
+        if source_data['fields'].keys.include?(field)
+          source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+        else
+          match
+        end
       else
         match
       end
@@ -201,6 +207,12 @@ if !recipients.nil?
 
     if source_data.keys.include?(field)
       source_data[field][field_qualifier] || source_data[field]
+    elsif source_data.keys.include?('fields')
+      if source_data['fields'].keys.include?(field)
+        source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+      else
+        match
+      end
     else
       match
     end
@@ -415,7 +427,7 @@ results['error'].each{|key,value|
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_14</task>
-                    <task label="" type="Complete" value="">cherwell_object_create_v1_114</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_118</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_111" name="OnSolve Error Notification" x="474" y="74">
@@ -499,54 +511,6 @@ work_notes.join(" ")+"."
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_97</task>
                 </dependents>
             </task>
-            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_114" name="Add Cherwell Journal Entry - Alerting Initiated - Error" x="834" y="33">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-initiation_params = JSON.parse( integration_config['Initiation Standard Action Parameters'] )
-initiation_params['Journal Type']
-%&gt;</parameter>
-                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be created with.">&lt;%=
-source_data = JSON.parse( @source['Data'] )['Source Data']
-source_id = JSON.parse( @source['Data'] )['Source Id']
-source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
-
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-initiation_params = JSON.parse( integration_config['Initiation Standard Action Parameters'] )
-journal_type_id = initiation_params['Journal Object Type Id']
-notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
-notification_method = notification_method_options[integration_config['Notification Method']]
-
-work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
-results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
-results['error'].each{|key,value|
-  work_notes.push( "#{key}: #{value}" )
-}
-
-{ 
-  "Parent TypeID":source_type_id,
-  "Parent RecID":source_id,
-  "Journal TypeID":journal_type_id,
-  "Details" =&gt; work_notes.join("\n"),
-  "Show In Self Service": "false"
-}.to_json
-
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_118</task>
-                </dependents>
-            </task>
             <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_117" name="MIR3 One Step Notification" x="474" y="217">
                 <version>1</version>
                 <configured>true</configured>
@@ -582,7 +546,7 @@ end
                     <task label="Successful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] == &quot;true&quot;">kinetic_request_ce_submission_update_v1_53</task>
                 </dependents>
             </task>
-            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_118" name="Outbound Activity - Add Cherwell Journal Entry - Alerting Initiated - Error" x="944" y="33">
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_118" name="Outbound Activity - Add Cherwell Journal Entry - Alerting Initiated - Error" x="836" y="12">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>

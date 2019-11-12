@@ -7,7 +7,7 @@
         <name>OnSolve Integration - Cherwell</name>
         <author/>
         <notes/>
-        <lastID>82</lastID>
+        <lastID>85</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -77,7 +77,7 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['ServiceNow Search to XML']['XML']%&gt;</parameter>
+                    <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Cherwell Search to XML']['XML']%&gt;</parameter>
                     <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/node/node</parameter>
                     <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">servicenow_id</parameter>
                 </parameters>
@@ -121,7 +121,7 @@
                     <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Deferral Token']%&gt;</parameter>
                     <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
 # Normal output
-if @results.has_key?("Cherwell Search")
+if @results.has_key?("Cherwell Search") &amp;&amp; @results['Cherwell Search'].has_key?('Handler Error Message') &amp;&amp; @results['Cherwell Search']['Handler Error Message'].to_s.empty?
   outcome = "Successful"
   output = {
     "message" =&gt; "#{JSON.parse(@results['Cherwell Search']['JSON Results']).length} results returned",
@@ -131,7 +131,7 @@ if @results.has_key?("Cherwell Search")
 end
 
 # If timeout
-if !@results.has_key?("Cherwell Search")
+if !@results.has_key?("Cherwell Search") || !@results['Cherwell Search'].has_key?('Handler Error Message')
   outcome = "Unsuccessful"
   output = {
     "message" =&gt; "Timeout during attempted data retrieve"
@@ -139,10 +139,10 @@ if !@results.has_key?("Cherwell Search")
 end
 
 # Handler errored
-if @results.has_key?("Cherwell Search") &amp;&amp; false
+if @results.has_key?("Cherwell Search") &amp;&amp; @results['Cherwell Search'].has_key?('Handler Error Message') &amp;&amp; !@results['Cherwell Search']['Handler Error Message'].to_s.empty?
   outcome = "Unsuccessful"
   output = {
-    "message" =&gt; "Retrieve error: #{@results['ServiceNow Search']['Handler Error Message']}"
+    "message" =&gt; "Retrieve error: #{@results['Cherwell Search']['Handler Error Message']}"
   }.to_json
 end
 
@@ -276,7 +276,7 @@ output.to_json
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_wait_v1_77</task>
-                    <task label="" type="Complete" value="">cherwell_object_find_v1_81</task>
+                    <task label="" type="Complete" value="">routine_onsolve_cherwell_data_search_v1_85</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="969" y="418">
@@ -321,7 +321,7 @@ output.to_json
                     <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
                 </dependents>
             </task>
-            <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_47" name="ServiceNow Search to XML" x="969" y="110">
+            <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_47" name="Cherwell Search to XML" x="968" y="100">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -337,53 +337,6 @@ output.to_json
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_loop_head_v1_5</task>
-                </dependents>
-            </task>
-            <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_68" name="ServiceNow Search" x="801" y="-34">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to retrieve info from (ie. change_request,incident, task,etc).">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
-                    <parameter id="query" label="Query" menu="" required="true" tooltip="The query to retrieve objects. Use a '^' to seperate parameters.">&lt;%=
-# Without replacement:
-# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
-
-# With replacement:
-# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
-
-extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
-query_start_time = Time.parse( extracted_times['query_start_time'] )
-query_end_time = Time.parse( extracted_times['query_end_time'] )
-formatted_start_date = "javascript:gs.dateGenerate('#{query_start_time.strftime("%Y-%m-%d")}','#{query_start_time.strftime("%H:%M:%S")}')"
-formatted_end_date = "javascript:gs.dateGenerate('#{query_end_time.strftime("%Y-%m-%d")}','#{query_end_time.strftime("%H:%M:%S")}')"
-
-query = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
-
-query.gsub!( "{{Start Date}}", formatted_start_date )
-query.gsub!( "{{End Date}}", formatted_end_date )
-
-query
-
-%&gt;</parameter>
-                    <parameter id="display_value" label="Display Value" menu="" required="false" tooltip="Return field display values (true), actual values (false), or both (all) (default: false).">all</parameter>
-                    <parameter id="exclude_ref_link" label="Exclude Reference Link" menu="" required="false" tooltip="True to exclude Table API links for reference fields (default: false)."/>
-                    <parameter id="suppress_pag_header" label="Suppress Pagination Header" menu="" required="false" tooltip="True to supress pagination header (default: false)."/>
-                    <parameter id="fields" label="Fields" menu="" required="false" tooltip="A comma-separated list of fields to return in the response."/>
-                    <parameter id="limit" label="Limit" menu="" required="false" tooltip="The maximum number of results returned per page (default: 10,000)."/>
-                    <parameter id="query_category" label="Query Category" menu="" required="false" tooltip="Name of the query category (read replica category) to use for queries."/>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="Has Error" type="Complete" value="!@results['ServiceNow Search']['Handler Error Message'].nil?">routine_onsolve_error_v1_80</task>
-                    <task label="No error" type="Complete" value="@results['ServiceNow Search']['Handler Error Message'].nil?">utility_json_to_xml_v1_47</task>
                 </dependents>
             </task>
             <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="132" y="131">
@@ -467,15 +420,15 @@ query
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: ServiceNow Search Error" x="1028" y="-42">
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: Cherwell Search Error" x="968" y="-20">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">ServiceNow Retrieve Error</parameter>
-                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['Remedy Search']['Handler Error Message']%&gt;</parameter>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Cherwell Retrieve Error</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['Cherwell Search']['Handler Error Message']%&gt;</parameter>
                     <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
                     <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
                     <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"/>
@@ -488,32 +441,6 @@ query
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
-            </task>
-            <task definition_id="cherwell_object_find_v1" id="cherwell_object_find_v1_81" name="Cherwell Search" x="803" y="120">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
-                    <parameter id="fields" label="Fields to Return" menu="" required="false" tooltip="Comma separated list of fields to return (if none entered, all fields will be returned)."/>
-                    <parameter id="filters" label="Filters" menu="" required="false" tooltip="A JSON object with key/value pairs that will be searched for equality.">&lt;%=
-{
-  "Incident ID" =&gt; "102364"
-}.to_json
-%&gt;</parameter>
-                    <parameter id="page_size" label="Max Results" menu="" required="false" tooltip="The maximum amount of results that can be returned in a single handler execution (if blank, as many as possible will be returned).">5</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_join_v1_76</task>
-                    <task label="" type="Complete" value="">utility_json_to_xml_v1_47</task>
-                </dependents>
             </task>
             <task definition_id="routine_onsolve_integration_cherwell_process_incoming_data_v1" id="routine_onsolve_integration_cherwell_process_incoming_data_v1_82" name="Process Data" x="1086" y="275">
                 <version>1</version>
@@ -533,6 +460,50 @@ query
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_cherwell_data_search_v1" id="routine_onsolve_cherwell_data_search_v1_85" name="Cherwell Search" x="804" y="120">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
+                    <parameter id="Fields To Return" label="Fields To Return" menu="" required="false" tooltip=""/>
+                    <parameter id="Filters" label="Filters" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+query_start_time = Time.parse( extracted_times['query_start_time'] )
+query_end_time = Time.parse( extracted_times['query_end_time'] )
+formatted_start_date = query_start_time.iso8601
+formatted_end_date = query_end_time.iso8601
+
+query = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+query.gsub!( "{{Start Date}}", formatted_start_date )
+query.gsub!( "{{End Date}}", formatted_end_date )
+
+query
+
+%&gt;</parameter>
+                    <parameter id="Max Results" label="Max Results" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="!@results['Cherwell Search']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_80</task>
+                    <task label="No error" type="Complete" value="@results['Cherwell Search']['Handler Error Message'].to_s.empty?">utility_json_to_xml_v1_47</task>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
                 </dependents>
             </task>
         </request>

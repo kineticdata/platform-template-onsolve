@@ -1,26 +1,26 @@
 <tree schema_version="1.0">
 <sourceName>-</sourceName>
 <sourceGroup>-</sourceGroup>
-<definitionId>routine_onsolve_cherwell_data_retrieve_v1</definitionId>
+<definitionId>routine_onsolve_cherwell_object_update_v1</definitionId>
 <type>Global Routine</type>
 <status>Active</status>
 <taskTree builder_version="" schema_version="1.0" version="">
-        <name>OnSolve Cherwell Data Retrieve</name>
+        <name>OnSolve Cherwell Object Update</name>
         <author/>
         <notes/>
-        <lastID>16</lastID>
-        <taskDefinition id="routine_onsolve_cherwell_data_retrieve_v1" name="OnSolve Cherwell Data Retrieve" schema_version="1.0" version="1">
+        <lastID>19</lastID>
+        <taskDefinition id="routine_onsolve_cherwell_object_update_v1" name="OnSolve Cherwell Object Update" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
                 <parameter id="Error Handling" label="Error Handling" required="false" tooltip=""/>
-                <parameter id="Object Name" label="Object Name" required="true" tooltip=""/>
-                <parameter id="Object Id" label="Object Id" required="true" tooltip=""/>
+                <parameter id="Object Name" label="Object Name" required="true" tooltip="Readable name of the Object to be update (e.g., Incident)"/>
+                <parameter id="Object Id" label="Object Id" required="true" tooltip="Public ID of the object to be updated"/>
+                <parameter id="Object JSON" label="Object JSON" required="true" tooltip="A JSON representation of the displayName/values for the fields that should be updated"/>
             </parameters>
             <handler name="system_tree_call" version="1"/>
             <results format="xml">
                 <result name="Handler Error Message" tooltip=""/>
-                <result name="JSON Results" tooltip=""/>
             </results>
         </taskDefinition>
         <request>
@@ -45,12 +45,13 @@
                 <parameters>
                     <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
                     <parameter id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%=@results['Retrieve Space']['Slug']%&gt;</parameter>
-                    <parameter id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">cherwell_object_retrieve_v1</parameter>
+                    <parameter id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">cherwell_object_update_v1</parameter>
                     <parameter id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%=
 {
   "error_handling" =&gt; @inputs['Error Handling'],
   "object_name" =&gt; @inputs['Object Name'],
-  "object_id" =&gt; @inputs['Object Id']
+  "object_id" =&gt; @inputs['Object Id'],
+  "object_json" =&gt; @inputs['Object JSON']
 }.to_json
 %&gt;</parameter>
                 </parameters>
@@ -60,7 +61,7 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">system_tree_return_v1_16</task>
+                    <task label="" type="Complete" value="">system_tree_return_v1_17</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_8" name="Uses Agent" x="177" y="121">
@@ -87,7 +88,7 @@
                 </messages>
                 <dependents>
                     <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v1_1</task>
-                    <task label="No Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase != &quot;true&quot;">cherwell_object_retrieve_v1_13</task>
+                    <task label="No Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase != &quot;true&quot;">cherwell_object_update_v1_19</task>
                 </dependents>
             </task>
             <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_9" name="Retrieve Space" x="12" y="110">
@@ -106,44 +107,7 @@
                     <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_8</task>
                 </dependents>
             </task>
-            <task definition_id="cherwell_object_retrieve_v1" id="cherwell_object_retrieve_v1_13" name="Cherwell Object Retrieve" x="172" y="210">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%=@inputs['Object Name']%&gt;</parameter>
-                    <parameter id="object_id" label="Object Id" menu="" required="true" tooltip="Id of the object to be retrieved.">&lt;%=@inputs['Object Id']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_tree_return_v1_15</task>
-                </dependents>
-            </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_15" name="Return Direct" x="340" y="220">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Cherwell Object Retrieve']['Handler Error Message']%&gt;</parameter>
-                    <parameter id="JSON Results" label="JSON Results" menu="" required="false" tooltip="">&lt;%=@results['Cherwell Object Retrieve']['Object JSON']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_16" name="Return Agent" x="341" y="12">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_17" name="Return Agent" x="343" y="12">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -151,7 +115,6 @@
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
-                    <parameter id="JSON Results" label="JSON Results" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Object JSON']%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
@@ -159,6 +122,43 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_18" name="Return Direct" x="341" y="219">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Cherwell Object Update']['Handler Error Message']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_19" name="Cherwell Object Update" x="176" y="210">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to update (ie. Incident).">&lt;%=@inputs['Object Name']%&gt;</parameter>
+                    <parameter id="object_id" label="Object Id" menu="" required="true" tooltip="Public id for the object that should be updated..">&lt;%=@inputs['Object Id']%&gt;</parameter>
+                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be updated with.">&lt;%=@inputs['Object JSON']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_18</task>
+                </dependents>
             </task>
         </request>
     </taskTree>
