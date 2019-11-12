@@ -274,6 +274,7 @@ rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 
 display_line_assignee = headers.find_index('ASSIGNEE')
 display_line_assignee_name = headers.find_index('ASSIGNEENAME')
+display_line_assignee_response = headers.find_index('ASSIGNEERESPONSE')
 display_line_responder_primary_key = headers.find_index('RESPONDERPRIMARYKEY')
 display_line_status = headers.find_index('STATUS')
 
@@ -289,12 +290,14 @@ else
 end
 notification_status = rows.first['value'][display_line_status]
 assignee_name = rows.first['value'][display_line_assignee_name]
+assignee_response = rows.first['value'][display_line_assignee_response]
 
 output = {
-  "notificationStatus" =&gt; notification_status, 
+  "notificationStatus" =&gt; notification_status,
   "responderType" =&gt; successResponderType, 
   "responderValue" =&gt; assignee, 
-  "responderName" =&gt; assignee_name
+  "responderName" =&gt; assignee_name,
+  "responderResponse" =&gt; assignee_response
 }.to_json
 %&gt;</parameter>
                 </parameters>
