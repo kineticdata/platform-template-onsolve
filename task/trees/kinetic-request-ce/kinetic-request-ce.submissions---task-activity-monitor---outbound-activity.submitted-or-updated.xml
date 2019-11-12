@@ -7,7 +7,7 @@
         <name>Submitted or Updated</name>
         <author/>
         <notes/>
-        <lastID>46</lastID>
+        <lastID>49</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -220,50 +220,8 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">cherwell_object_create_v1_15</task>
-                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">cherwell_object_update_v1_16</task>
-                </dependents>
-            </task>
-            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_15" name="Cherwell Create" x="743" y="601">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
-                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be created with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="No Error" type="Complete" value="true || @results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
-                    <task label="Error" type="Complete" value="false &amp;&amp; !@results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
-                </dependents>
-            </task>
-            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_16" name="Cherwell Update" x="743" y="678">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to update (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
-                    <parameter id="object_id" label="Object Id" menu="" required="true" tooltip="Public id for the object that should be updated.">&lt;%= JSON.parse( @values['Payload'] )['object_id']%&gt;</parameter>
-                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be updated with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="No Error" type="Complete" value="@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
-                    <task label="Error" type="Complete" value="!@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">cherwell_object_create_v1_48</task>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">cherwell_object_update_v1_49</task>
                 </dependents>
             </task>
             <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_17" name="OBM Annotation Add" x="748" y="779">
@@ -805,6 +763,49 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_submission_retrieve_with_child_values_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_48" name="Cherwell Create" x="744" y="620">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
+                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be created with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_49" name="Cherwell Update" x="753" y="681">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to update (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
+                    <parameter id="object_id" label="Object Id" menu="" required="true" tooltip="Public id for the object that should be updated..">&lt;%= JSON.parse( @values['Payload'] )['object_id']%&gt;</parameter>
+                    <parameter id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be updated with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
                 </dependents>
             </task>
         </request>
