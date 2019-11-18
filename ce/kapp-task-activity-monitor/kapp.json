@@ -12,6 +12,12 @@
       "values": [
         "30"
       ]
+    },
+    {
+      "name": "Uses Kinetic Agent",
+      "values": [
+        "False"
+      ]
     }
   ],
   "bundlePath": null,
