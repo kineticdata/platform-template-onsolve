@@ -659,7 +659,7 @@ source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
                     <task label="Update Source Record?" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;&#10;integration_config['Polling'] == &quot;Yes&quot; &amp;&amp; !integration_config['Fields to Update Upon Notification'].to_s.empty?">routine_kinetic_submission_create_v1_120</task>
                 </dependents>
             </task>
-            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Cherwell Object" x="1012" y="541">
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Cherwell Object" x="1012" y="539">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -672,20 +672,8 @@ source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
                     <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
                     <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse( integration_config['Initiation Standard Action Parameters'] )
-journal_type_id = params['Journal Object Type Id']
 source_data = JSON.parse( @source['Data'] )['Source Data']
 source_id = JSON.parse( @source['Data'] )['Source Id']
-source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
-
-notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
-notification_method = notification_method_options[integration_config['Notification Method']]
-
-work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
-results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
-results['error'].each{|key,value|
-  work_notes.push( "#{key}: #{value}" )
-}
 
 {
   "Status" =&gt; "New",
