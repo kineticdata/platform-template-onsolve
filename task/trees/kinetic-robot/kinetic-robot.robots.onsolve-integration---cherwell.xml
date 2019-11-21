@@ -106,9 +106,7 @@
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_junction_v1_45</task>
-                </dependents>
+                <dependents/>
             </task>
             <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="649" y="429">
                 <version>1</version>
@@ -395,7 +393,7 @@ output.to_json
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_join_v1_76</task>
-                    <task label="No Cherwell Search result" type="Complete" value="!@results.has_key?(&quot;Cherwell Search&quot;)">routine_onsolve_error_v1_79</task>
+                    <task label="No Cherwell Search result" type="Complete" value="!@results['Cherwell Search'].has_key?('Handler Error Message')">routine_onsolve_error_v1_79</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_79" name="Error Notification: Cherwell Timeout" x="393" y="229">
@@ -501,7 +499,7 @@ query
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Has Error" type="Complete" value="!@results['Cherwell Search']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_80</task>
+                    <task label="Has Error" type="Complete" value="!@results['Cherwell Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: Cherwell Timeout')">routine_onsolve_error_v1_80</task>
                     <task label="No error" type="Complete" value="@results['Cherwell Search']['Handler Error Message'].to_s.empty?">utility_json_to_xml_v1_47</task>
                     <task label="" type="Complete" value="">system_join_v1_76</task>
                 </dependents>

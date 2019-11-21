@@ -4,155 +4,122 @@
 <type>Tree</type>
 <status>Active</status>
 <taskTree builder_version="" schema_version="1.0" version="">
-    <name>OnSolve Integration - ServiceNow</name>
-    <author/>
-    <notes/>
-    <lastID>80</lastID>
-    <request>
-        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
-            <version>1</version>
-            <configured>true</configured>
-            <defers>false</defers>
-            <deferrable>false</deferrable>
-            <visible>false</visible>
-            <parameters/>
-            <messages/>
-            <dependents>
-                
-            <task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
-                
-            <task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">system_join_v1_74</task></dependents>
-        </task>
-    
-        <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="14" y="99">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."/>
-        <parameter id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
-        <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
-        <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running"}</parameter>
-        <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
-        <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">system_join_v1_74</task></dependents>
-    </task>
-      
-        <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="527" y="110">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
-        <parameter id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
-        <!-- Retrieve By Query parameters -->
-        <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"/>
-        <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"/>
-        <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"/>
-        <!-- Retrieve By Id parameters -->
-        <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                
-            <task label="" type="Complete" value="">utilities_echo_v1_32</task>
-                
-            </dependents>
-    </task>
-      
-        
-      
-        
-      
-        <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="969" y="220">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['ServiceNow Search to XML']['XML']%&gt;</parameter>
-        <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/node/node</parameter>
-        <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">servicenow_id</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
-                
-                
-            <task label="" type="Complete" value="">routine_onsolve_integration_servicenow_process_incoming_data_v1_67</task>
-            </dependents>
-    </task>
-      
-        <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="969" y="341">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
-        <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-            <task label="" type="Complete" value="">system_junction_v1_45</task></dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="649" y="429">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
-        <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Deferral Token']%&gt;</parameter>
-        <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+        <name>OnSolve Integration - ServiceNow</name>
+        <author/>
+        <notes/>
+        <lastID>81</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages/>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                    <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="14" y="99">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."/>
+                    <parameter id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."/>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running"}</parameter>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="527" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter><!-- Retrieve By Query parameters -->
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"/>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"/>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"/><!-- Retrieve By Id parameters -->
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_32</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="969" y="220">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['ServiceNow Search to XML']['XML']%&gt;</parameter>
+                    <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/node/node</parameter>
+                    <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">servicenow_id</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                    <task label="" type="Complete" value="">routine_onsolve_integration_servicenow_process_incoming_data_v1_67</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="969" y="341">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="649" y="429">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
 # Normal output
-if @results.has_key?("ServiceNow Search") &amp;&amp; @results['ServiceNow Search']['Handler Error Message'].to_s.empty?
+if @results.has_key?("ServiceNow Search") &amp;&amp; @results['ServiceNow Search'].has_key?('Handler Error Message') &amp;&amp; @results['ServiceNow Search']['Handler Error Message'].to_s.empty?
   outcome = "Successful"
   output = {
     "message" =&gt; "#{JSON.parse(@results['ServiceNow Search']['object_json']).length} results returned",
@@ -162,7 +129,7 @@ if @results.has_key?("ServiceNow Search") &amp;&amp; @results['ServiceNow Search
 end
 
 # If timeout
-if !@results.has_key?("ServiceNow Search")
+if !@results.has_key?("ServiceNow Search") || !@results['ServiceNow Search'].has_key?('Handler Error Message')
   outcome = "Unsuccessful"
   output = {
     "message" =&gt; "Timeout during attempted data retrieve"
@@ -170,7 +137,7 @@ if !@results.has_key?("ServiceNow Search")
 end
 
 # Handler errored
-if @results.has_key?("ServiceNow Search") &amp;&amp; !@results['ServiceNow Search']['Handler Error Message'].to_s.empty?
+if @results.has_key?("ServiceNow Search") &amp;&amp; @results['ServiceNow Search'].has_key?('Handler Error Message') &amp;&amp; !@results['ServiceNow Search']['Handler Error Message'].to_s.empty?
   outcome = "Unsuccessful"
   output = {
     "message" =&gt; "Retrieve error: #{@results['ServiceNow Search']['Handler Error Message']}"
@@ -181,119 +148,91 @@ results = %|&lt;results&gt;&lt;result name="outcome"&gt;#{outcome}&lt;/result&gt
 results
 #raise "#{results}"
 %&gt;</parameter>
-        <parameter id="message" label="Message" menu="" required="false" tooltip=""/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents><task label="" type="Complete" value="">system_junction_v1_45</task></dependents>
-    </task>
-      
-        
-      
-        <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1089" y="441">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters/>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_22" name="Get Onsolve Product Setting" x="261" y="99">
-      <version>2</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
-        <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
-        <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Onsolve Product</parameter>
-        <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value"/>
-        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."/>
-        <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
-        <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."/>
-        <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_23</task>
-            </dependents>
-    </task>
-      
-        <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_23" name="Get Polling Artifact Cleanup Setting" x="395" y="99">
-      <version>2</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
-        <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
-        <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Polling Artifact Cleanup Days</parameter>
-        <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value">30</parameter>
-        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."/>
-        <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
-        <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."/>
-        <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
-            </dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Determine Start and End Times" x="659" y="110">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                    <parameter id="message" label="Message" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1089" y="441">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_22" name="Get Onsolve Product Setting" x="261" y="99">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Onsolve Product</parameter>
+                    <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value"/>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."/>
+                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."/>
+                    <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_23</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_23" name="Get Polling Artifact Cleanup Setting" x="395" y="99">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Polling Artifact Cleanup Days</parameter>
+                    <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value">30</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."/>
+                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."/>
+                    <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Determine Start and End Times" x="659" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 # Determine start and end time to use in query. Store them as output for use in the Robot output trigger.
 # Probably using the output from the last execution run, with additional logic to use a the last x minutes if the last execution time is beyond some threshold.
 # An idea is below:
@@ -323,173 +262,210 @@ output['query_end_time'] = query_end_time.iso8601
 output.to_json
 
 %&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">servicenow_object_query_retrieve_v1_68</task>
-            <task label="" type="Complete" value="">system_wait_v1_77</task></dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="969" y="418">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."/>
-        <parameter id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
-        <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%={
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_77</task>
+                    <task label="" type="Complete" value="">routine_onsolve_servicenow_data_retrieve_v1_81</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="969" y="418">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."/>
+                    <parameter id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%={
   "Task Run Id" =&gt; @run['Id'],
   "Delete After Date Time" =&gt; (Time.now + (86400 * (@results['Get Polling Artifact Cleanup Setting']['Value']).to_i)).iso8601
 }.to_json%&gt;</parameter>
-        <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
-        <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_noop_v1_17</task>
-            </dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="system_junction_v1" id="system_junction_v1_45" name="Junction: Robot" x="802" y="440">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters/>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
-            </dependents>
-    </task>
-      
-        
-      
-        <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_47" name="ServiceNow Search to XML" x="969" y="110">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="json" label="JSON" menu="" required="true" tooltip="The JSON String to be converted to XML">&lt;%=@results['ServiceNow Search']['object_json']%&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_loop_head_v1_5</task>
-            </dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="routine_onsolve_integration_servicenow_process_incoming_data_v1" id="routine_onsolve_integration_servicenow_process_incoming_data_v1_67" name="Process Data" x="1089" y="274">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>true</defers>
-      <deferrable>true</deferrable>
-      <visible>false</visible>
-      <parameters>
-            <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%= ( JSON.parse( @results['ServiceNow Search']['object_json'] )[@results['Loop Begin']['Index']] ).to_json %&gt;</parameter>
-            <parameter id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
-            <parameter id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
-        </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
-            </dependents>
-    </task>
-      
-        <task definition_id="servicenow_object_query_retrieve_v1" id="servicenow_object_query_retrieve_v1_68" name="ServiceNow Search" x="802" y="121">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-        <parameter id="table" label="Table" menu="" required="true" tooltip="The name of the table to retrieve info from (ie. change_request,incident, task,etc).">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
-        <parameter id="query" label="Query" menu="" required="true" tooltip="The query to retrieve objects. Use a '^' to seperate parameters.">&lt;%=
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_45" name="Junction: Robot" x="802" y="440">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_47" name="ServiceNow Search to XML" x="969" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="json" label="JSON" menu="" required="true" tooltip="The JSON String to be converted to XML">&lt;%=@results['ServiceNow Search']['object_json']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_5</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration_servicenow_process_incoming_data_v1" id="routine_onsolve_integration_servicenow_process_incoming_data_v1_67" name="Process Data" x="1089" y="274">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%= ( JSON.parse( @results['ServiceNow Search']['object_json'] )[@results['Loop Begin']['Index']] ).to_json %&gt;</parameter>
+                    <parameter id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="132" y="131">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_76" name="Join 2" x="803" y="220">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_junction_v1_45</task>
+                    <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">utilities_create_trigger_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="659" y="220">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">60</parameter>
+                    <parameter id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="No ServiceNow Search result" type="Complete" value="!@results['ServiceNow Search'].has_key?('Handler Error Message')">routine_onsolve_error_v1_79</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_79" name="Error Notification: ServiceNow Timeout" x="393" y="229">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">ServiceNow Retrieve Error</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">ServiceNow Search query did not respond</parameter>
+                    <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
+                    <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"/>
+                    <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: ServiceNow Search Error" x="973" y="-22">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">ServiceNow Retrieve Error</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['ServiceNow Search']['Handler Error Message']%&gt;</parameter>
+                    <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
+                    <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"/>
+                    <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_81" name="ServiceNow Search" x="804" y="119">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter id="Table" label="Table" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
+                    <parameter id="Query" label="Query" menu="" required="true" tooltip="">&lt;%=
 # Without replacement:
 # JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
 
@@ -510,130 +486,24 @@ query.gsub!( "{{End Date}}", formatted_end_date )
 query
 
 %&gt;</parameter>
-        <parameter id="display_value" label="Display Value" menu="" required="false" tooltip="Return field display values (true), actual values (false), or both (all) (default: false).">all</parameter>
-        <parameter id="exclude_ref_link" label="Exclude Reference Link" menu="" required="false" tooltip="True to exclude Table API links for reference fields (default: false)."/>
-        <parameter id="suppress_pag_header" label="Suppress Pagination Header" menu="" required="false" tooltip="True to supress pagination header (default: false)."/>
-        <parameter id="fields" label="Fields" menu="" required="false" tooltip="A comma-separated list of fields to return in the response."/>
-        <parameter id="limit" label="Limit" menu="" required="false" tooltip="The maximum number of results returned per page (default: 10,000)."/>
-        <parameter id="query_category" label="Query Category" menu="" required="false" tooltip="Name of the query category (read replica category) to use for queries."/>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="No error" type="Complete" value="@results['ServiceNow Search']['Handler Error Message'].nil?">utility_json_to_xml_v1_47</task>
-            <task label="" type="Complete" value="">system_join_v1_76</task><task type="Complete" label="Has Error" value="!@results['ServiceNow Search']['Handler Error Message'].nil?">routine_onsolve_error_v1_80</task></dependents>
-    </task>
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="132" y="131">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
-        <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"/>
-    </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents><task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task></dependents>
-    </task>
-      
-        
-      
-        <task definition_id="system_join_v1" id="system_join_v1_76" name="Join 2" x="803" y="220">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
-        <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"/>
-    </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents><task label="Not from Robot" type="Complete" value="if !@source['Data']&#xA;  true&#xA;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;  true&#xA;else&#xA;  false&#xA;end">system_junction_v1_45</task><task label="Robot Initiated" type="Complete" value="if @source['Data']&#xA;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#xA;else &#xA;  false&#xA;end">utilities_create_trigger_v1_15</task></dependents>
-    </task>
-      
-        <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="659" y="220">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>true</defers>
-      <deferrable>true</deferrable>
-      <visible>true</visible>
-      <parameters>
-        <parameter id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">60</parameter>
-        <parameter id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
-    </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents><task label="" type="Complete" value="">system_join_v1_76</task><task type="Complete" label="No ServiceNow Search result" value="!@results.has_key?(&quot;ServiceNow Search&quot;)">routine_onsolve_error_v1_79</task></dependents>
-    </task>
-      
-        
-      
-        <task name="Error Notification: ServiceNow Timeout" id="routine_onsolve_error_v1_79" definition_id="routine_onsolve_error_v1" x="393" y="229">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>true</deferrable>
-      <visible>false</visible>
-      <parameters>
-            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">ServiceNow Retrieve Error</parameter>
-            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">ServiceNow Search query did not respond</parameter>
-            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu="">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
-            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu=""/>
-            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu=""/>
-            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
-            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
-        </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      
-        <task name="Error Notification: ServiceNow Search Error" id="routine_onsolve_error_v1_80" definition_id="routine_onsolve_error_v1" x="973" y="-22">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>true</deferrable>
-      <visible>false</visible>
-      <parameters>
-            <parameter id="Error Message Title" label="Error Message Title" required="true" tooltip="The title of the error message to be send with the error notification" menu="">ServiceNow Retrieve Error</parameter>
-            <parameter id="Error Message Details" label="Error Message Details" required="true" tooltip="The error message details to be sent with the error notification" menu="">&lt;%=@results['Remedy Search']['Handler Error Message']%&gt;</parameter>
-            <parameter id="Integration Id" label="Integration Id" required="false" tooltip="The Submission Id of the integration configuration record" menu="">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
-            <parameter id="Submission Id" label="Submission Id" required="false" tooltip="The Submission Id of the Task Activity Monitor record" menu=""/>
-            <parameter id="Recipient List" label="Recipient List" required="false" tooltip="The receipient list to receive the notification" menu=""/>
-            <parameter id="Task Run" label="Task Run" required="false" tooltip="" menu="">&lt;%=@run['Id']%&gt;</parameter>
-            <parameter id="Additional Info" label="Additional Info" required="false" tooltip="" menu=""/>
-        </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      </request>
-</taskTree></tree>
+                    <parameter id="Display Value" label="Display Value" menu="" required="false" tooltip="">all</parameter>
+                    <parameter id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""/>
+                    <parameter id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""/>
+                    <parameter id="Fields" label="Fields" menu="" required="false" tooltip=""/>
+                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip=""/>
+                    <parameter id="Query Category" label="Query Category" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="!@results['ServiceNow Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: ServiceNow Timeout')">routine_onsolve_error_v1_80</task>
+                    <task label="No error" type="Complete" value="@results['ServiceNow Search']['Handler Error Message'].to_s.empty?">utility_json_to_xml_v1_47</task>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>
