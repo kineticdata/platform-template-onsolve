@@ -276,6 +276,7 @@ display_line_assignee = headers.find_index('ASSIGNEE')
 display_line_assignee_name = headers.find_index('ASSIGNEENAME')
 display_line_assignee_response = headers.find_index('ASSIGNEERESPONSE')
 display_line_responder_primary_key = headers.find_index('RESPONDERPRIMARYKEY')
+display_line_assignee_response_time = headers.find_index('ASSIGNEERESPONSETIME')
 display_line_status = headers.find_index('STATUS')
 
 ## if zero, we don't want to assign
@@ -291,6 +292,7 @@ end
 notification_status = rows.first['value'][display_line_status]
 assignee_name = rows.first['value'][display_line_assignee_name]
 assignee_response = rows.first['value'][display_line_assignee_response]
+assignee_response_time = rows.first['value'][display_line_assignee_response_time]
 
 output = {
   "notificationStatus" =&gt; notification_status,
@@ -298,6 +300,7 @@ output = {
   "responderValue" =&gt; assignee, 
   "responderName" =&gt; assignee_name,
   "responderResponse" =&gt; assignee_response
+  "responderResponseTime" =&gt; assignee_response_time
 }.to_json
 %&gt;</parameter>
                 </parameters>
