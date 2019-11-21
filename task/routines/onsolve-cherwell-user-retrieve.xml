@@ -148,8 +148,13 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Message" label="Message" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Message']%&gt;</parameter>
-                    <parameter id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['User JSON']%&gt;</parameter>
+                    <parameter id="Message" label="Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
+                    <parameter id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%=
+begin
+  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['User JSON']
+rescue
+end
+%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

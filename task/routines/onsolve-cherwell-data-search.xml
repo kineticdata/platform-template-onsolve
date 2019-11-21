@@ -119,10 +119,25 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
-                    <parameter id="JSON Results" label="JSON Results" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['JSON Results']%&gt;</parameter>
-                    <parameter id="Total Matched" label="Total Matched" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Total Matched']%&gt;</parameter>
-                    <parameter id="Count" label="Count" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Count']%&gt;</parameter>
+                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
+                    <parameter id="JSON Results" label="JSON Results" menu="" required="false" tooltip="">&lt;%=
+begin
+  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['JSON Results']
+rescue
+end
+%&gt;</parameter>
+                    <parameter id="Total Matched" label="Total Matched" menu="" required="false" tooltip="">&lt;%=
+begin
+  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['Total Matched']
+rescue
+end
+%&gt;</parameter>
+                    <parameter id="Count" label="Count" menu="" required="false" tooltip="">&lt;%=
+begin
+  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['Count']
+rescue
+end
+%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

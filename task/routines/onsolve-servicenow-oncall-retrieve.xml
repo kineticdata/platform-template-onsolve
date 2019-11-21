@@ -156,8 +156,13 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
-                    <parameter id="object_json" label="object_json" menu="" required="false" tooltip="">&lt;%=JSON.parse( @results['Agent']['output'] )['results']['object_json']%&gt;</parameter>
+                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
+                    <parameter id="object_json" label="object_json" menu="" required="false" tooltip="">&lt;%=
+begin
+  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['object_json']
+rescue
+end
+%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>

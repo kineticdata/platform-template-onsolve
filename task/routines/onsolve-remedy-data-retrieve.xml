@@ -90,7 +90,7 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message']%&gt;</parameter>
+                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
                     <parameter id="RequestIdList" label="RequestIdList" menu="" required="false" tooltip="">&lt;%=
 begin
   JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['RequestIdList']
