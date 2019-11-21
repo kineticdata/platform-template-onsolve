@@ -710,8 +710,8 @@ responderValue
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="No user" type="Complete" value="JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?">system_junction_v1_28</task>
-                    <task label="Not empty" type="Complete" value="!JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?">routine_onsolve_cherwell_object_update_v1_51</task>
+                    <task label="No user" type="Complete" value="@results['Get Cherwell User']['User JSON'].to_s.empty?">system_junction_v1_28</task>
+                    <task label="Not empty" type="Complete" value="!@results['Get Cherwell User']['User JSON'].to_s.empty?">routine_onsolve_cherwell_object_update_v1_51</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_cherwell_object_update_v1" id="routine_onsolve_cherwell_object_update_v1_51" name="Assign Cherwell" x="924" y="289">
