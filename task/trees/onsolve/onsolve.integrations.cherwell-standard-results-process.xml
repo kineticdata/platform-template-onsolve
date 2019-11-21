@@ -277,7 +277,7 @@ output = {
   "responderType" =&gt; successResponderType, 
   "responderValue" =&gt; assignee, 
   "responderName" =&gt; assignee_name,
-  "responderResponse" =&gt; assignee_response
+  "responderResponse" =&gt; assignee_response,
   "responderResponseTime" =&gt; assignee_response_time
 }.to_json
 %&gt;</parameter>
