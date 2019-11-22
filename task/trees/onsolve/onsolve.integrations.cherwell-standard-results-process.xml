@@ -333,16 +333,16 @@ if assignment_logic_output['notificationStatus'] == "RESPONDED" &amp;&amp; !['Br
         # If successfully assigned
         if @results.has_key?('Assign Cherwell') &amp;&amp; @results['Assign Cherwell']['Handler Error Message'].to_s.empty?
           # Assignment successful
-          assignment_status = "completed and assigned #{assignment_logic_output['responderName']} as the responder accepting the issue with the response: #{assignment_logic_output['responderStatus']}."
+          assignment_status = "completed and assigned #{assignment_logic_output['responderName']} as the responder accepting the issue with the response: #{assignment_logic_output['responderResponse']}."
         else
           # Assignment unsuccessful
-          assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderStatus']} - HOWEVER, assignment to that Service Now user was unsuccessful."
+          assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']} - HOWEVER, assignment to that Service Now user was unsuccessful."
         end
       else
-        assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderStatus']} - HOWEVER, assignment to that Service Now user was unsuccessful."
+        assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']} - HOWEVER, assignment to that Service Now user was unsuccessful."
       end
   else
-    assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderStatus']}."
+    assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}."
   end
 elsif assignment_logic_output['notificationStatus'] == "RESPONDED"
   assignment_status = "completed."
@@ -702,7 +702,11 @@ responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responder
 # Cherwell only supports a login name value for querying about the user, so we'll need to use that in all situations.
 responderValue
 %&gt;</parameter>
-                    <parameter id="Login Id Type" label="Login Id Type" menu="" required="true" tooltip="">Internal</parameter>
+                    <parameter id="Login Id Type" label="Login Id Type" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
+
+integration_config['User Field Containing Match to OnSolve Users Modifier'] || "Internal"
+%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
@@ -729,7 +733,7 @@ integration_config['Schema Name']
                     <parameter id="Object Id" label="Object Id" menu="" required="true" tooltip="Public ID of the object to be updated">&lt;%=@results['Get Task Activity Monitoring Values']['Source Reference Id']%&gt;</parameter>
                     <parameter id="Object JSON" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that should be updated">&lt;%=
 {
-  "Assigned To ID" =&gt; JSON.parse( @results['Get Cherwell User']['User JSON'] )['fields']['RecID']
+  "Owned By ID" =&gt; JSON.parse( @results['Get Cherwell User']['User JSON'] )['fields']['RecID']
 }.to_json
 %&gt;
 
