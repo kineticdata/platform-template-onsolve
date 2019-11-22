@@ -477,6 +477,13 @@
       "unique": false
     },
     {
+      "name": "values[User Field Containing Match to OnSolve Users Modifier]",
+      "parts": [
+        "values[User Field Containing Match to OnSolve Users Modifier]"
+      ],
+      "unique": false
+    },
+    {
       "name": "values[User Field Containing Match to OnSolve Users]",
       "parts": [
         "values[User Field Containing Match to OnSolve Users]"
@@ -898,10 +905,10 @@
                   "name": "User Field Containing Match to OnSolve Users",
                   "label": "User Field Containing Match to OnSolve Users",
                   "key": "f41",
-                  "defaultValue": null,
+                  "defaultValue": "Login Id",
                   "defaultResourceName": null,
                   "visible": true,
-                  "enabled": true,
+                  "enabled": false,
                   "required": true,
                   "requiredMessage": null,
                   "omitWhenHidden": null,
@@ -919,10 +926,46 @@
                   "rows": 1
                 },
                 {
+                  "type": "field",
+                  "name": "User Field Containing Match to OnSolve Users Modifier",
+                  "label": "Login ID Type",
+                  "key": "f54",
+                  "defaultValue": null,
+                  "defaultResourceName": null,
+                  "visible": true,
+                  "enabled": true,
+                  "required": true,
+                  "requiredMessage": null,
+                  "omitWhenHidden": null,
+                  "pattern": null,
+                  "constraints": [
+
+                  ],
+                  "events": [
+
+                  ],
+                  "renderAttributes": {
+                  },
+                  "dataType": "string",
+                  "renderType": "dropdown",
+                  "choicesResourceName": null,
+                  "choicesRunIf": null,
+                  "choices": [
+                    {
+                      "label": "Internal",
+                      "value": "Internal"
+                    },
+                    {
+                      "label": "Windows",
+                      "value": "Windows"
+                    }
+                  ]
+                },
+                {
                   "type": "content",
                   "renderType": "html",
                   "name": "Unique Individual Identifier Field Note",
-                  "text": "<small>What field from <strong>sys_user</strong> table is used to uniquely identify an individual user?<small>",
+                  "text": "<small>The Cherwell lookup expects to uniquely identify an individual user based on <strong>Login Id</strong>. Identify if the Cherwell users are Internal or Windows users.",
                   "visible": true,
                   "renderAttributes": {
                     "class": "margin-top:-10px;"
