@@ -41,8 +41,8 @@ JSON.parse(@source['Data'])['Deferral Token']
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#10;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_17</task>
-                    <task label="Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#10;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_join_v1_33</task>
+                    <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#xA;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_17</task>
+                    <task label="Forever" type="Complete" value="integration_config = JSON.parse(@source['Data'])['Integration Configuration']&#xA;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_join_v1_33</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_submission_get_answers_v1" id="kinetic_request_ce_submission_get_answers_v1_5" name="Get Task Activity Monitoring Values" x="298" y="99">
@@ -288,8 +288,8 @@ output = {
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="No Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
-                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_cherwell_user_retrieve_v1_50</task>
+                    <task label="No Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#xA;integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
+                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#xA;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_cherwell_user_retrieve_v1_50</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="925" y="154">
@@ -329,7 +329,7 @@ rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 assignment_status = nil
 if assignment_logic_output['notificationStatus'] == "RESPONDED" &amp;&amp; !['Broadcast','Bulletin Board'].include?(notification_method)
   if integration_config['Assign Responder'] == "Yes"
-    if @results['Get Cherwell User'] &amp;&amp; !JSON.parse( @results['Get Cherwell User']['User JSON'] ).empty?
+    if @results['Get Cherwell User'] &amp;&amp; !JSON.parse( @results['Get Cherwell User']['User JSON'] &amp;&amp; "{}" ).empty?
         # If successfully assigned
         if @results.has_key?('Assign Cherwell') &amp;&amp; @results['Assign Cherwell']['Handler Error Message'].to_s.empty?
           # Assignment successful
@@ -749,5 +749,4 @@ integration_config['Schema Name']
                 </dependents>
             </task>
         </request>
-    </taskTree>
-</tree>
+    </taskTree></tree>
