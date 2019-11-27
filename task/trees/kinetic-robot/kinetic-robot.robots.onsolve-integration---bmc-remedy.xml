@@ -7,7 +7,7 @@
         <name>OnSolve Integration - BMC Remedy</name>
         <author/>
         <notes/>
-        <lastID>97</lastID>
+        <lastID>99</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -88,7 +88,7 @@
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
-                    <task label="" type="Complete" value="">remedy_generic_retrieve_v2_91</task>
+                    <task label="" type="Complete" value="">routine_onsolve_remedy_data_retrieve_v1_99</task>
                 </dependents>
             </task>
             <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="899" y="341">
@@ -271,7 +271,7 @@ output.to_json
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_wait_v1_81</task>
-                    <task label="" type="Complete" value="">routine_onsolve_remedy_data_retrieve_v1_96</task>
+                    <task label="" type="Complete" value="">routine_onsolve_remedy_data_search_v1_98</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="902" y="430">
@@ -400,25 +400,6 @@ output.to_json
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="remedy_generic_retrieve_v2" id="remedy_generic_retrieve_v2_91" name="Get Ticket Details" x="1165" y="210">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] )%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to retrieve">&lt;%=@results['Loop Begin']['Value']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">utilities_echo_v1_92</task>
-                </dependents>
-            </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_92" name="XML to JSON" x="1166" y="331">
                 <version>1</version>
                 <configured>true</configured>
@@ -478,7 +459,23 @@ field_json.to_json
                     <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_remedy_data_retrieve_v1" id="routine_onsolve_remedy_data_retrieve_v1_96" name="Remedy Search" x="725" y="121">
+            <task definition_id="system_junction_v1" id="system_junction_v1_97" name="Junction: Robot Begin" x="165" y="13">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_remedy_data_search_v1" id="routine_onsolve_remedy_data_search_v1_98" name="Remedy Search" x="726" y="114">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -516,25 +513,28 @@ query
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Has error" type="Complete" value="!@results['Remedy Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: Remedy Timeout')">routine_onsolve_error_v1_90</task>
                     <task label="No error" type="Complete" value="@results['Remedy Search']['Handler Error Message'].nil?">system_loop_head_v1_5</task>
+                    <task label="Has error" type="Complete" value="!@results['Remedy Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: Remedy Timeout')">routine_onsolve_error_v1_90</task>
                     <task label="" type="Complete" value="">system_join_v1_82</task>
                 </dependents>
             </task>
-            <task definition_id="system_junction_v1" id="system_junction_v1_97" name="Junction: Robot Begin" x="165" y="13">
+            <task definition_id="routine_onsolve_remedy_data_retrieve_v1" id="routine_onsolve_remedy_data_retrieve_v1_99" name="Get Ticket Details" x="1165" y="210">
                 <version>1</version>
                 <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters>
+                    <parameter id="Remedy Form" label="Remedy Form" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] )%&gt;</parameter>
+                    <parameter id="Request Id" label="Request Id" menu="" required="true" tooltip="">&lt;%=@results['Loop Begin']['Value']%&gt;</parameter>
+                </parameters>
                 <messages>
                     <message type="Create"/>
                     <message type="Update"/>
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_92</task>
                 </dependents>
             </task>
         </request>

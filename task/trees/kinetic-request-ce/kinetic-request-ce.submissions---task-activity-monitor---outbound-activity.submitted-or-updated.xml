@@ -7,7 +7,7 @@
         <name>Submitted or Updated</name>
         <author/>
         <notes/>
-        <lastID>49</lastID>
+        <lastID>52</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -93,47 +93,6 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <task label="" type="Complete" value="">kinetic_agent_handler_execute_v1_1</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_3" name="Remedy Create" x="746" y="253">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%= JSON.parse( @values['Payload'] )['field_values']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="No Error" type="Complete" value="true ||&#10;@results['Remedy Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
-                    <task label="Error" type="Complete" value="false &amp;&amp; !@results['Remedy Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
-                </dependents>
-            </task>
-            <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_7" name="Remed Update" x="747" y="351">
-                <version>3</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to update">&lt;%= JSON.parse( @values['Payload'] )['request_id']%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="No Error" type="Complete" value="@results['Remedy Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
-                    <task label="Error" type="Complete" value="!@results['Remedy Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
-                </dependents>
-            </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_10" name="No Agent" x="254" y="561">
                 <version>1</version>
                 <configured>true</configured>
@@ -166,8 +125,8 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">remedy_generic_create_v2_3</task>
-                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">remedy_generic_update_v3_7</task>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">remedy_generic_update_v3_50</task>
+                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">remedy_generic_create_v2_52</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_12" name="ServiceNow" x="583" y="487">
@@ -806,6 +765,49 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
                     <task label="Error" type="Complete" value="!@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_50" name="Remed Update" x="745" y="352">
+                <version>3</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
+                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to update">&lt;%= JSON.parse( @values['Payload'] )['request_id']%&gt;</parameter>
+                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Remedy Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Remedy Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_52" name="Remedy Create" x="741" y="253">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
+                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%= JSON.parse( @values['Payload'] )['field_values']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Remedy Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Remedy Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
                 </dependents>
             </task>
         </request>

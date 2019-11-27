@@ -436,44 +436,6 @@ report_name
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_get_answers_v1_5</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_31" name="Add Remedy - WorkInfo" x="1375" y="177">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
-parameters["Work Log Form"]
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-source_data = JSON.parse( @results['Re-Get Task Activity Monitoring Values']['Source Data'] )
-
-{
-  "Incident Entry ID" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
-  "Secure Work Log" =&gt; "Yes",
-  "View Access" =&gt; "Internal",
-  "Communication Source" =&gt; "Web",
-  "z1D Previous Operation" =&gt; "SET",
-  "Status" =&gt; "Enabled",
-  "Work Log Type" =&gt; "General Information",
-  "Incident Number" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
-  "Description" =&gt; "Alerting Interim Update",
-  "Detailed Description" =&gt; @results['Assemble Work Note']['output'],
-  "Work Log Date" =&gt; Time.now().iso8601
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
             <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_32" name="Add Submission Activity" x="10" y="96">
                 <version>1</version>
                 <configured>true</configured>
@@ -637,44 +599,6 @@ work_notes.join("\n")
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_39</task>
                 </dependents>
-            </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_38" name="Add Remedy - WorkInfo - Error" x="1372" y="11">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Interim Standard Action Parameters'])
-parameters["Work Log Form"]
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-source_data = JSON.parse( @results['Re-Get Task Activity Monitoring Values']['Source Data'] )
-
-{
-  "Incident Entry ID" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
-  "Secure Work Log" =&gt; "Yes",
-  "View Access" =&gt; "Internal",
-  "Communication Source" =&gt; "Web",
-  "z1D Previous Operation" =&gt; "SET",
-  "Status" =&gt; "Enabled",
-  "Work Log Type" =&gt; "General Information",
-  "Incident Number" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
-  "Description" =&gt; "Alerting Interim Update",
-  "Detailed Description" =&gt; @results['Assemble Work Note - Error']['output'],
-  "Work Log Date" =&gt; Time.now().iso8601
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
             </task>
             <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_39" name="Update Submission Activity - Not Closed - Error" x="1134" y="12">
                 <version>1</version>

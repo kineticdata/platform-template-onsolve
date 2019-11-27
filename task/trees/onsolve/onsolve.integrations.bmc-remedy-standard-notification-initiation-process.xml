@@ -274,44 +274,6 @@ duration = JSON.parse( @source['Data'] )['Integration Configuration']['Task Hist
                     <task label="" type="Complete" value="">system_junction_v1_100</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_96" name="Update Remedy - Alerting Initiated" x="804" y="474">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
-parameters["Work Log Form"]
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-source_data = JSON.parse( @source['Data'] )['Source Data']
-
-{
-  "Incident Entry ID" =&gt; JSON.parse( @source['Data'] )['Source Id'],
-  "Secure Work Log" =&gt; "Yes",
-  "View Access" =&gt; "Internal",
-  "Communication Source" =&gt; "Web",
-  "z1D Previous Operation" =&gt; "SET",
-  "Status" =&gt; "Enabled",
-  "Work Log Type" =&gt; "General Information",
-  "Incident Number" =&gt; source_data[integration_config['External Unique Key Field Name']],
-  "Description" =&gt; "Alerting Initiated",
-  "Detailed Description" =&gt; @results['Work Note Content']['output'],
-  "Work Log Date" =&gt; Time.now().iso8601
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_97" name="Notes / Issues" x="178.3000030517578" y="30.416671752929688">
                 <version>1</version>
                 <configured>true</configured>
@@ -512,52 +474,6 @@ comments
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_105" name="Update Remedy - Alerting Initiated - Error" x="803" y="10">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
-parameters["Work Log Form"]
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-source_data = JSON.parse( @source['Data'] )['Source Data']
-notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
-notification_method = notification_method_options[integration_config['Notification Method']]
-
-work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
-results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
-results['error'].each{|key,value|
-  work_notes.push( "#{key}: #{value}" )
-}
-
-{
-  "Incident Entry ID" =&gt; JSON.parse( @source['Data'] )['Source Id'],
-  "Secure Work Log" =&gt; "Yes",
-  "View Access" =&gt; "Internal",
-  "Communication Source" =&gt; "Web",
-  "z1D Previous Operation" =&gt; "SET",
-  "Status" =&gt; "Enabled",
-  "Work Log Type" =&gt; "General Information",
-  "Incident Number" =&gt; source_data[integration_config['External Unique Key Field Name']],
-  "Description" =&gt; "Alerting Initiated - Error",
-  "Detailed Description" =&gt; work_notes.join("\n"),
-  "Work Log Date" =&gt; Time.now().iso8601
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_106" name="Dev Notes - 01" x="985" y="109">
                 <version>1</version>
                 <configured>true</configured>
@@ -619,32 +535,6 @@ work_notes.join(" ")+"."
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_101</task>
                 </dependents>
-            </task>
-            <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_108" name="Update Remedy Ticket" x="805" y="635">
-                <version>3</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-integration_config['Schema Name']
-%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to update">&lt;%=
-JSON.parse( @source['Data'] )['Source Id']
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-integration_config['Fields to Update Upon Notification']
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
             </task>
             <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_111" name="MIR3 One Step Notification" x="535" y="214">
                 <version>1</version>

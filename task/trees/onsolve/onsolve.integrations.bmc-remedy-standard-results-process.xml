@@ -7,7 +7,7 @@
         <name>BMC Remedy Standard Results Process</name>
         <author/>
         <notes/>
-        <lastID>51</lastID>
+        <lastID>53</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -311,7 +311,7 @@ output = {
                 </messages>
                 <dependents>
                     <task label="No Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] != &quot;Yes&quot; || ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] != &quot;RESPONDED&quot; || JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? || JSON.parse( @results['Assignment Logic']['output'] )['responderType'] == &quot;0&quot; )">system_junction_v1_28</task>
-                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_remedy_data_retrieve_v1_51</task>
+                    <task label="Expects Assignment" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;integration_config['Assign Responder'] == &quot;Yes&quot; &amp;&amp; ( JSON.parse( @results['Assignment Logic']['output'] )['notificationStatus'] == &quot;RESPONDED&quot; &amp;&amp; !JSON.parse( @results['Assignment Logic']['output'] )['responderType'].nil? &amp;&amp; JSON.parse( @results['Assignment Logic']['output'] )['responderType'] != &quot;0&quot; )">routine_onsolve_remedy_data_search_v1_52</task>
                 </dependents>
             </task>
             <task definition_id="system_junction_v1" id="system_junction_v1_28" name="Junction 2" x="923" y="152">
@@ -353,7 +353,7 @@ if assignment_logic_output['notificationStatus'] == "RESPONDED" &amp;&amp; !['Br
   if integration_config['Assign Responder'] == "Yes"
     if @results['Get Remedy User'].has_key?('Remedy Login ID') &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?
         # If successfully assigned
-        if @results.has_key? ('Assign Remedy') #&amp;&amp; @results['Assign Remedy']['Handler Error Message'].nil?
+        if @results.has_key? ('Assign Remedy') &amp;&amp; @results['Assign Remedy']['Handler Error Message'].nil?
           # Assignment successful
           assignment_status = "completed and assigned #{assignment_logic_output['responderName']} as the responder accepting the issue with the response: #{assignment_logic_output['responderResponse']}."
         else
@@ -419,74 +419,6 @@ work_note_text
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_noop_v1_18</task>
-                </dependents>
-            </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_38" name="Add Remedy - WorkInfo" x="1498" y="197">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Result Standard Action Parameters'])
-parameters["Work Log Form"]
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-source_data = JSON.parse( @results['Get Task Activity Monitoring Values']['Source Data'] )
-assignment_logic_output = JSON.parse( @results['Assignment Logic']['output'] )
-work_note_description = "Alerting Result: #{assignment_logic_output['notificationStatus']}"
-
-{
-  "Incident Entry ID" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
-  "Secure Work Log" =&gt; "Yes",
-  "View Access" =&gt; "Internal",
-  "Communication Source" =&gt; "Web",
-  "z1D Previous Operation" =&gt; "SET",
-  "Status" =&gt; "Enabled",
-  "Work Log Type" =&gt; "General Information",
-  "Incident Number" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
-  "Description" =&gt; work_note_description,
-  "Detailed Description" =&gt; @results['Assemble Work Note']['output'],
-  "Work Log Date" =&gt; Time.now().iso8601
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
-            <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_40" name="Assign Remedy" x="924" y="297">
-                <version>3</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%=
-integration_config = JSON.parse(@source['Data'])['Integration Configuration']
-integration_config['Schema Name']
-%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to update">&lt;%=@results['Get Task Activity Monitoring Values']['Source Id']%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-{
-  "Assignee Login ID" =&gt; @results['Get Remedy User']['Remedy Login ID'],
-  "Assignee" =&gt; @results['Get Remedy User']['Full Name']
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_junction_v1_28</task>
                 </dependents>
             </task>
             <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_42" name="Add Submission Activity" x="11" y="109">
@@ -588,46 +520,6 @@ work_notes.join("\n")
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_47</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_45" name="Add Remedy - WorkInfo - Error" x="1500" y="-50">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>true</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-parameters = JSON.parse(integration_config['Result Standard Action Parameters'])
-parameters["Work Log Form"]
-%&gt;</parameter>
-                    <parameter id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-source_data = JSON.parse( @results['Get Task Activity Monitoring Values']['Source Data'] ) 
-assignment_logic_output = JSON.parse( @results['Assignment Logic']['output'] )
-work_note_description = "Alerting Result - Error"
-
-{
-  "Incident Entry ID" =&gt; @results['Get Task Activity Monitoring Values']['Source Id'],
-  "Secure Work Log" =&gt; "Yes",
-  "View Access" =&gt; "Internal",
-  "Communication Source" =&gt; "Web",
-  "z1D Previous Operation" =&gt; "SET",
-  "Status" =&gt; "Enabled",
-  "Work Log Type" =&gt; "General Information",
-  "Incident Number" =&gt; @results['Get Task Activity Monitoring Values']['Source Reference Id'],
-  "Description" =&gt; work_note_description,
-  "Detailed Description" =&gt; @results['Assemble Work Note - Error']['output'],
-  "Work Log Date" =&gt; Time.now().iso8601
-}.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_46" name="OnSolve Error Notification" x="452" y="264">
                 <version>1</version>
                 <configured>true</configured>
@@ -696,91 +588,6 @@ Run Id: &lt;%=@run['Id']%&gt;</parameter>
                 <dependents>
                     <task label="If result config" type="Complete" value="JSON.parse( @source['Data'] )['Integration Configuration']['Notification Result Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_49</task>
                 </dependents>
-            </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_48" name="Unstreamlined / old Assemble Work Note code" x="1078" y="215">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
-integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
-notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
-notification_method = notification_method_options[integration_config['Notification Method']]
-assignment_logic_output = JSON.parse( @results['Assignment Logic']['output'] )
-report_output = JSON.parse(@results['Get Integration Report Results']['Output'])
-report_result = report_output['execute_custom_report_response']['report_detail']
-headers = report_result['header']['column_name']
-rows = report_result['row'] if report_result['row'].is_a? (Array)
-rows = [report_result['row']] if report_result['row'].is_a? (Hash)
-
-assignment_status = nil
-### Need to 1: Determine if they want it assigned, or the type of notification was a callout
-# Determine if notification was designed to capture a responder.
-#if ["firstResponseInfo","calloutInfo"].include? integration_config['Notification Method']  # This line is previous logic.
-if integration_config['Assign Responder'] == "Yes" &amp;&amp; assignment_logic_output['notificationStatus'] != "TERMINATED" &amp;&amp; assignment_logic_output['notificationStatus'] != "TIME_OUT"
-  # Determine if this configuration expects a responder
-  if !assignment_logic_output['responderType'].nil? &amp;&amp; assignment_logic_output['responderType'] != "0"
-    # Determine if assignment was RESPONDED or TIME_OUT
-    if assignment_logic_output['notificationStatus'] == "RESPONDED"
-      # If has error in looking up user (couldn't find them), or in assignment (person not in group for example)
-      # indicate failure to assign
-      #if @results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].empty?
-      if !@results['Get Remedy User']['Remedy Login ID'].empty?
-        # If successfully assigned
-        if @results.has_key? ('Assign Remedy') #&amp;&amp; @results['Assign Remedy']['Handler Error Message'].nil?
-          # Assignment successful
-          #assignment_status = "Successfully assigned to #{assignment_logic_output['responderValue']}."
-          assignment_status = "completed and assigned #{assignment_logic_output['responderValue']} as the responder accepting the issue with the response: #{assignment_logic_output['notificationStatus']}."
-        else
-          # Assignment unsuccessful
-          #assignment_status = "Assignment to #{assignment_logic_output['responderValue']} was unsuccessful. User not a member of current assignment group?"
-          assignment_status = "completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['notificationStatus']} - HOWEVER, assignment to that Remedy user was unsuccessful."
-        end
-      else
-        #assignment_status = "Assignment to #{assignment_logic_output['responderValue']} was unsuccessful.  Could not find this user."
-        assignment_status = "completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['notificationStatus']} - HOWEVER, assignment to that Remedy user was unsuccessful."
-      end
-    #elsif assignment_logic_output['notificationStatus'] == "TIME_OUT"
-      #assignment_status = "Notification time out; could not attempt ticket assignment"
-    end
-  else
-    #assignment_status = "Assignment not attempted per configuration."
-    assignment_status = "completed and #{assignment_logic_output['responderValue']} accepted the issue with the response: #{assignment_logic_output['notificationStatus']}."
-  end
-elsif assignment_logic_output['notificationStatus'] == "TIME_OUT"
-  assignment_status = "completed but no responder was identified."
-elsif assignment_logic_output['notificationStatus'] == "TERMINATED"
-  assignment_status = "was manually cancelled by an administrator."
-else
-  ## No assignment expected; commented out next line.
-  #assignment_status = "Assignment not expected."
-end
-
-#work_note_text = "Alerting Result (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']}): #{assignment_logic_output['notificationStatus']}"
-work_note_text = "#{notification_method} Notification \"#{integration_config['Notification Message Template']}\" (UUID: #{@results['Get Task Activity Monitoring Values']['Onsolve Id']})"
-work_note_text += " #{assignment_status}" if !assignment_status.nil?
-
-
-if ["Standard Reporting","Custom Action"].include?( integration_config['Notification Result Action'] )
-  work_note_text += "  Status update through completion:" if (!assignment_status.nil? &amp;&amp; assignment_logic_output['notificationStatus'] != "TERMINATED")
-  work_note_text += "  Status update through termination:" if (!assignment_status.nil? &amp;&amp; assignment_logic_output['notificationStatus'] == "TERMINATED")
-  display_line_index = headers.find_index('DISPLAYLINE');
-  rows.each{|row|
-    work_note_text += "\n#{row['value'][display_line_index]}"
-  }
-end
-
-work_note_text
-%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
             </task>
             <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_49" name="Outbound Activity - Add Remedy - WorkInfo - Error" x="1411" y="-11">
                 <version>1</version>
@@ -890,7 +697,7 @@ source_data = JSON.parse( @source['Data'] )['Source Data']
                 </messages>
                 <dependents/>
             </task>
-            <task definition_id="routine_onsolve_remedy_data_retrieve_v1" id="routine_onsolve_remedy_data_retrieve_v1_51" name="Get Remedy User" x="731" y="297">
+            <task definition_id="routine_onsolve_remedy_data_search_v1" id="routine_onsolve_remedy_data_search_v1_52" name="Get Remedy User" x="726" y="286">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -934,8 +741,36 @@ query
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="No Error Message and not empty" type="Complete" value="#@results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;@results['Get Remedy User'].has_key?('Remedy Login ID') &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">remedy_generic_update_v3_40</task>
                     <task label="Error Message or no user" type="Complete" value="#!@results['Get Remedy User']['Handler Error Message'].nil? || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;#@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;!@results['Get Remedy User'].has_key?('Remedy Login ID') || @results['Get Remedy User']['Remedy Login ID'].to_s.empty?">system_junction_v1_28</task>
+                    <task label="No Error Message and not empty" type="Complete" value="#@results['Get Remedy User']['Handler Error Message'].nil? &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?&#10;@results['Get Remedy User'].has_key?('Remedy Login ID') &amp;&amp; !@results['Get Remedy User']['Remedy Login ID'].to_s.empty?">routine_onsolve_remedy_data_update_v1_53</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_remedy_data_update_v1" id="routine_onsolve_remedy_data_update_v1_53" name="Assign Remedy" x="924" y="294">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Remedy Form" label="Remedy Form" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse(@source['Data'])['Integration Configuration']
+integration_config['Schema Name']
+%&gt;</parameter>
+                    <parameter id="Request Id" label="Request Id" menu="" required="true" tooltip="Request ID (Field 1) of the record to update">&lt;%=@results['Get Task Activity Monitoring Values']['Source Id']%&gt;</parameter>
+                    <parameter id="Field Values" label="Field Values" menu="" required="false" tooltip="JSON mapping of field values">&lt;%=
+{
+  "Assignee Login ID" =&gt; @results['Get Remedy User']['Remedy Login ID'],
+  "Assignee" =&gt; @results['Get Remedy User']['Full Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_28</task>
                 </dependents>
             </task>
         </request>

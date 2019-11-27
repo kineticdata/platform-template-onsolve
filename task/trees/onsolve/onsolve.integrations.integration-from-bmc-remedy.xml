@@ -7,7 +7,7 @@
         <name>Integration From BMC Remedy</name>
         <author/>
         <notes/>
-        <lastID>70</lastID>
+        <lastID>71</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -42,7 +42,7 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">remedy_generic_retrieve_v2_69</task>
+                    <task label="" type="Complete" value="">routine_onsolve_remedy_data_retrieve_v1_71</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="985" y="131">
@@ -157,25 +157,6 @@
                     <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_retrieve_v2" id="remedy_generic_retrieve_v2_69" name="Get Remedy Record Data" x="424" y="102">
-                <version>2</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%= JSON.parse( @source['Data'] )['form']%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to retrieve">&lt;%= JSON.parse( @source['Data'] )['field_1']%&gt;</parameter>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents>
-                    <task label="" type="Complete" value="">utilities_echo_v1_70</task>
-                </dependents>
-            </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_70" name="XML to JSON" x="570" y="120">
                 <version>1</version>
                 <configured>true</configured>
@@ -213,6 +194,25 @@ field_json.to_json
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_onsolve_integration_servicenow_process_incoming_data_v1_67</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_remedy_data_retrieve_v1" id="routine_onsolve_remedy_data_retrieve_v1_71" name="Get Remedy Record Data" x="422" y="103">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Remedy Form" label="Remedy Form" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['form']%&gt;</parameter>
+                    <parameter id="Request Id" label="Request Id" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['field_1']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_70</task>
                 </dependents>
             </task>
         </request>
