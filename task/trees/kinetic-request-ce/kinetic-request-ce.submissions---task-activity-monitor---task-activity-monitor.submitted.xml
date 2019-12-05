@@ -111,28 +111,6 @@ duration = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['T
                     <task label="" type="Complete" value="">system_noop_v1_17</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_40" name="Add Activity Record" x="462" y="22">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."/>
-                    <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%= @submission['Id']%&gt;</parameter>
-                    <parameter id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiated</parameter>
-                    <parameter id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."/>
-                    <parameter id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
-                    <parameter id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data)."/>
-                </parameters>
-                <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
-                </messages>
-                <dependents/>
-            </task>
             <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_42" name="Update Submission: Deferral Token" x="460" y="111">
                 <version>1</version>
                 <configured>true</configured>
