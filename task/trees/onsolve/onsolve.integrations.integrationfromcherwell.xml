@@ -7,7 +7,7 @@
         <name>IntegrationFromCherwell</name>
         <author/>
         <notes/>
-        <lastID>71</lastID>
+        <lastID>74</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -42,10 +42,11 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">routine_onsolve_cherwell_data_retrieve_v1_69</task>
+                    <task label="Found" type="Complete" value="!@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_cherwell_data_retrieve_v1_69</task>
+                    <task label="Not found" type="Complete" value="@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_error_v1_74</task>
                 </dependents>
             </task>
-            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="942" y="132">
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="992" y="378">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -111,7 +112,7 @@
                     <task label="All Items" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="808" y="99">
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="829" y="355">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -154,7 +155,8 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">routine_onsolve_integration_cherwell_process_incoming_data_v1_70</task>
+                    <task label="Successful" type="Complete" value="@results['Get Cherwell Object']['Handler Error Message'].to_s.empty?">routine_onsolve_integration_cherwell_process_incoming_data_v1_70</task>
+                    <task label="Has Error" type="Complete" value="!@results['Get Cherwell Object']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_72</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_integration_cherwell_process_incoming_data_v1" id="routine_onsolve_integration_cherwell_process_incoming_data_v1_70" name="Process Data" x="656" y="121">
@@ -174,7 +176,7 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_71" name="Dev Notes" x="252" y="93">
@@ -192,6 +194,78 @@
                     <message type="Complete"/>
                 </messages>
                 <dependents/>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_72" name="Get Cherwell Object Error Notifiction" x="520" y="240">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Could not retrieve object details from Cherwell.</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Kinetic received an inbound integration from Cherwell, but could not retrieve additional ticket information.  No notification was attempted.
+
+Received data:
+&lt;%=@source['Data']%&gt;</parameter>
+                    <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"/>
+                    <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
+                    <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_73" name="Junction" x="664" y="388">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters/>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_74" name="Get Integration Config Error Notifiction" x="352" y="342">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Could not retrieve Kinetic configuration record.</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Kinetic received an inbound integration from Cherwell, but could not retrieve the related integration configuration record. No notification could be attempted.
+
+The 'action' value could be missing from the source data, or the value of 'action' has no correlating integration entry.
+
+Received data:
+&lt;%=@source['Data']%&gt;</parameter>
+                    <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"/>
+                    <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"/>
+                    <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""/>
+                </parameters>
+                <messages>
+                    <message type="Create"/>
+                    <message type="Update"/>
+                    <message type="Complete"/>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
             </task>
         </request>
     </taskTree>
