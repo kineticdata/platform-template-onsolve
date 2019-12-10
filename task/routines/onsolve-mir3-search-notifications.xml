@@ -1,0 +1,236 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_mir3_search_notifications_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>OnSolve MIR3 Search Notifications</name>
+        <author></author>
+        <notes></notes>
+        <lastID>12</lastID>
+        <taskDefinition id="routine_onsolve_mir3_search_notifications_v1" name="OnSolve MIR3 Search Notifications" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Title" label="Title" required="true" tooltip="The title of the notification to be found and retrieved"></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"></result>
+                <result name="Success" tooltip="'true' or 'false'"></result>
+                <result name="Notification Method" tooltip="The notification method extracted from the notification"></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_1</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_1" name="Placeholder: Validate Operation?" x="10" y="114">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip=""># Do we need to perform any validation to be sure the operation can continue?</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_2" name="Generate XML Body" x="177" y="121">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+require 'rexml/document'
+
+doc = REXML::Document.new
+
+wrapper = doc.add_element 'searchNotifications'
+vesion = wrapper.add_element 'apiVersion'
+vesion.text = "4.14"
+includeDetail = wrapper.add_element 'includeDetail'
+includeDetail.text = "true"
+excludeRecipients = wrapper.add_element 'excludeRecipients'
+excludeRecipients.text = "false"
+query = wrapper.add_element 'query'
+el_or = query.add_element 'or'
+notificationTitle = el_or.add_element 'notificationTitle'
+#notificationTitle = query.add_element 'notificationTitle'
+notificationTitle.text = "#{@inputs['Title']}"
+
+output = "" 
+doc.write(output)
+#To pretty print, do this -- but it isn't perfect because of the 'wrapper' element that gets removed
+#doc.write(output, 2)
+
+output
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_10</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_4" name="Extract output" x="506" y="121">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+require 'rexml/document'
+
+doc = REXML::Document.new(@results['MIR3 Call: Search Notifications']['output'])
+
+handler_error = @results['MIR3 Call: Search Notifications']['Handler Error Message']
+
+success = doc.elements['//success']
+
+notification_method = nil
+notification_method = "broadcastInfo" if !doc.elements['//broadcastInfo'].nil?
+notification_method = "bulletinBoardInfo" if !doc.elements['//bulletinBoardInfo'].nil?
+notification_method = "firstResponseInfo" if !doc.elements['//firstResponseInfo'].nil?
+notification_method = "calloutInfo" if !doc.elements['//calloutInfo'].nil?
+
+return_count = doc.elements['//returnCount']
+
+
+output = {}
+if success &amp;&amp; success.text == "true" &amp;&amp; return_count.text.to_i &gt; 0
+  notification_details = doc.elements['//notificationDetail']
+  output['output'] = notification_details.to_s
+  output['notification_method'] = notification_method
+  output['success'] = "true"
+elsif success &amp;&amp; success.text == "true" &amp;&amp; return_count.text.to_i == 0
+  output['output'] = "Notification Title: #{@inputs['Title']} not found."
+  output['success'] = "false"
+elsif success &amp;&amp; success.text == "true"
+  raise "Unexpected successful result (more than one match?): \n#{doc.to_s}"
+elsif !handler_error.nil? &amp;&amp; handler_error.include?("ConnectTimeout")
+  output['success'] = "false"
+  output['output'] = "Connect Timeout"
+else
+  output['success'] = "false"
+  output['output'] = doc.to_s
+  #raise "Unsuccessful: \n#{doc.to_s}"
+end
+
+output.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_11</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_10" name="MIR3 Call: Search Notifications" x="341" y="112">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">XML</parameter>
+                    <parameter id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">search_notifications_op</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_4</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_11" name="Return" x="664" y="132">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%=JSON.parse(@results['Extract output']['output'])['output']%&gt;</parameter>
+                    <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Extract output']['output'])['success']%&gt;</parameter>
+                    <parameter id="Notification Method" label="Notification Method" menu="" required="false" tooltip="The notification method extracted from the notification">&lt;%=JSON.parse(@results['Extract output']['output'])['notification_method']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Generate XML Body - Original" x="177" y="192">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+require 'rexml/document'
+
+doc = REXML::Document.new
+
+wrapper = doc.add_element 'wrapper'
+vesion = wrapper.add_element 'apiVersion'
+vesion.text = "4.14"
+includeDetail = wrapper.add_element 'includeDetail'
+includeDetail.text = "true"
+excludeRecipients = wrapper.add_element 'excludeRecipients'
+excludeRecipients.text = "false"
+query = wrapper.add_element 'query'
+el_or = query.add_element 'or'
+notificationTitle = el_or.add_element 'notificationTitle'
+#notificationTitle = query.add_element 'notificationTitle'
+notificationTitle.text = "#{@inputs['Title']}"
+
+output = "" 
+doc.write(output)
+#To pretty print, do this -- but it isn't perfect because of the 'wrapper' element that gets removed
+#doc.write(output, 2)
+
+output
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>
