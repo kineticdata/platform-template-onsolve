@@ -18,11 +18,11 @@
                 <parameters/>
                 <messages/>
                 <dependents>
-                    <task label="Test" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;test&quot;">routine_onsolve_integration_test_process_incoming_data_v1_74</task>
-                    <task label="Cherwell" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;cherwell&quot;">routine_onsolve_inbound_integration_cherwell_v1_76</task>
-                    <task label="ServiceNow" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;servicenow&quot;">routine_onsolve_inbound_integration_servicenow_v1_77</task>
-                    <task label="BMC Remedy" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;bmc-remedy&quot;">routine_onsolve_inbound_integration_remedy_v1_78</task>
-                    <task label="OBM / OMi" type="Complete" value="JSON.parse( @source['Data'].downcase )['source'] == &quot;obm&quot;">routine_onsolve_inbound_integration_obm_v1_79</task>
+                    <task label="Test" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;test&quot;">routine_onsolve_integration_test_process_incoming_data_v1_74</task>
+                    <task label="Cherwell" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;cherwell&quot;">routine_onsolve_inbound_integration_cherwell_v1_76</task>
+                    <task label="ServiceNow" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;servicenow&quot;">routine_onsolve_inbound_integration_servicenow_v1_77</task>
+                    <task label="BMC Remedy" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;bmc-remedy&quot;">routine_onsolve_inbound_integration_remedy_v1_78</task>
+                    <task label="OBM / OMi" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;obm&quot;">routine_onsolve_inbound_integration_obm_v1_79</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1069" y="297">
@@ -117,7 +117,7 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                    <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
@@ -135,8 +135,8 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['action']%&gt;</parameter>
-                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
@@ -154,8 +154,8 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['action']%&gt;</parameter>
-                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
@@ -173,8 +173,8 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['action']%&gt;</parameter>
-                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
@@ -192,8 +192,8 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['action']%&gt;</parameter>
-                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'] )['data'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
                     <message type="Create"/>
