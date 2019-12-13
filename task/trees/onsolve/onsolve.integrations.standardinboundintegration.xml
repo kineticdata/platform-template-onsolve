@@ -128,14 +128,14 @@
                     <task label="" type="Complete" value="">system_join_v1_69</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_inbound_integration_cherwell_v1" id="routine_onsolve_inbound_integration_cherwell_v1_76" name="Cherwell" x="507" y="71">
+            <task definition_id="routine_onsolve_inbound_integration_cherwell_v1" id="routine_onsolve_inbound_integration_cherwell_v1_76" name="Cherwell" x="506" y="66">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action']%&gt;</parameter>
                     <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
@@ -154,7 +154,7 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action']%&gt;</parameter>
                     <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
@@ -173,7 +173,7 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action']%&gt;</parameter>
                     <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
@@ -192,7 +192,7 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action'].to_json%&gt;</parameter>
+                    <parameter id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action']%&gt;</parameter>
                     <parameter id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
