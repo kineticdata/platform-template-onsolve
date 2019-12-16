@@ -158,10 +158,7 @@
   "platformComponents": {
     "agents": [
 
-    ],
-    "task": {
-      "url": "https://onsolve-kubernetes-migration.kinops.io/kinetic-task"
-    }
+    ]
   },
   "resetPasswordPage": null,
   "securityPolicies": [
