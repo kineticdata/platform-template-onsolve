@@ -1,25 +1,25 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_onsolve_mir3_stop_notification_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_mir3_stop_notification_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
         <name>OnSolve MIR3 Stop Notification</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>16</lastID>
         <taskDefinition id="routine_onsolve_mir3_stop_notification_v1" name="OnSolve MIR3 Stop Notification" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="UUIDs JSON" label="UUIDs JSON" required="true" tooltip="A JSON object of open MIR3 Notification UUIDs"/>
+                <parameter id="UUIDs JSON" label="UUIDs JSON" required="true" tooltip="A JSON object of open MIR3 Notification UUIDs"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
+            <handler name="system_tree_call" version="1"></handler>
             <results format="xml">
-                <result name="Success" tooltip="'true' or 'false'"/>
-                <result name="Output" tooltip="The output from the call - either the XML/JSON block, or the error message"/>
-                <result name="Terminated Notifications" tooltip="JSON object of terminated UUIDs"/>
+                <result name="Success" tooltip="'true' or 'false'"></result>
+                <result name="Output" tooltip="The output from the call - either the XML/JSON block, or the error message"></result>
+                <result name="Terminated Notifications" tooltip="JSON object of terminated UUIDs"></result>
             </results>
         </taskDefinition>
         <request>
@@ -29,8 +29,8 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
-                <messages/>
+                <parameters></parameters>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_2</task>
                 </dependents>
@@ -67,9 +67,9 @@ output
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
@@ -116,9 +116,9 @@ output.to_json
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_16</task>
@@ -137,9 +137,9 @@ output.to_json
                     <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">terminate_notifications_op</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_4</task>
@@ -157,11 +157,11 @@ output.to_json
                     <parameter id="Terminated Notifications" label="Terminated Notifications" menu="" required="false" tooltip="JSON object of terminated UUIDs">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Terminated Notifications'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

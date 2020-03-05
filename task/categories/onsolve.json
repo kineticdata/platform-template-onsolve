@@ -10,9 +10,18 @@
   ],
   "trees": [
     "routine_delete_task_runs_v1",
+    "routine_onsolve_cherwell_determine_user",
     "routine_onsolve_error_v1",
     "routine_onsolve_find_completed_notification_records_v1",
     "routine_onsolve_get_active_integrations_v1",
+    "routine_onsolve_inbound_integration_cherwell_v1",
+    "routine_onsolve_inbound_integration_obm_v1",
+    "routine_onsolve_inbound_integration_remedy_v1",
+    "routine_onsolve_inbound_integration_servicenow_v1",
+    "routine_onsolve_inbound_integration_sql_database",
+    "routine_onsolve_integration__sql_database__process_incoming_data",
+    "routine_onsolve_integration_test_process_incoming_data_v1",
+    "routine_onsolve_sql_database_call",
     "routine_onsolve_task_activity_monitor_submission_count_v1"
   ]
 }

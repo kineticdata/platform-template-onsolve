@@ -1,0 +1,272 @@
+<tree schema_version="1.0">
+    <sourceName>OnSolve</sourceName>
+    <sourceGroup>Integrations</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>IntegrationFromCherwell</name>
+        <author></author>
+        <notes></notes>
+        <lastID>74</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="351" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Query</parameter><!-- Retrieve By Query parameters -->
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query">cherwell</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval">values[Name]</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission">values[Name]="&lt;%=JSON.parse( @source['Data'] )['action']%&gt;"</parameter><!-- Retrieve By Id parameters -->
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved."></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="Found" type="Complete" value="!@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_cherwell_data_retrieve_v1_69</task>
+                    <task label="Not found" type="Complete" value="@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_error_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="992" y="378">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_22" name="Get Onsolve Product Setting" x="15" y="99">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Onsolve Product</parameter>
+                    <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value"></parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."></parameter>
+                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."></parameter>
+                    <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_23</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_23" name="Get Polling Artifact Cleanup Setting" x="147" y="99">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Polling Artifact Cleanup Days</parameter>
+                    <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value">30</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."></parameter>
+                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."></parameter>
+                    <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="All Items" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="829" y="355">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."></parameter>
+                    <parameter id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%={
+  "Task Run Id" =&gt; @run['Id'],
+  "Delete After Date Time" =&gt; (Time.now + (86400 * (@results['Get Polling Artifact Cleanup Setting']['Value']).to_i)).iso8601
+}.to_json%&gt;</parameter>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_cherwell_data_retrieve_v1" id="routine_onsolve_cherwell_data_retrieve_v1_69" name="Get Cherwell Object" x="503" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['business_object_name']%&gt;</parameter>
+                    <parameter id="Object Id" label="Object Id" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['business_object_id']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="Successful" type="Complete" value="@results['Get Cherwell Object']['Handler Error Message'].to_s.empty?">routine_onsolve_integration_cherwell_process_incoming_data_v1_70</task>
+                    <task label="Has Error" type="Complete" value="!@results['Get Cherwell Object']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_72</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration_cherwell_process_incoming_data_v1" id="routine_onsolve_integration_cherwell_process_incoming_data_v1_70" name="Process Data" x="656" y="121">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=@results['Get Cherwell Object']['JSON Results']%&gt;</parameter>
+                    <parameter id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_71" name="Dev Notes" x="252" y="93">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="input" label="Input" menu="" required="true" tooltip="">Add Actions here if incoming data needs to do multiple things or could trigger special work flows.  Evaluate based on the source data's 'action' value.</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_72" name="Get Cherwell Object Error Notifiction" x="520" y="240">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Could not retrieve object details from Cherwell.</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Kinetic received an inbound integration from Cherwell, but could not retrieve additional ticket information.  No notification was attempted.
+
+Received data:
+&lt;%=@source['Data']%&gt;</parameter>
+                    <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_73" name="Junction" x="664" y="388">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_74" name="Get Integration Config Error Notifiction" x="352" y="342">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Could not retrieve Kinetic configuration record.</parameter>
+                    <parameter id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Kinetic received an inbound integration from Cherwell, but could not retrieve the related integration configuration record. No notification could be attempted.
+
+The 'action' value could be missing from the source data, or the value of 'action' has no correlating integration entry.
+
+Received data:
+&lt;%=@source['Data']%&gt;</parameter>
+                    <parameter id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

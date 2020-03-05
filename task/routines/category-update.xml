@@ -1,26 +1,26 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_kinetic_category_update_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="1">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kinetic_category_update_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="1">
         <name>Category Update</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>5</lastID>
         <taskDefinition id="routine_kinetic_category_update_v1" name="Category Update" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="The slug of the kapp to update the category in"/>
-                <parameter id="Current Slug" label="Current Slug" required="true" tooltip="The categories current slug"/>
-                <parameter id="Updated - Name" label="Updated - Name" required="false" tooltip="The updated attribute definition name - may be omitted"/>
-                <parameter id="Updated - Slug" label="Updated - Slug" required="false" tooltip="The updated slug - may be omitted"/>
-                <parameter id="Updated - Attributes Map JSON" label="Updated - Attributes Map JSON" required="false" tooltip="A JSON Map of Attributes to Update"/>
+                <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="The slug of the kapp to update the category in"></parameter>
+                <parameter id="Current Slug" label="Current Slug" required="true" tooltip="The categories current slug"></parameter>
+                <parameter id="Updated - Name" label="Updated - Name" required="false" tooltip="The updated attribute definition name - may be omitted"></parameter>
+                <parameter id="Updated - Slug" label="Updated - Slug" required="false" tooltip="The updated slug - may be omitted"></parameter>
+                <parameter id="Updated - Attributes Map JSON" label="Updated - Attributes Map JSON" required="false" tooltip="A JSON Map of Attributes to Update"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
-            <results format="xml"/>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml"></results>
         </taskDefinition>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="41" y="71">
@@ -29,11 +29,11 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_core_api_v1_1</task>
@@ -59,9 +59,9 @@
  data.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['API']['Handler Error Message'].to_s.empty?">system_tree_return_v1_2</task>
@@ -74,13 +74,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_handler_failure_error_process_v1" id="routine_handler_failure_error_process_v1_3" name="Error Process" x="517" y="66">
                 <version>1</version>
@@ -95,9 +95,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Inputs JSON" label="Inputs JSON" menu="" required="false" tooltip="">&lt;%=@inputs.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_category_update_v1_4</task>
@@ -117,9 +117,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Updated - Attributes Map JSON" label="Updated - Attributes Map JSON" menu="" required="false" tooltip="A JSON Map of Attributes to Update">&lt;%=@results['Error Process']['Updated - Attributes Map JSON']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_5</task>
@@ -131,13 +131,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

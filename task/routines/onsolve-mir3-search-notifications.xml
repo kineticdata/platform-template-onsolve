@@ -1,25 +1,25 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_onsolve_mir3_search_notifications_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_mir3_search_notifications_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
         <name>OnSolve MIR3 Search Notifications</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>12</lastID>
         <taskDefinition id="routine_onsolve_mir3_search_notifications_v1" name="OnSolve MIR3 Search Notifications" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Title" label="Title" required="true" tooltip="The title of the notification to be found and retrieved"/>
+                <parameter id="Title" label="Title" required="true" tooltip="The title of the notification to be found and retrieved"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
+            <handler name="system_tree_call" version="1"></handler>
             <results format="xml">
-                <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"/>
-                <result name="Success" tooltip="'true' or 'false'"/>
-                <result name="Notification Method" tooltip="The notification method extracted from the notification"/>
+                <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"></result>
+                <result name="Success" tooltip="'true' or 'false'"></result>
+                <result name="Notification Method" tooltip="The notification method extracted from the notification"></result>
             </results>
         </taskDefinition>
         <request>
@@ -29,8 +29,8 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
-                <messages/>
+                <parameters></parameters>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_1</task>
                 </dependents>
@@ -45,9 +45,9 @@
                     <parameter id="input" label="Input" menu="" required="true" tooltip=""># Do we need to perform any validation to be sure the operation can continue?</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_2</task>
@@ -87,9 +87,9 @@ output
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">mir3_generic_call_v1_10</task>
@@ -144,9 +144,9 @@ output.to_json
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_11</task>
@@ -165,9 +165,9 @@ output.to_json
                     <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">search_notifications_op</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_4</task>
@@ -185,11 +185,11 @@ output.to_json
                     <parameter id="Notification Method" label="Notification Method" menu="" required="false" tooltip="The notification method extracted from the notification">&lt;%=JSON.parse(@results['Extract output']['output'])['notification_method']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Generate XML Body - Original" x="177" y="192">
                 <version>1</version>
@@ -225,11 +225,11 @@ output
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

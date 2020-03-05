@@ -1,28 +1,28 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_kinetic_kapp_create_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="1">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kinetic_kapp_create_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="1">
         <name>Kapp Create</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>5</lastID>
         <taskDefinition id="routine_kinetic_kapp_create_v1" name="Kapp Create" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Name" label="Name" required="true" tooltip="The Kapps Name"/>
-                <parameter id="Slug" label="Slug" required="true" tooltip="The Kapps Slug"/>
-                <parameter id="After Logout Path" label="After Logout Path" required="false" tooltip="The path in which users will be routed upon logout"/>
-                <parameter id="Attributes Map JSON" label="Attributes Map JSON" required="false" tooltip="JSON representation of the attributes associated with the Kapp"/>
-                <parameter id="Bundle Path" label="Bundle Path" required="false" tooltip="The bundle path configured for the kapp"/>
-                <parameter id="Default Submission Label Expression" label="Default Submission Label Expression" required="false" tooltip="The kapps submission label expression"/>
-                <parameter id="Security Policies JSON" label="Security Policies JSON" required="false" tooltip="JSON list the kapps security policies"/>
+                <parameter id="Name" label="Name" required="true" tooltip="The Kapps Name"></parameter>
+                <parameter id="Slug" label="Slug" required="true" tooltip="The Kapps Slug"></parameter>
+                <parameter id="After Logout Path" label="After Logout Path" required="false" tooltip="The path in which users will be routed upon logout"></parameter>
+                <parameter id="Attributes Map JSON" label="Attributes Map JSON" required="false" tooltip="JSON representation of the attributes associated with the Kapp"></parameter>
+                <parameter id="Bundle Path" label="Bundle Path" required="false" tooltip="The bundle path configured for the kapp"></parameter>
+                <parameter id="Default Submission Label Expression" label="Default Submission Label Expression" required="false" tooltip="The kapps submission label expression"></parameter>
+                <parameter id="Security Policies JSON" label="Security Policies JSON" required="false" tooltip="JSON list the kapps security policies"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
-            <results format="xml"/>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml"></results>
         </taskDefinition>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="41" y="71">
@@ -31,11 +31,11 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_core_api_v1_1</task>
@@ -65,9 +65,9 @@
  data.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['API']['Handler Error Message'].to_s.empty?">system_tree_return_v1_2</task>
@@ -80,13 +80,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_handler_failure_error_process_v1" id="routine_handler_failure_error_process_v1_3" name="Error Process" x="517" y="66">
                 <version>1</version>
@@ -101,9 +101,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Inputs JSON" label="Inputs JSON" menu="" required="false" tooltip="">&lt;%=@inputs.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_kapp_create_v1_4</task>
@@ -125,9 +125,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Security Policies JSON" label="Security Policies JSON" menu="" required="false" tooltip="JSON list the kapps security policies">&lt;%=@results['Error Process']['Security Policies JSON']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_5</task>
@@ -139,13 +139,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

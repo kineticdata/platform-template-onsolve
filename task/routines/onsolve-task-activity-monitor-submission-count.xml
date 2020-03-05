@@ -1,141 +1,124 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_onsolve_task_activity_monitor_submission_count_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="">
-    <name>OnSolve Task Activity Monitor Submission Count</name>
-    <author/>
-    <notes/>
-    <lastID>11</lastID>
-    <taskDefinition id="routine_onsolve_task_activity_monitor_submission_count_v1" name="OnSolve Task Activity Monitor Submission Count" schema_version="1.0" version="1">
-        <visible>false</visible>
-        <deferrable>true</deferrable>
-        <parameters>
-            <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip=""/>
-            <parameter id="Starting Count" label="Starting Count" required="true" tooltip="">0</parameter>
-            <parameter id="Start Time" label="Start Time" required="true" tooltip=""/>
-            <parameter id="End Time" label="End Time" required="true" tooltip=""/>
-            <parameter id="Source" label="Source" required="true" tooltip=""/>
-            <parameter id="Page Token" label="Page Token" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."/>
-        </parameters>
-        <handler name="system_tree_call" version="1"/>
-        <results format="xml">
-            <result name="Total Count" tooltip=""/>
-        </results>
-    </taskDefinition>
-    <request>
-        <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
-            <version>1</version>
-            <configured>true</configured>
-            <defers>false</defers>
-            <deferrable>false</deferrable>
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_task_activity_monitor_submission_count_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>OnSolve Task Activity Monitor Submission Count</name>
+        <author></author>
+        <notes></notes>
+        <lastID>11</lastID>
+        <taskDefinition id="routine_onsolve_task_activity_monitor_submission_count_v1" name="OnSolve Task Activity Monitor Submission Count" schema_version="1.0" version="1">
             <visible>false</visible>
-            <parameters/>
-            <messages/>
-            <dependents>
-                
-            <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_8</task>
-            </dependents>
-        </task>
-    
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        <task definition_id="system_tree_return_v1" id="system_tree_return_v1_6" name="Return - Multiple Pages" x="110" y="352">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@results['Call self - Get next records']['Total Count']%&gt;</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      
-        <task definition_id="system_tree_return_v1" id="system_tree_return_v1_7" name="Return - Complete page" x="319" y="99">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip=""></parameter>
+                <parameter id="Starting Count" label="Starting Count" required="true" tooltip="">0</parameter>
+                <parameter id="Start Time" label="Start Time" required="true" tooltip=""></parameter>
+                <parameter id="End Time" label="End Time" required="true" tooltip=""></parameter>
+                <parameter id="Source" label="Source" required="true" tooltip=""></parameter>
+                <parameter id="Page Token" label="Page Token" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="Total Count" tooltip=""></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_8</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_6" name="Return - Multiple Pages" x="110" y="352">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@results['Call self - Get next records']['Total Count']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_7" name="Return - Complete page" x="319" y="99">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;
 </parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents/>
-    </task>
-      
-        <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_8" name="Retrieve Submission records" x="111" y="94">
-      <version>2</version>
-      <configured>true</configured>
-      <defers>false</defers>
-      <deferrable>false</deferrable>
-      <visible>false</visible>
-      <parameters>
-        <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-        <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
-        <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
-        <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
-        <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">include=details&amp;timeline=createdAt&amp;direction=ASC&amp;start=&lt;%=@inputs['Start Time']%&gt;&amp;end=&lt;%=@inputs['End Time']%&gt;&amp;limit=100&amp;q=values[Integration Name]="&lt;%=@inputs['Source']%&gt;"</parameter>
-        <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@inputs['Page Token']%&gt;</parameter>
-        <parameter id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">ID List</parameter>
-    </parameters>
-            <messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents>
-                <task label="No more records" type="Complete" value="@results['Retrieve Submission records']['Next Page Token'].nil?">system_tree_return_v1_7</task>
-                
-            
-            
-            <task type="Complete" label="More records" value="!@results['Retrieve Submission records']['Next Page Token'].nil?">routine_onsolve_task_activity_monitor_submission_count_v1_11</task></dependents>
-    </task>
-      
-        
-      
-        
-      
-        <task name="Call self - Get next records" id="routine_onsolve_task_activity_monitor_submission_count_v1_11" definition_id="routine_onsolve_task_activity_monitor_submission_count_v1" x="106" y="233">
-      <version>1</version>
-      <configured>true</configured>
-      <defers>true</defers>
-      <deferrable>true</deferrable>
-      <visible>false</visible>
-      <parameters>
-            <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip="" menu="">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
-            <parameter id="Starting Count" label="Starting Count" required="true" tooltip="" menu="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;</parameter>
-            <parameter id="Start Time" label="Start Time" required="true" tooltip="" menu="">&lt;%=@inputs['Start Time']%&gt;</parameter>
-            <parameter id="End Time" label="End Time" required="true" tooltip="" menu="">&lt;%=@inputs['End Time']%&gt;</parameter>
-            <parameter id="Source" label="Source" required="true" tooltip="" menu="">&lt;%=@inputs['Source']%&gt;</parameter>
-            <parameter id="Page Token" label="Page Token" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results." menu="">&lt;%=@results['Retrieve Submission records']['Next Page Token']%&gt;</parameter>
-        </parameters><messages>
-        <message type="Create"/>
-        <message type="Update"/>
-        <message type="Complete"/>
-      </messages>
-      <dependents><task type="Complete" label="" value="">system_tree_return_v1_6</task></dependents>
-    </task>
-      </request>
-</taskTree></tree>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_8" name="Retrieve Submission records" x="111" y="94">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">include=details&amp;timeline=createdAt&amp;direction=ASC&amp;start=&lt;%=@inputs['Start Time']%&gt;&amp;end=&lt;%=@inputs['End Time']%&gt;&amp;limit=100&amp;q=values[Integration Name]="&lt;%=@inputs['Source']%&gt;"</parameter>
+                    <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@inputs['Page Token']%&gt;</parameter>
+                    <parameter id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">ID List</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="No more records" type="Complete" value="@results['Retrieve Submission records']['Next Page Token'].nil?">system_tree_return_v1_7</task>
+                    <task label="More records" type="Complete" value="!@results['Retrieve Submission records']['Next Page Token'].nil?">routine_onsolve_task_activity_monitor_submission_count_v1_11</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_task_activity_monitor_submission_count_v1" id="routine_onsolve_task_activity_monitor_submission_count_v1_11" name="Call self - Get next records" x="106" y="233">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                    <parameter id="Starting Count" label="Starting Count" menu="" required="true" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;</parameter>
+                    <parameter id="Start Time" label="Start Time" menu="" required="true" tooltip="">&lt;%=@inputs['Start Time']%&gt;</parameter>
+                    <parameter id="End Time" label="End Time" menu="" required="true" tooltip="">&lt;%=@inputs['End Time']%&gt;</parameter>
+                    <parameter id="Source" label="Source" menu="" required="true" tooltip="">&lt;%=@inputs['Source']%&gt;</parameter>
+                    <parameter id="Page Token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@results['Retrieve Submission records']['Next Page Token']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_6</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

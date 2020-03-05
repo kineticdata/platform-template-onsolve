@@ -1,25 +1,25 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_onsolve_integration_servicenow_process_incoming_data_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_integration_servicenow_process_incoming_data_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
         <name>OnSolve Integration - ServiceNow - Process Incoming Data</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>12</lastID>
         <taskDefinition id="routine_onsolve_integration_servicenow_process_incoming_data_v1" name="OnSolve Integration - ServiceNow - Process Incoming Data" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Source Data" label="Source Data" required="true" tooltip="A JSON object of the ServiceNow ticket details"/>
-                <parameter id="Integration Config Id" label="Integration Config Id" required="true" tooltip="The Submission Id of the Integration Config datastore submission"/>
-                <parameter id="Integration Config Values" label="Integration Config Values" required="true" tooltip="A JSON object of the integration configuration values"/>
+                <parameter id="Source Data" label="Source Data" required="true" tooltip="A JSON object of the ServiceNow ticket details"></parameter>
+                <parameter id="Integration Config Id" label="Integration Config Id" required="true" tooltip="The Submission Id of the Integration Config datastore submission"></parameter>
+                <parameter id="Integration Config Values" label="Integration Config Values" required="true" tooltip="A JSON object of the integration configuration values"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
+            <handler name="system_tree_call" version="1"></handler>
             <results format="xml">
-                <result name="Output" tooltip=""/>
+                <result name="Output" tooltip=""></result>
             </results>
         </taskDefinition>
         <request>
@@ -29,8 +29,8 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
-                <messages/>
+                <parameters></parameters>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_1</task>
                 </dependents>
@@ -43,7 +43,7 @@
                 <visible>false</visible>
                 <parameters>
                     <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">task-activity-monitor</parameter>
                     <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
                     <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%=
@@ -59,13 +59,13 @@ end
 query = %|include=details,values&amp;q=values[Integration Id]="#{@inputs['Integration Config Id']}" AND values[Source Id]="#{source_id_value}"| + query_addendum
 
 query%&gt;</parameter>
-                    <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."/>
+                    <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
                     <parameter id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="None" type="Complete" value="@results['Active Alerts']['Count'].to_i == 0">kinetic_request_ce_submission_create_v1_2</task>
@@ -81,7 +81,7 @@ query%&gt;</parameter>
                 <visible>true</visible>
                 <parameters>
                     <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp the submission is for.">task-activity-monitor</parameter>
                     <parameter id="form_slug" label="Form Slug" menu="" required="true" tooltip="The slug of the form the submission is for.">task-activity-monitor</parameter>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%= 
@@ -104,15 +104,15 @@ source_ref_id = details[integration_details['External Unique Key Field Name']]['
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
 }.to_json%&gt;</parameter>
-                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
-                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
-                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."/>
-                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."/>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_3</task>
@@ -126,19 +126,19 @@ source_ref_id = details[integration_details['External Unique Key Field Name']]['
                 <visible>true</visible>
                 <parameters>
                     <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=@results['Create Submission']['Submission ID']%&gt;</parameter>
                     <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state.">Submitted</parameter>
-                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set."/>
-                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
-                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
-                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."/>
-                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."/>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set."></parameter>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
@@ -150,11 +150,11 @@ source_ref_id = details[integration_details['External Unique Key Field Name']]['
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Has Restart Criteria" type="Complete" value="!(JSON.parse( @inputs['Integration Config Values'] )['Restart Notification Criteria']).nil?&#10;&#10;">utilities_echo_v1_5</task>
@@ -244,9 +244,9 @@ restart_result
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="True" type="Complete" value="@results['Evaluate Restart Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_6</task>
@@ -264,13 +264,13 @@ restart_result
 existing_activity_record = JSON.parse( @results['Active Alerts']['Result'] )
 existing_activity_record[0]['values']['Deferral Token']
 %&gt;</parameter>
-                    <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip=""/>
+                    <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip=""></parameter>
                     <parameter id="message" label="Message" menu="" required="false" tooltip="">Stop Notification</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_create_v1_7</task>
@@ -284,7 +284,7 @@ existing_activity_record[0]['values']['Deferral Token']
                 <visible>true</visible>
                 <parameters>
                     <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp the submission is for.">task-activity-monitor</parameter>
                     <parameter id="form_slug" label="Form Slug" menu="" required="true" tooltip="The slug of the form the submission is for.">task-activity-monitor</parameter>
                     <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%= 
@@ -307,15 +307,15 @@ source_ref_id = details[integration_details['External Unique Key Field Name']]['
   "Onsolve Status" =&gt; "Pending",
   "Source Data" =&gt; details
 }.to_json%&gt;</parameter>
-                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
-                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
-                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."/>
-                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."/>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_8</task>
@@ -329,19 +329,19 @@ source_ref_id = details[integration_details['External Unique Key Field Name']]['
                 <visible>true</visible>
                 <parameters>
                     <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."/>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=@results['Create Submission (Restart)']['Submission ID']%&gt;</parameter>
                     <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state.">Submitted</parameter>
-                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set."/>
-                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."/>
-                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."/>
-                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."/>
-                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."/>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set."></parameter>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
@@ -443,9 +443,9 @@ stop_result
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="True" type="Complete" value="@results['Evaluate Stop Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_10</task>
@@ -463,13 +463,13 @@ stop_result
 existing_activity_record = JSON.parse( @results['Active Alerts']['Result'] )
 existing_activity_record[0]['values']['Deferral Token']
 %&gt;</parameter>
-                    <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip=""/>
+                    <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip=""></parameter>
                     <parameter id="message" label="Message" menu="" required="false" tooltip="">Stop Notification</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
@@ -481,11 +481,11 @@ existing_activity_record[0]['values']['Deferral Token']
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_12</task>
@@ -498,14 +498,14 @@ existing_activity_record[0]['values']['Deferral Token']
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Output" label="Output" menu="" required="false" tooltip=""/>
+                    <parameter id="Output" label="Output" menu="" required="false" tooltip=""></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

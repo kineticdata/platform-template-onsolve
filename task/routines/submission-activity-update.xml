@@ -1,27 +1,27 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_kinetic_submission_activity_update_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="1">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kinetic_submission_activity_update_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="1">
         <name>Submission Activity Update</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>5</lastID>
         <taskDefinition id="routine_kinetic_submission_activity_update_v1" name="Submission Activity Update" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Submission Id" label="Submission Id" required="true" tooltip="The Id of the submission in which the activity is related"/>
-                <parameter id="Activity Id" label="Activity Id" required="true" tooltip="The Id of the submission activity"/>
-                <parameter id="Updated - Data" label="Updated - Data" required="false" tooltip="Data to store in the submission activity"/>
-                <parameter id="Updated - Description" label="Updated - Description" required="false" tooltip="Description of the submission activity"/>
-                <parameter id="Updated - Label" label="Updated - Label" required="false" tooltip="Label for the submission activity"/>
-                <parameter id="Updated - Type" label="Updated - Type" required="false" tooltip="Type of submission activity"/>
+                <parameter id="Submission Id" label="Submission Id" required="true" tooltip="The Id of the submission in which the activity is related"></parameter>
+                <parameter id="Activity Id" label="Activity Id" required="true" tooltip="The Id of the submission activity"></parameter>
+                <parameter id="Updated - Data" label="Updated - Data" required="false" tooltip="Data to store in the submission activity"></parameter>
+                <parameter id="Updated - Description" label="Updated - Description" required="false" tooltip="Description of the submission activity"></parameter>
+                <parameter id="Updated - Label" label="Updated - Label" required="false" tooltip="Label for the submission activity"></parameter>
+                <parameter id="Updated - Type" label="Updated - Type" required="false" tooltip="Type of submission activity"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
-            <results format="xml"/>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml"></results>
         </taskDefinition>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="41" y="71">
@@ -30,11 +30,11 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_core_api_v1_1</task>
@@ -61,9 +61,9 @@
  data.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['API']['Handler Error Message'].to_s.empty?">system_tree_return_v1_2</task>
@@ -76,13 +76,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_handler_failure_error_process_v1" id="routine_handler_failure_error_process_v1_3" name="Error Process" x="517" y="66">
                 <version>1</version>
@@ -97,9 +97,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Inputs JSON" label="Inputs JSON" menu="" required="false" tooltip="">&lt;%=@inputs.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_submission_activity_update_v1_4</task>
@@ -120,9 +120,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Updated - Type" label="Updated - Type" menu="" required="false" tooltip="Type of submission activity">&lt;%=@results['Error Process']['Updated - Type']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_5</task>
@@ -134,13 +134,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

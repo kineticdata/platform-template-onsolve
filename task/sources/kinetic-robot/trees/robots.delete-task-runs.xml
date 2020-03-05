@@ -1,0 +1,273 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Robot</sourceName>
+    <sourceGroup>Robots</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>Delete Task Runs</name>
+        <author></author>
+        <notes></notes>
+        <lastID>29</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">kinetic_request_ce_datastore_submission_update_v1_12</task>
+                    <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_junction_v1_27</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_3" name="Loop Begin" x="473" y="119">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=
+task_runs = JSON.parse( @results['Retrieve Records from Datastore']['Result'] )
+
+"&lt;runIds&gt;#{task_runs.map{|run| "&lt;runId&gt;#{run['values']['Task Run Id']}&lt;/runId&gt;"}.join}&lt;/runIds&gt;"
+%&gt;
+</parameter>
+                    <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/runIds/runId</parameter>
+                    <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">task_run</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_4</task>
+                    <task label="" type="Complete" value="">kinetic_task_run_delete_v1_19</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_4" name="Loop End" x="473" y="233">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">utilities_create_trigger_v1_28</task>
+                    <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_junction_v1_29</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_12" name="Update Robot Execution Status" x="12" y="99">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running"}</parameter>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_27</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_task_run_delete_v1" id="kinetic_task_run_delete_v1_19" name="Task Run Delete" x="637" y="115">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="run_id" label="Run Id" menu="" required="true" tooltip="The id of the run you want to delete.">&lt;%=@results['Loop Begin']['Value']%&gt;</parameter>
+                    <parameter id="signature_key" label="Signature Key" menu="" required="false" tooltip="The id of the access key to use to sign the request (overrides info value)."></parameter>
+                    <parameter id="signature_secret" label="Signature Secret" menu="" required="false" tooltip="The secret of the access key to use to sign the request (overrides info value)."></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_core_api_v1_23</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_search_v2" id="kinetic_request_ce_datastore_submission_search_v2_20" name="Retrieve Records from Datastore" x="330" y="100">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="The slug of the Datastore Form to search for submissions in.">task-run-cleanup</parameter>
+                    <parameter id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used.">ASC</parameter>
+                    <parameter id="index" label="Index" menu="" required="false" tooltip="The index to use for the search.">values[Delete After Date Time]</parameter>
+                    <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">values[Delete After Date Time] &lt; "&lt;%=Time.now.iso8601%&gt;"</parameter>
+                    <parameter id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return.">100</parameter>
+                    <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=JSON.parse(@source['Data'] || "{}")['Page Token'].to_s%&gt;</parameter>
+                    <parameter id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">values[Task Run Id]</parameter>
+                    <parameter id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_3</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_23" name="Delete Datastore Record" x="639" y="209">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">DELETE</parameter>
+                    <parameter id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">&lt;%=
+id = JSON.parse( @results['Retrieve Records from Datastore']['Result'] )[@results['Loop Begin']['Index']]['id']
+
+"/datastore/submissions/#{id}"
+%&gt;</parameter>
+                    <parameter id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_4</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_task_api_v2" id="kinetic_task_api_v2_24" name="kinetic_task_api_v2_24" x="781.1000213623047" y="127.19999694824219">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">GET</parameter>
+                    <parameter id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug"></parameter>
+                    <parameter id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_26" name="Add Task Run Cleanup Entry" x="297" y="341">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."></parameter>
+                    <parameter id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
+                    <parameter id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%={
+  "Task Run Id" =&gt; @run['Id'],
+  "Delete After Date Time" =&gt; (Time.now + (86400 * 7)).iso8601
+}.to_json%&gt;</parameter>
+                    <parameter id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_27" name="Junction: Robot Initiated" x="174" y="111">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_search_v2_20</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_28" name="Robot return trigger" x="593" y="349">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+output = {
+  "Task Runs Deleted" =&gt; @results['Retrieve Records from Datastore']['Count'],
+}.to_json
+
+"&lt;results&gt;
+&lt;result name=\"output\"&gt;#{output.encode(:xml =&gt; :text)}&lt;/result&gt;
+&lt;/results&gt;"
+%&gt;</parameter>
+                    <parameter id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_29</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_29" name="Junction" x="451" y="374">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_26</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

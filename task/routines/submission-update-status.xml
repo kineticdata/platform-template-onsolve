@@ -1,23 +1,23 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_kinetic_submission_update_status_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kinetic_submission_update_status_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
         <name>Submission Update Status</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>16</lastID>
         <taskDefinition id="routine_kinetic_submission_update_status_v1" name="Submission Update Status" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Submission Id" label="Submission Id" required="true" tooltip="Id of the Submission that is being updated"/>
-                <parameter id="Status" label="Status" required="true" tooltip="Status to set the submission to. (e.g. Submitted, In Progress)"/>
+                <parameter id="Submission Id" label="Submission Id" required="true" tooltip="Id of the Submission that is being updated"></parameter>
+                <parameter id="Status" label="Status" required="true" tooltip="Status to set the submission to. (e.g. Submitted, In Progress)"></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
-            <results format="xml"/>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml"></results>
         </taskDefinition>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="779" y="-144">
@@ -26,8 +26,8 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
-                <messages/>
+                <parameters></parameters>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_submission_retrieve_v1_13</task>
                 </dependents>
@@ -42,9 +42,9 @@
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The Id of the submission to retrieve">&lt;%=@inputs['Submission Id']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_form_retrieve_v1_14</task>
@@ -61,9 +61,9 @@
                     <parameter id="Slug" label="Slug" menu="" required="true" tooltip="The Forms slug">&lt;%=@results['Retrieve Submission']['Form Slug']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Has Status Field" type="Complete" value="JSON.parse(@results['Retrieve Form']['Fields JSON']).any? { | f | f['name'] == 'Status'}">routine_kinetic_submission_update_v1_15</task>
@@ -77,16 +77,16 @@
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%=@inputs['Submission Id']%&gt;</parameter>
-                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"/>
-                    <parameter id="Updated - Current Page" label="Updated - Current Page" menu="" required="false" tooltip="The submissions current page"/>
-                    <parameter id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"/>
-                    <parameter id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"/>
+                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter id="Updated - Current Page" label="Updated - Current Page" menu="" required="false" tooltip="The submissions current page"></parameter>
+                    <parameter id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
                     <parameter id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%={'Status' =&gt; @inputs['Status']}.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_16</task>
@@ -98,13 +98,13 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

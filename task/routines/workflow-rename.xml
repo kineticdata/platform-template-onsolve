@@ -1,27 +1,27 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_kinetic_workflow_rename_v1</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="1">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kinetic_workflow_rename_v1</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="1">
         <name>Workflow Rename</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>5</lastID>
         <taskDefinition id="routine_kinetic_workflow_rename_v1" name="Workflow Rename" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="From - Source" label="From - Source" required="true" tooltip="The source to clone the workflow(s) from. Use '-' for a global routine."/>
-                <parameter id="From - Group" label="From - Group" required="true" tooltip="The source group to clone the workflow(s) from. Use '-' for any routine."/>
-                <parameter id="From - Names JSON" label="From - Names JSON" required="true" tooltip="A JSON list of the workflow (tree/routine) names to clone. (ie. [&quot;Created&quot;, &quot;Submitted&quot;])."/>
-                <parameter id="To - Source" label="To - Source" required="true" tooltip="The source to clone the workflow(s) to. Use '-' for a global routine."/>
-                <parameter id="To - Group" label="To - Group" required="true" tooltip="The source group to clone the workflow(s) to. Use '-' for any routine."/>
+                <parameter id="From - Source" label="From - Source" required="true" tooltip="The source to clone the workflow(s) from. Use '-' for a global routine."></parameter>
+                <parameter id="From - Group" label="From - Group" required="true" tooltip="The source group to clone the workflow(s) from. Use '-' for any routine."></parameter>
+                <parameter id="From - Names JSON" label="From - Names JSON" required="true" tooltip="A JSON list of the workflow (tree/routine) names to clone. (ie. [&quot;Created&quot;, &quot;Submitted&quot;])."></parameter>
+                <parameter id="To - Source" label="To - Source" required="true" tooltip="The source to clone the workflow(s) to. Use '-' for a global routine."></parameter>
+                <parameter id="To - Group" label="To - Group" required="true" tooltip="The source group to clone the workflow(s) to. Use '-' for any routine."></parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
+            <handler name="system_tree_call" version="1"></handler>
             <results format="xml">
-                <result name="Trees Json" tooltip="A JSON list of trees that were created"/>
+                <result name="Trees Json" tooltip="A JSON list of trees that were created"></result>
             </results>
         </taskDefinition>
         <request>
@@ -31,11 +31,11 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_task_api_v1_1</task>
@@ -61,9 +61,9 @@
  data.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['API']['Handler Error Message'].to_s.empty?">system_tree_return_v1_2</task>
@@ -80,11 +80,11 @@
                     <parameter id="Trees Json" label="Trees Json" required="false" tooltip="A JSON list of trees that were created">&lt;%=JSON.parse(@results['API']['Response Body'])['trees'].to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_handler_failure_error_process_v1" id="routine_handler_failure_error_process_v1_3" name="Error Process" x="517" y="66">
                 <version>1</version>
@@ -99,9 +99,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Inputs JSON" label="Inputs JSON" menu="" required="false" tooltip="">&lt;%=@inputs.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_workflow_rename_v1_4</task>
@@ -121,9 +121,9 @@
                     <parameter dependsOnId="" dependsOnValue="" id="To - Group" label="To - Group" menu="" required="true" tooltip="The source group to clone the workflow(s) to. Use '-' for any routine.">&lt;%=@results['Error Process']['To - Group']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_5</task>
@@ -139,11 +139,11 @@
                     <parameter id="Trees Json" label="Trees Json" required="false" tooltip="A JSON list of trees that were created">&lt;%=@results['Retry']['Trees Json']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

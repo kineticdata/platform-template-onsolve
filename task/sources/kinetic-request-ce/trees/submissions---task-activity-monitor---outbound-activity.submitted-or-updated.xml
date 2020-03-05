@@ -1,0 +1,723 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>Submissions > task-activity-monitor > outbound-activity</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>Submitted or Updated</name>
+        <author></author>
+        <notes></notes>
+        <lastID>54</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Status is New" type="Complete" value="@values['Status'] == &quot;New&quot;">routine_kinetic_submission_retrieve_with_child_values_v1_30</task>
+                    <task label="Status is Retry" type="Complete" value="@values['Status'] == &quot;Retry&quot;">system_join_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_1" name="Execute Agent Call" x="702" y="40">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%= @space['Slug']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">&lt;%=@results['Determine Handler Slug']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%= @values['Payload']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Error" type="Complete" value="!@results['Execute Agent Call']['Handler Error Message'].to_s.empty?">routine_kinetic_submission_update_v1_26</task>
+                    <task label="No Error" type="Complete" value="@results['Execute Agent Call']['Handler Error Message'].to_s.empty?">routine_kinetic_submission_update_v1_25</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_2" name="Determine Handler Slug" x="426" y="39">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+agent_handler_slugs = 
+{
+  "Remedy - Create" =&gt; "remedy_generic_create_v2",
+  "Remedy - Find" =&gt; "remedy_generic_find_v4",
+  "Remedy - Query Retrieve" =&gt; "remedy_generic_query_retrieve_v2",
+  "Remedy - Retrieve" =&gt; "remedy_generic_retrieve_v2",
+  "Remedy - Update" =&gt; "remedy_generic_update_v3",
+  "ServiceNow - Query Retrieve" =&gt; "servicenow_object_query_retrieve_v1",
+  "ServiceNow - Update" =&gt; "servicenow_object_update_v1",
+  "ServiceNow - OnCall Retrieve" =&gt; "servicenow_oncall_retrieve_v1",
+  "Cherwell - Create" =&gt; "cherwell_object_create_v1",
+  "Cherwell - Find" =&gt; "cherwell_object_find_v1",
+  "Cherwell - Retrieve" =&gt; "cherwell_user_retrieve_v2",
+  "Cherwell - Update" =&gt; "cherwell_object_update_v1",
+  "OBM - Annotation Add" =&gt; "obm_event_annotation_add_v1",
+  "OBM - Event Retrieve" =&gt; "obm_event_retrieve_v1",
+  "OBM - Event Update" =&gt; "obm_event_update_v1"
+}
+
+## Look up value using matching criteria.  If not found, use the @values['Action'] as a default.
+## That way, if we pass in a handler's Agent Slug, it'll work regardless if the above was updated.
+## The reason we don't do that by default is if we need to change it later, we'd have to find all
+## the places it was used in the source trees and adjust them.  This way we can look up and use the
+## corresponding value.  However, if the input change, we need to still find and update all the
+## places it was used, which will provide to be difficult (unless we scan the task trees for inputs
+## to a handler with the values we're looking for...
+
+agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['Action']
+
+%&gt;
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_agent_handler_execute_v1_1</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_10" name="No Agent" x="424" y="557">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Remedy" type="Complete" value="@values['Source'].to_s.downcase == &quot;remedy&quot;">system_noop_v1_11</task>
+                    <task label="ServiceNow" type="Complete" value="@values['Source'].to_s.downcase == &quot;servicenow&quot; || @values['Source'].to_s.downcase == &quot;service now&quot;">system_noop_v1_12</task>
+                    <task label="Cherwell" type="Complete" value="@values['Source'].to_s.downcase == &quot;cherwell&quot;">system_noop_v1_14</task>
+                    <task label="OBM" type="Complete" value="@values['Source'].to_s.downcase == &quot;obm&quot;">system_noop_v1_19</task>
+                    <task label="SQL Database" type="Complete" value="@values['Source'].to_s.downcase == &quot;sql database&quot;">system_noop_v1_53</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_11" name="Remedy" x="707" y="298">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">remedy_generic_update_v3_50</task>
+                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">remedy_generic_create_v2_52</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_12" name="ServiceNow" x="707" y="518">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">servicenow_object_update_v1_13</task>
+                </dependents>
+            </task>
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_13" name="ServiceNow Update" x="1029" y="497">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%= JSON.parse( @values['Payload'] )['table']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%= JSON.parse( @values['Payload'] )['id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%= JSON.parse( @values['Payload'] )['json_body']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="true || @results['ServiceNow Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="false &amp;&amp; !@results['ServiceNow Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_14" name="Cherwell" x="710" y="709">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">cherwell_object_create_v1_48</task>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">cherwell_object_update_v1_49</task>
+                </dependents>
+            </task>
+            <task definition_id="obm_event_annotation_add_v1" id="obm_event_annotation_add_v1_17" name="OBM Annotation Add" x="1025" y="858">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="event_id" label="Event Id" menu="" required="true" tooltip="The Event Id to which this annotation will be attached.">&lt;%= JSON.parse( @values['Payload'] )['event_id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="annotation_content" label="Annotation Content" menu="" required="true" tooltip="The annotation content to be added to the event.">&lt;%= JSON.parse( @values['Payload'] )['annotation_content']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['OBM Annotation Add']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['OBM Annotation Add']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="obm_event_update_v1" id="obm_event_update_v1_18" name="OBM Event Update" x="1026" y="941">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="event_id" label="Event Id" menu="" required="true" tooltip="The Id of the event to update.">&lt;%= JSON.parse( @values['Payload'] )['event_id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="xml" label="XML" menu="" required="true" tooltip="The updated Xml structure.">&lt;%= JSON.parse( @values['Payload'] )['xml']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="true || @results['OBM Event Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="false &amp;&amp; !@results['OBM Event Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_19" name="OBM" x="712" y="890">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Annotation Add" type="Complete" value="@values['Action'].to_s.downcase == &quot;annotation add&quot;">obm_event_annotation_add_v1_17</task>
+                    <task label="Event Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;event update&quot; || @values['Action'].to_s.downcase == &quot;eventupdate&quot;">obm_event_update_v1_18</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_20" name="Complete Submission - No Agent" x="1342" y="179">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%= @submission['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state">Closed</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+{
+  "Status" =&gt; "Complete"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_46</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_24" name="Submission Update - No Agent - Failed" x="1361" y="705">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%= @submission['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+{
+  "Status" =&gt; "Failed"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_41</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_25" name="Complete Submission - Agent" x="1019" y="31">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%= @submission['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state">Closed</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+{
+  "Status" =&gt; "Complete"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_46</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_26" name="Submission Update - Agent - Failed" x="705" y="154">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%= @submission['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+{
+  "Status" =&gt; "Failed"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_41</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_retrieve_with_child_values_v1" id="routine_kinetic_submission_retrieve_with_child_values_v1_30" name="Get Task Activity Monitor Record" x="39" y="147">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The Id of the submission to retrieve">&lt;%= @values['Task Activity Monitor Record']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_31</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="Evaluate Children" x="38" y="266">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+children = JSON.parse( @results['Get Task Activity Monitor Record']['Children JSON'] )
+
+my_status = "New"
+my_outcome = ""
+id_to_retry = ""
+
+children.each{|child|
+  # Only look for 'Submitted' child records
+  if child['coreState'] == "Submitted"
+    # Exclude the current submission from evaluation
+    if child['id'] != @submission['Id']
+      # See if the entry is new
+      if child['values']['Status'] == "New"
+        # Compare the start times.  If the start time of the submission 
+        # is &gt; the start time of this record, this should be set to pending.
+        if @submission['Submitted At'] &gt; child['submittedAt']
+          my_status = "Pending"
+          my_outcome = "Adjusting my status to 'Pending'. There is a submission with Status 'New' earlier than me.  My submittedAt: #{@submission['Submitted At']}; other submission (#{child['id']}): #{child['submittedAt']}."
+        end
+        # No further evaluation necessary because there is a 'New' record older than me, which will trigger this.
+        break
+      end
+      # If the child entry is retry, this should be set to 'Pending'
+      if child['values']['Status'] == "Retry"
+        my_status = "Pending"
+        my_outcome = "Adjusting my status to 'Pending'.  There is a submission already in retry: #{child['id']}."
+        # No further evaluation necessary because there is already a submission in 'retry', which will trigger this.
+        break
+      end
+      # Check for 'failed' or 'pending' records.
+      if ["Pending","Failed"].include?( child['values']['Status'] )
+        my_status = "Pending"
+        my_outcome = "Adjusting my status to 'Pending'.  There is an existing record (#{child['id']}) with #{child['values']['status']} status, which will be set to retry."
+        id_to_retry = child['id']
+        # The order of the child records should be by create date.  
+        # So ... the first one should be the oldest, which needs to process first.
+        # No further processing.
+        break
+      end
+    end
+  end
+}
+
+{
+  "status" =&gt; my_status,
+  "outcome" =&gt; my_outcome,
+  "id_to_retry" =&gt; id_to_retry
+}.to_json
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Suspend" type="Complete" value="JSON.parse( @results['Evaluate Children']['output'] )['status'] != &quot;New&quot;">routine_kinetic_submission_update_v1_33</task>
+                    <task label="Continue" type="Complete" value="JSON.parse( @results['Evaluate Children']['output'] )['status'] == &quot;New&quot;">system_join_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_33" name="Submission Update - Suspend Processing" x="46" y="410">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%= @submission['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+status = JSON.parse( @results['Evaluate Children']['output'] )['status']
+{
+  "Status" =&gt; status
+}.to_json
+%&gt;
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Id To Retry" type="Complete" value="!JSON.parse( @results['Evaluate Children']['output'] )['id_to_retry'].to_s.empty?">routine_kinetic_submission_update_v1_34</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_34" name="Submission Update - Retry Other Record" x="39" y="540">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%=
+JSON.parse( @results['Evaluate Children']['output'] )['id_to_retry']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+{
+  "Status" =&gt; "Retry"
+}.to_json
+%&gt;
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_41</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_retrieve_with_child_values_v1" id="routine_kinetic_submission_retrieve_with_child_values_v1_35" name="Get Task Activity Monitor Record 2" x="1621" y="24">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The Id of the submission to retrieve">&lt;%= @values['Task Activity Monitor Record']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_38</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_36" name="Success" x="1346" y="295">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_update_v1_20</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_37" name="Error" x="1367" y="956">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_update_v1_24</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_38" name="Evaluate Children For Next Retry" x="1624" y="135">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+children = JSON.parse( @results['Get Task Activity Monitor Record 2']['Children JSON'] )
+
+id_to_retry = ""
+
+children.each{|child|
+  # Only look for 'Submitted' child records
+  if child['coreState'] == "Submitted"
+    # Exclude the current submission from evaluation
+    if child['id'] != @submission['Id']
+      # Check for 'failed' or 'pending' records.
+      if ["Pending","Failed"].include?( child['values']['Status'] )
+        id_to_retry = child['id']
+        # The order of the child records should be by create date.  
+        # So ... the first one should be the oldest, which needs to process first.
+        # No further processing.
+        break
+      end
+    end
+  end
+}
+
+id_to_retry
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Id To Retry" type="Complete" value="!@results['Evaluate Children For Next Retry']['output'].to_s.empty?">routine_kinetic_submission_update_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_update_v1" id="routine_kinetic_submission_update_v1_39" name="Submission Update - Retry Other Record 2" x="1624" y="248">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%=@results['Evaluate Children For Next Retry']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Origin Id" label="Updated - Origin Id" menu="" required="false" tooltip="The Id of the submissions origin"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Parent Id" label="Updated - Parent Id" menu="" required="false" tooltip="The Id of the submissions parent"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
+{
+  "Status" =&gt; "Retry"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_41</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_41" name="Junction: Final" x="1631" y="427">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_42</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_42" name="Add Task Run Cleanup Entry" x="1627" y="567">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%=
+duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
+
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Delete After Date Time" =&gt; (Time.now + (86400 * duration)).iso8601
+}.to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_43</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_43" name="End" x="1624" y="702">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_45" name="Join: Continue Processing" x="427" y="270">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Uses Agent" type="Complete" value="@kapp_attributes['Uses Kinetic Agent'].to_s.downcase == &quot;true&quot;">utilities_echo_v1_2</task>
+                    <task label="No Agent" type="Complete" value="@kapp_attributes['Uses Kinetic Agent'].to_s.downcase != &quot;true&quot;">system_noop_v1_10</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_46" name="Join: Success" x="1340" y="38">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_retrieve_with_child_values_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_48" name="Cherwell Create" x="1027" y="629">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be created with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_49" name="Cherwell Update" x="1026" y="701">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to update (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_id" label="Object Id" menu="" required="true" tooltip="Public id for the object that should be updated..">&lt;%= JSON.parse( @values['Payload'] )['object_id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be updated with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Cherwell Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="remedy_generic_update_v3" id="remedy_generic_update_v3_50" name="Remed Update" x="1029" y="352">
+                <version>3</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to update">&lt;%= JSON.parse( @values['Payload'] )['request_id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Remedy Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Remedy Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="remedy_generic_create_v2" id="remedy_generic_create_v2_52" name="Remedy Create" x="1033" y="274">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form" label="Form Name" menu="" required="true" tooltip="Form Name">&lt;%= JSON.parse( @values['Payload'] )['form']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="field_values" label="Field Values" menu="" required="true" tooltip="JSON mapping of field values">&lt;%= JSON.parse( @values['Payload'] )['field_values']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Remedy Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Remedy Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_53" name="SQL Database" x="721" y="1090">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="All" type="Complete" value="">sql_generic_v1_54</task>
+                </dependents>
+            </task>
+            <task definition_id="sql_generic_v1" id="sql_generic_v1_54" name="SQL Command" x="1024" y="1086">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="Database" menu="" required="true" tooltip="Database to Access for example sqlserver, oracle or postgresql.">&lt;%= JSON.parse( @values['Payload'] )['jdbc_database']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="dbname" label="Database Name" menu="" required="true" tooltip="Database Name">&lt;%= JSON.parse( @values['Payload'] )['db_name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="SQL Action" menu="" required="true" tooltip="SQL Action Type. Use fetch for a SELECT statement or run for an UPDATE query.">&lt;%= JSON.parse( @values['Payload'] )['action']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Command to Perform" menu="" required="true" tooltip="SQL Command to be performed.">&lt;%= JSON.parse( @values['Payload'] )['query']%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="Error" type="Complete" value="!@results['SQL Command']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                    <task label="No Error" type="Complete" value="@results['SQL Command']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

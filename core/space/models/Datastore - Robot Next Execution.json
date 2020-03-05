@@ -1,0 +1,41 @@
+{
+  "activeMappingName": "Datastore - Robot Next Execution",
+  "attributes": [
+    {
+      "name": "Next Execution"
+    }
+  ],
+  "mappings": [
+    {
+      "agentSlug": "system",
+      "attributes": [
+        {
+          "name": "Next Execution",
+          "structureField": "${fields('values[Next Execution]')}"
+        }
+      ],
+      "bridgeSlug": "kinetic-core",
+      "name": "Datastore - Robot Next Execution",
+      "qualifications": [
+        {
+          "name": "By Id",
+          "query": "formSlug=robot-next-execution&direction=DESC&limit=1&index=values[Robot ID]&q=values[Robot ID]=\"${parameters('Id')}\""
+        }
+      ],
+      "structure": "Datastore Submissions"
+    }
+  ],
+  "name": "Datastore - Robot Next Execution",
+  "qualifications": [
+    {
+      "name": "By Id",
+      "parameters": [
+        {
+          "name": "Id"
+        }
+      ],
+      "resultType": "Single"
+    }
+  ],
+  "status": "Active"
+}

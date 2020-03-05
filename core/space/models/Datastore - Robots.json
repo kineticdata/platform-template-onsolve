@@ -1,0 +1,48 @@
+{
+  "activeMappingName": "Datastore - Robots",
+  "attributes": [
+    {
+      "name": "Id"
+    },
+    {
+      "name": "Status"
+    }
+  ],
+  "mappings": [
+    {
+      "agentSlug": "system",
+      "attributes": [
+        {
+          "name": "Id",
+          "structureField": "${fields('id')}"
+        },
+        {
+          "name": "Status",
+          "structureField": "${fields('values[Status]')}"
+        }
+      ],
+      "bridgeSlug": "kinetic-core",
+      "name": "Datastore - Robots",
+      "qualifications": [
+        {
+          "name": "By Id",
+          "query": "id=${parameters('Robot Id')}"
+        }
+      ],
+      "structure": "Datastore Submissions"
+    }
+  ],
+  "name": "Datastore - Robots",
+  "qualifications": [
+    {
+      "name": "By Id",
+      "parameters": [
+        {
+          "name": "Robot Id"
+        }
+      ],
+      "resultType": "Single"
+    }
+  ],
+  "status": "Active"
+}

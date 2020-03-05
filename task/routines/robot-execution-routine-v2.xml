@@ -1,26 +1,26 @@
 <tree schema_version="1.0">
-<sourceName>-</sourceName>
-<sourceGroup>-</sourceGroup>
-<definitionId>routine_kinetic_robot_execution_v2</definitionId>
-<type>Global Routine</type>
-<status>Active</status>
-<taskTree builder_version="" schema_version="1.0" version="">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_kinetic_robot_execution_v2</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
         <name>Robot Execution Routine V2</name>
-        <author/>
-        <notes/>
+        <author></author>
+        <notes></notes>
         <lastID>114</lastID>
         <taskDefinition id="routine_kinetic_robot_execution_v2" name="Robot Execution Routine V2" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="space slug" label="space slug" required="true" tooltip="Space slug of the submission"/>
-                <parameter id="submission id" label="submission id" required="true" tooltip="Submission Id of the robot schedule record"/>
-                <parameter id="start time" label="start time" required="true" tooltip="The time from which the next schedule should be determined.  Usually the current time, unless this is for a new schedule."/>
-                <parameter id="schedule update time" label="schedule update time" required="true" tooltip="Schedule update time (for the initial routine call), or current time (for subsequent calls)."/>
+                <parameter id="space slug" label="space slug" required="true" tooltip="Space slug of the submission"></parameter>
+                <parameter id="submission id" label="submission id" required="true" tooltip="Submission Id of the robot schedule record"></parameter>
+                <parameter id="start time" label="start time" required="true" tooltip="The time from which the next schedule should be determined.  Usually the current time, unless this is for a new schedule."></parameter>
+                <parameter id="schedule update time" label="schedule update time" required="true" tooltip="Schedule update time (for the initial routine call), or current time (for subsequent calls)."></parameter>
                 <parameter id="Initial Run" label="Initial Run" required="true" tooltip="Set to false when this routine calls itself; any other value when called the first time (when a submission is submitted or modified)">False</parameter>
             </parameters>
-            <handler name="system_tree_call" version="1"/>
-            <results format="xml"/>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml"></results>
         </taskDefinition>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
@@ -29,8 +29,8 @@
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
-                <messages/>
+                <parameters></parameters>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_88</task>
                 </dependents>
@@ -45,9 +45,9 @@
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%= ((Time.parse(@results['Determine next execution']['next_occurrence']) - Time.now()).to_i) %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_wait_v1_9</task>
@@ -65,9 +65,9 @@
                     <parameter id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_datastore_submission_retrieve_v1_114</task>
@@ -80,12 +80,12 @@
                 <deferrable>true</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="deferral_value" label="Initial Deferral Value" menu="" required="false" tooltip=""/>
+                    <parameter id="deferral_value" label="Initial Deferral Value" menu="" required="false" tooltip=""></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Create" value="">utilities_echo_v1_53</task>
@@ -115,9 +115,9 @@ inputs["Runtime Inputs"]=JSON.parse( JSON.parse( @results['Recheck submission'][
 inputs.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_workflow_run_create_v1_106</task>
@@ -129,11 +129,11 @@ inputs.to_json%&gt;</parameter>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_datastore_submissions_retrieve_list_v1_93</task>
@@ -145,13 +145,13 @@ inputs.to_json%&gt;</parameter>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_39" name="Schedule change" x="506" y="305">
                 <version>1</version>
@@ -163,11 +163,11 @@ inputs.to_json%&gt;</parameter>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">The schedule changed since this execution initiated, which stopes processing on this thread. A separate thread will processing the updated schedule.</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_41" name="Schedule inactive - recheck" x="506" y="394">
                 <version>1</version>
@@ -175,13 +175,13 @@ inputs.to_json%&gt;</parameter>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_43" name="Notes on if routine cannot be executed" x="1288" y="558">
                 <version>1</version>
@@ -193,11 +193,11 @@ inputs.to_json%&gt;</parameter>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">Do we error, or ???</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_47" name="Schedule changed; new run has been initiated" x="139" y="304">
                 <version>1</version>
@@ -205,13 +205,13 @@ inputs.to_json%&gt;</parameter>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_48" name="Schedule changed" x="147" y="199">
                 <version>1</version>
@@ -223,9 +223,9 @@ inputs.to_json%&gt;</parameter>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=@inputs['schedule update time'] != @results['Get submission']['Updated At']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Changed" type="Complete" value="@results['Schedule changed']['output'] == &quot;true&quot;">system_noop_v1_47</task>
@@ -242,11 +242,11 @@ inputs.to_json%&gt;</parameter>
                     <parameter id="input" label="Input" menu="" required="true" tooltip="">This ensures that if the task engine was stopped while multiple changes were happening, it validates against the submission details and not the retrieved values.</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="kinetic_determine_next_occurrence_v2" id="kinetic_determine_next_occurrence_v2_52" name="Determine next execution" x="316" y="187">
                 <version>2</version>
@@ -305,9 +305,9 @@ JSON.parse( @results['Get submission']['Values JSON'] )['Friday Index'].join(","
 JSON.parse( @results['Get submission']['Values JSON'] )['Saturday Index'].join(",")%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Future Time" type="Complete" value="JSON.parse( @results['Get submission']['Values JSON'] )['End Date'].nil? || JSON.parse( @results['Get submission']['Values JSON'] )['End Date'].empty? || ( !( JSON.parse(@results['Get submission']['Values JSON'])['End Date'].nil? ) &amp;&amp; !( JSON.parse(@results['Get submission']['Values JSON'])['End Date'].empty? ) &amp;&amp; ( ( Time.parse( @results['Determine next execution']['next_occurrence'] ) - Time.parse( JSON.parse(@results['Get submission']['Values JSON'])['End Date'] ) ).to_i  &lt; 0) )">utilities_echo_v1_8</task>
@@ -327,9 +327,9 @@ Time.now().utc.iso8601
 %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_datastore_submission_create_v1_103</task>
@@ -341,11 +341,11 @@ Time.now().utc.iso8601
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Inactive" type="Complete" value="JSON.parse(@results['Recheck submission']['Values JSON'])['Status'].downcase != &quot;active&quot;">system_noop_v1_41</task>
@@ -358,13 +358,13 @@ Time.now().utc.iso8601
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_robot_execution_v2" id="routine_kinetic_robot_execution_v2_83" name="Call self" x="671" y="912">
                 <version>1</version>
@@ -380,11 +380,11 @@ Time.now().utc.iso8601
                     <parameter id="Initial Run" label="Initial Run" menu="" required="true" tooltip="Set to false when this routine calls itself; any other value when called the first time (when a submission is submitted or modified)">False</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_88" name="Get space details" x="11" y="84">
                 <version>1</version>
@@ -392,11 +392,11 @@ Time.now().utc.iso8601
                 <defers>true</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
-                <parameters/>
+                <parameters></parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_datastore_submission_retrieve_v1_113</task>
@@ -412,11 +412,11 @@ Time.now().utc.iso8601
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The Id of the submission to retrieve">&lt;%=@inputs['submission id']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_datastore_submissions_retrieve_list_v1" id="routine_kinetic_datastore_submissions_retrieve_list_v1_93" name="Find next execution record - Clear" x="319" y="398">
                 <version>1</version>
@@ -427,15 +427,15 @@ Time.now().utc.iso8601
                 <parameters>
                     <parameter id="Form Slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to find submissions in.">robot-next-execution</parameter>
                     <parameter id="Index To Search" label="Index To Search" menu="" required="false" tooltip="The Index definition to search (i.e. values[Name],values[Status])">values[Robot ID]</parameter>
-                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."/>
-                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000"/>
+                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."></parameter>
+                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000"></parameter>
                     <parameter id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch submissions. (i.e values[First Name]=&quot;Fred&quot;)">values[Robot ID]="&lt;%=@inputs['submission id']%&gt;"</parameter>
-                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."/>
+                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_datastore_submission_update_v1_112</task>
@@ -460,15 +460,15 @@ Time.now().utc.iso8601
 "Robot"
 %&gt;</parameter>
                     <parameter id="Related Submission Id" label="Related Submission Id" menu="" required="false" tooltip="Id of the submission to get values for, required if using those or attachments in the message">&lt;%=@inputs['submission id']%&gt;</parameter>
-                    <parameter id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" menu="" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)"/>
+                    <parameter id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" menu="" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)"></parameter>
                     <parameter id="Is Datastore" label="Is Datastore" menu="" required="false" tooltip="If the Related Submission Id, or Form Slug is a datastore form.">false</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_datastore_submissions_retrieve_list_v1" id="routine_kinetic_datastore_submissions_retrieve_list_v1_97" name="Find next execution record" x="509" y="79">
                 <version>1</version>
@@ -479,15 +479,15 @@ Time.now().utc.iso8601
                 <parameters>
                     <parameter id="Form Slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to find submissions in.">robot-next-execution</parameter>
                     <parameter id="Index To Search" label="Index To Search" menu="" required="false" tooltip="The Index definition to search (i.e. values[Name],values[Status])">values[Robot ID]</parameter>
-                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."/>
-                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000"/>
+                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."></parameter>
+                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000"></parameter>
                     <parameter id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch submissions. (i.e values[First Name]=&quot;Fred&quot;)">values[Robot ID]="&lt;%=@inputs['submission id']%&gt;"</parameter>
-                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."/>
+                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Not found" type="Complete" value="@results['Find next execution record']['Count'].to_i == 0">routine_kinetic_datastore_submission_create_v1_98</task>
@@ -502,19 +502,19 @@ Time.now().utc.iso8601
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">robot-next-execution</parameter>
-                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
-                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
                     <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%={
 'Robot ID' =&gt; @inputs['submission id'],
 'Next Execution' =&gt; Time.parse( @results['Determine next execution']['next_occurrence'] ).utc.iso8601
 }.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_datastore_submission_create_v1" id="routine_kinetic_datastore_submission_create_v1_103" name="Create execution record" x="990" y="650">
                 <version>1</version>
@@ -524,8 +524,8 @@ Time.now().utc.iso8601
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">robot-executions</parameter>
-                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
-                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
                     <parameter id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
 runtime_inputs = JSON.parse(@results['Recheck submission']['Values JSON'])['Runtime Inputs'] || "{}"
 {
@@ -538,9 +538,9 @@ runtime_inputs = JSON.parse(@results['Recheck submission']['Values JSON'])['Runt
 }.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_21</task>
@@ -555,16 +555,16 @@ runtime_inputs = JSON.parse(@results['Recheck submission']['Values JSON'])['Runt
                 <parameters>
                     <parameter id="Form Slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to find submissions in.">robot-executions</parameter>
                     <parameter id="Index To Search" label="Index To Search" menu="" required="false" tooltip="The Index definition to search (i.e. values[Name],values[Status])">values[Robot ID],values[Status],createdAt</parameter>
-                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."/>
+                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."></parameter>
                     <parameter id="Direction" label="Direction" menu="" required="false" tooltip="Result Set sorting direction. The default value is ascending.">DESC</parameter>
                     <parameter id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000">1</parameter>
                     <parameter id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch submissions. (i.e values[First Name]=&quot;Fred&quot;)">values[Robot ID] = "&lt;%=@results['Recheck submission']['Id']%&gt;" AND values[Status] = "Completed"</parameter>
-                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."/>
+                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_defer_v1_18</task>
@@ -583,11 +583,11 @@ runtime_inputs = JSON.parse(@results['Recheck submission']['Values JSON'])['Runt
                     <parameter id="Body" label="Body" menu="" required="false" tooltip="A JSON string of name/value pairs that will be passed to the tree as body content.">&lt;%=@results['Update runtime inputs']['output']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_email_template_notification_send_v1" id="routine_kinetic_email_template_notification_send_v1_109" name="Notification:  Schedule Execution" x="836" y="782">
                 <version>1</version>
@@ -606,15 +606,15 @@ runtime_inputs = JSON.parse(@results['Recheck submission']['Values JSON'])['Runt
 }.to_json%&gt;</parameter>
                     <parameter id="Kapp Slug Initiating Notification" label="Kapp Slug Initiating Notification" menu="" required="true" tooltip="The slug of the Kapp sending the notification (ex: services, queue, etc.)">Robot</parameter>
                     <parameter id="Related Submission Id" label="Related Submission Id" menu="" required="false" tooltip="Id of the submission to get values for, required if using those or attachments in the message">&lt;%=@inputs['submission id']%&gt;</parameter>
-                    <parameter id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" menu="" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)"/>
+                    <parameter id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" menu="" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)"></parameter>
                     <parameter id="Is Datastore" label="Is Datastore" menu="" required="false" tooltip="If the Related Submission Id, or Form Slug is a datastore form.">false</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_datastore_submission_update_v1" id="routine_kinetic_datastore_submission_update_v1_110" name="Update execution record" x="672" y="781">
                 <version>1</version>
@@ -624,9 +624,9 @@ runtime_inputs = JSON.parse(@results['Recheck submission']['Values JSON'])['Runt
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%=@results['Create execution record']['Id']%&gt;</parameter>
-                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"/>
-                    <parameter id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
-                    <parameter id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
                     <parameter id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%=
 require 'time'
 now = Time.now()
@@ -646,9 +646,9 @@ end
 }.to_json %&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_robot_execution_v2_83</task>
@@ -663,19 +663,19 @@ end
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%=JSON.parse( @results['Find next execution record']['Submissions List JSON'] )[0]['id']%&gt;</parameter>
-                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"/>
-                    <parameter id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
-                    <parameter id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
                     <parameter id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%={
 'Next Execution' =&gt; Time.parse( @results['Determine next execution']['next_occurrence'] ).utc.iso8601
 }.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
-                <dependents/>
+                <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_datastore_submission_update_v1" id="routine_kinetic_datastore_submission_update_v1_112" name="Update next execution record - Clear" x="319" y="517">
                 <version>1</version>
@@ -685,17 +685,17 @@ end
                 <visible>false</visible>
                 <parameters>
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The id of the submission to update">&lt;%=JSON.parse( @results['Find next execution record - Clear']['Submissions List JSON'] )[0]['id']%&gt;</parameter>
-                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"/>
-                    <parameter id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"/>
-                    <parameter id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"/>
+                    <parameter id="Updated - Core State" label="Updated - Core State" menu="" required="false" tooltip="The submissions core state"></parameter>
+                    <parameter id="Updated - Current Page Name" label="Updated - Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter id="Updated - Current Page Navigation" label="Updated - Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
                     <parameter id="Updated - Values JSON" label="Updated - Values JSON" menu="" required="false" tooltip="A JSON representation of the submissions values">&lt;%={
 'Next Execution' =&gt; nil
 }.to_json%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Notify" type="Complete" value="JSON.parse(@results['Get submission']['Values JSON'])['Notify Upon Schedule Completion'].downcase == &quot;yes&quot; &amp;&amp; !@inputs['Initial Run'].nil? &amp;&amp; @inputs['Initial Run'].downcase == &quot;false&quot;">routine_kinetic_email_template_notification_send_v1_95</task>
@@ -711,9 +711,9 @@ end
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The Id of the submission to retrieve">&lt;%=@inputs['submission id']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Active" type="Complete" value="JSON.parse(@results['Get submission']['Values JSON'])['Status'].downcase == &quot;active&quot;">utilities_echo_v1_48</task>
@@ -730,15 +730,16 @@ end
                     <parameter id="Id" label="Id" menu="" required="true" tooltip="The Id of the submission to retrieve">&lt;%=@inputs['submission id']%&gt;</parameter>
                 </parameters>
                 <messages>
-                    <message type="Create"/>
-                    <message type="Update"/>
-                    <message type="Complete"/>
+                    <message type="Create"></message>
+                    <message type="Update"></message>
+                    <message type="Complete"></message>
                 </messages>
                 <dependents>
                     <task label="Not found" type="Complete" value="@results['Recheck submission']['Exists'] == &quot;false&quot;">system_noop_v1_70</task>
-                    <task label="Had updates" type="Complete" value="@results['Recheck submission']['Exists'] == &quot;true&quot; &amp;&amp; @results['Recheck submission']['Updated At'] != @inputs['schedule update time']&#xA;">utilities_echo_v1_39</task>
-                    <task label="No updates" type="Complete" value="@results['Recheck submission']['Exists'] == &quot;true&quot; &amp;&amp; @results['Recheck submission']['Updated At'] == @inputs['schedule update time']&#xA;">system_noop_v1_65</task>
+                    <task label="Had updates" type="Complete" value="@results['Recheck submission']['Exists'] == &quot;true&quot; &amp;&amp; @results['Recheck submission']['Updated At'] != @inputs['schedule update time']&#10;">utilities_echo_v1_39</task>
+                    <task label="No updates" type="Complete" value="@results['Recheck submission']['Exists'] == &quot;true&quot; &amp;&amp; @results['Recheck submission']['Updated At'] == @inputs['schedule update time']&#10;">system_noop_v1_65</task>
                 </dependents>
             </task>
         </request>
-    </taskTree></tree>
+    </taskTree>
+</tree>

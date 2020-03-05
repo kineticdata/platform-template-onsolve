@@ -3,6 +3,7 @@
   "description": null,
   "type": "Stored",
   "handlers": [
+    "cherwell_generic_api_v1",
     "cherwell_object_create_v1",
     "cherwell_object_find_v1",
     "cherwell_object_retrieve_v1",
@@ -13,6 +14,7 @@
 
   ],
   "trees": [
-
+    "routine_onsolve_cherwell_user_retrieve_by_name",
+    "routine_onsolve_cherwell_user_retrieve_v1"
   ]
 }
