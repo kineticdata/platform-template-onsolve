@@ -516,7 +516,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -553,7 +552,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -579,7 +577,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -605,7 +602,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -642,7 +638,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -668,7 +663,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -730,7 +724,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -767,7 +760,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -793,7 +785,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -829,7 +820,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "dropdown",
@@ -906,7 +896,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -931,7 +920,6 @@
                   "visible": "values('Polling') === \"Yes\"",
                   "omitWhenHidden": false,
                   "renderAttributes": {
-
                   },
                   "elements": [
                     {
@@ -954,7 +942,6 @@
 
                       ],
                       "renderAttributes": {
-
                       },
                       "dataType": "string",
                       "renderType": "text",
@@ -990,7 +977,6 @@
 
                       ],
                       "renderAttributes": {
-
                       },
                       "dataType": "string",
                       "renderType": "text",
@@ -1016,7 +1002,6 @@
 
                       ],
                       "renderAttributes": {
-
                       },
                       "dataType": "string",
                       "renderType": "text",
@@ -1076,7 +1061,6 @@
 
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1089,7 +1073,6 @@
                           "text": "<h4>Robot Display Here</h4>\n<em>Recurrence Description should be populated when the Robot form is updated</em>",
                           "visible": false,
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -1099,7 +1082,6 @@
                           "text": "<div class=\"modal fade\" id=\"recurrenceModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"recurrenceLabel\">\n  <div class=\"modal-dialog modal-xl\" role=\"document\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <h4 class=\"modal-title\" id=\"recurrenceLabel\"></h4>\n        <button type=\"button\" class=\"close btn btn-link\" data-dismiss=\"modal\" aria-label=\"Close\">Cancel</button>\n      </div>\n      <div class=\"modal-body\">\n        <i class=\"fa fa-cog fa-spin\"></i>\n      </div>\n      <!--div class=\"modal-footer\">\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n      </div-->\n    </div>\n  </div>\n</div>\n",
                           "visible": true,
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -1122,7 +1104,6 @@
 
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1148,7 +1129,6 @@
 
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1161,7 +1141,6 @@
                           "text": "<div id=\"poll-activity\">\n  <div id=\"next-poll\"></div>\n  <div id=\"last-poll\"></div>\n</div>",
                           "visible": true,
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -1172,7 +1151,6 @@
                           "enabled": true,
                           "renderType": "custom",
                           "renderAttributes": {
-
                           },
                           "events": [
                             {
@@ -1276,7 +1254,6 @@
                     }
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "dropdown",
@@ -1312,7 +1289,6 @@
                     }
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -1357,7 +1333,6 @@
                           "text": "<div class=\"placeholders\"></div>",
                           "visible": true,
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -1367,7 +1342,6 @@
                           "text": "Either a representation of data stored in a JSON object, or a subform with entires for each parameter / variable name from the notification.\n\nCould do it like bridges, where you import the notification, then it \"automatically\" looks for parameters (or you can add them manually) into a separate datastore.  Then, you provide a value to the parameters in yet another datastore.  The task engine looks at the parameter values to generate it's data.  Overly complex?  How to keep updated?",
                           "visible": false,
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -1390,7 +1364,6 @@
 
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1457,7 +1430,6 @@
                             }
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "radio",
@@ -1536,7 +1508,6 @@
 
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1578,7 +1549,6 @@
                             }
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1610,7 +1580,6 @@
                             }
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1642,7 +1611,6 @@
                             }
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1668,7 +1636,6 @@
 
                           ],
                           "renderAttributes": {
-
                           },
                           "dataType": "string",
                           "renderType": "text",
@@ -1734,7 +1701,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -1779,7 +1745,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -1805,7 +1770,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -1850,7 +1814,6 @@
                           "text": "<div id=\"initiation-custom-action-params\"></div>",
                           "visible": "values('Notification Initiation Action') === \"Custom Action\"",
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -1861,7 +1824,6 @@
                           "enabled": true,
                           "renderType": "custom",
                           "renderAttributes": {
-
                           },
                           "events": [
                             {
@@ -1896,7 +1858,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -1922,7 +1883,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -1967,7 +1927,6 @@
                           "text": "<div id=\"initiation-standard-action-params\"></div>",
                           "visible": "values('Notification Initiation Action') === \"Standard Reporting\"",
                           "renderAttributes": {
-
                           }
                         }
                       ]
@@ -2030,7 +1989,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -2075,7 +2033,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -2112,7 +2069,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2138,7 +2094,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2183,7 +2138,6 @@
                           "text": "<div id=\"result-custom-action-params\"></div>",
                           "visible": "values('Notification Result Action') === \"Custom Action\"",
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -2194,7 +2148,6 @@
                           "enabled": true,
                           "renderType": "custom",
                           "renderAttributes": {
-
                           },
                           "events": [
                             {
@@ -2229,7 +2182,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2255,7 +2207,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2300,7 +2251,6 @@
                           "text": "<div id=\"result-standard-action-params\"></div>",
                           "visible": "values('Notification Result Action') === \"Standard Reporting\"",
                           "renderAttributes": {
-
                           }
                         }
                       ]
@@ -2364,7 +2314,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "radio",
@@ -2408,7 +2357,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2434,7 +2382,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2460,7 +2407,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2505,7 +2451,6 @@
                           "text": "<div id=\"interim-custom-action-params\"></div>",
                           "visible": "values('Interim Update Action') === \"Custom Action\"",
                           "renderAttributes": {
-
                           }
                         },
                         {
@@ -2516,7 +2461,6 @@
                           "enabled": true,
                           "renderType": "custom",
                           "renderAttributes": {
-
                           },
                           "events": [
                             {
@@ -2551,7 +2495,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2577,7 +2520,6 @@
 
                   ],
                   "renderAttributes": {
-
                   },
                   "dataType": "string",
                   "renderType": "text",
@@ -2622,7 +2564,6 @@
                           "text": "<div id=\"interim-standard-action-params\"></div>",
                           "visible": "values('Interim Update Action') === \"Standard Reporting\"",
                           "renderAttributes": {
-
                           }
                         }
                       ]
@@ -2641,7 +2582,6 @@
           "visible": true,
           "omitWhenHidden": null,
           "renderAttributes": {
-
           },
           "elements": [
             {
@@ -2652,7 +2592,6 @@
               "enabled": true,
               "renderType": "submit-page",
               "renderAttributes": {
-
               }
             }
           ]

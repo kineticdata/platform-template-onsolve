@@ -142,7 +142,7 @@
               "name": "Set Fields and Save",
               "type": "Click",
               "action": "Custom",
-              "code": "K('field[Refresh]').value(\"Refresh\");\n//K('form').save();\nK('form').submitPage();\n\n//https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\n//window.location = \"#/kapps/task-activity-monitor/settings/message_templates\";\n//window.location = \"https://<space-slug>.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\""
+              "code": "K('field[Refresh]').value(\"Refresh\");\n//K('form').save();\nK('form').submitPage();\n\n//https://3210843.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\n//window.location = \"#/kapps/task-activity-monitor/settings/message_templates\";\n//window.location = \"https://3210843.kinops.io/#/kapps/task-activity-monitor/settings/message_templates\""
             }
           ]
         },
@@ -188,7 +188,6 @@
             }
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "radio",
@@ -225,7 +224,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "text",
@@ -251,7 +249,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "text",
@@ -277,7 +274,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "dropdown",
@@ -322,7 +318,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "radio",
@@ -359,7 +354,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "text",
@@ -385,7 +379,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "datetime"
@@ -410,7 +403,6 @@
 
           ],
           "renderAttributes": {
-
           },
           "dataType": "string",
           "renderType": "radio",
@@ -431,7 +423,6 @@
           "enabled": true,
           "renderType": "submit-page",
           "renderAttributes": {
-
           }
         }
       ],

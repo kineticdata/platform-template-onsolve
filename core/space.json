@@ -124,7 +124,7 @@
     {
       "name": "Task Server Space Slug",
       "values": [
-        "onsolve-kubernetes-migration"
+        "3210843"
       ]
     },
     {
@@ -136,7 +136,7 @@
     {
       "name": "Web Server Url",
       "values": [
-        "https://onsolve-kubernetes-migration.kinops.io"
+        "https://3210843.kinops.io"
       ]
     }
   ],
@@ -149,7 +149,7 @@
   "defaultLocale": "en",
   "defaultTimezone": "America/Chicago",
   "displayType": "Single Page App",
-  "displayValue": "spa.jsp?location=https://s3.amazonaws.com/bundles.kineticdata.com/onSolve/build-2019-12-09-platform-support",
+  "displayValue": "spa.jsp?location=https://s3.amazonaws.com/bundles.kineticdata.com/onSolve/build-2020-01-15",
   "enabledLocales": [
     "en"
   ],
@@ -201,11 +201,14 @@
   ],
   "sessionInactiveLimitInSeconds": 2592000,
   "sharedBundleBase": "hydrogen-v1",
-  "slug": "onsolve-kubernetes-migration",
+  "slug": "3210843",
   "trustedFrameDomains": [
 
   ],
   "trustedResourceDomains": [
+
+  ],
+  "webApis": [
 
   ]
 }

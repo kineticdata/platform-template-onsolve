@@ -143,5 +143,8 @@
       "name": "Admins"
     }
   ],
-  "slug": "task-activity-monitor"
+  "slug": "task-activity-monitor",
+  "webApis": [
+
+  ]
 }

@@ -1,0 +1,16 @@
+{
+  "name": "Micro Focus OBM",
+  "description": null,
+  "type": "Stored",
+  "handlers": [
+    "obm_event_annotation_add_v1",
+    "obm_event_retrieve_v1",
+    "obm_event_update_v1"
+  ],
+  "policyRules": [
+
+  ],
+  "trees": [
+
+  ]
+}

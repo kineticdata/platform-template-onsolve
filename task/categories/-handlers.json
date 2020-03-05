@@ -1,0 +1,35 @@
+{
+  "name": "_Handlers",
+  "description": "Handlers in the system",
+  "type": "Stored",
+  "handlers": [
+    "kinetic_agent_handler_execute_v1",
+    "kinetic_core_api_v1",
+    "kinetic_discussions_api_v1",
+    "kinetic_request_ce_cascading_attribute_value_retrieve_v2",
+    "kinetic_request_ce_datastore_submission_create_v1",
+    "kinetic_request_ce_datastore_submission_delete_v1",
+    "kinetic_request_ce_datastore_submission_retrieve_v1",
+    "kinetic_request_ce_datastore_submission_search_v2",
+    "kinetic_request_ce_datastore_submission_update_v1",
+    "kinetic_request_ce_notification_template_send_v3",
+    "kinetic_request_ce_submission_activity_create_v1",
+    "kinetic_request_ce_submission_activity_update_v1",
+    "kinetic_request_ce_submission_create_v1",
+    "kinetic_request_ce_submission_get_answers_v1",
+    "kinetic_request_ce_submission_retrieve_v2",
+    "kinetic_request_ce_submission_search_v2",
+    "kinetic_request_ce_submission_update_observers_v1",
+    "kinetic_request_ce_submission_update_v1",
+    "kinetic_task_api_v1",
+    "kinetic_task_api_v2",
+    "kinetic_task_run_delete_v1",
+    "kinetic_task_tree_run_v2"
+  ],
+  "policyRules": [
+    "Admins"
+  ],
+  "trees": [
+
+  ]
+}

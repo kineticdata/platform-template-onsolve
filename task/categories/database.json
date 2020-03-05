@@ -1,0 +1,14 @@
+{
+  "name": "Database",
+  "description": "Related to database integration",
+  "type": "Stored",
+  "handlers": [
+    "sql_generic_v1"
+  ],
+  "policyRules": [
+
+  ],
+  "trees": [
+    "routine_onsolve_sql_database_call"
+  ]
+}

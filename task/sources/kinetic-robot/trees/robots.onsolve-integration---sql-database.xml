@@ -1,0 +1,432 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Robot</sourceName>
+    <sourceGroup>Robots</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>OnSolve Integration - SQL Database</name>
+        <author></author>
+        <notes></notes>
+        <lastID>85</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                    <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="48.26786" y="150.4018">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running"}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="1135.7584" y="150.31512">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_32</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="1725.552" y="281.06302">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%= @results['Database Search']['JSON Results']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">$[*]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">database_entry</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                    <task label="" type="Complete" value="">routine_onsolve_integration__sql_database__process_incoming_data_82</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="1725.624" y="415.08667">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="1142.8761" y="541.8824">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+# Normal output
+if @results.has_key?("Database Search") &amp;&amp; @results['Database Search'].has_key?('Handler Error Message') &amp;&amp; @results['Database Search']['Handler Error Message'].to_s.empty?
+  outcome = "Successful"
+  output = {
+    "message" =&gt; "#{JSON.parse(@results['Database Search']['JSON Results']).length} results returned",
+    "start_query_time" =&gt; JSON.parse(@results['Determine Start and End Times']['output'])['query_start_time'],
+    "end_query_time" =&gt; JSON.parse(@results['Determine Start and End Times']['output'])['query_end_time']  
+  }.to_json
+end
+
+# If timeout
+if !@results.has_key?("Database Search") || !@results['Database Search'].has_key?('Handler Error Message')
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Timeout during attempted data retrieve"
+  }.to_json
+end
+
+# Handler errored
+if @results.has_key?("Database Search") &amp;&amp; @results['Database Search'].has_key?('Handler Error Message') &amp;&amp; !@results['Database Search']['Handler Error Message'].to_s.empty?
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Retrieve error: #{@results['Database Search']['Handler Error Message']}"
+  }.to_json
+end
+
+results = %|&lt;results&gt;&lt;result name="outcome"&gt;#{outcome}&lt;/result&gt;&lt;result name="output"&gt;#{output}&lt;/result&gt;&lt;/results&gt;|
+results
+#raise "#{results}"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1665.5063" y="648.6229">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_22" name="Get Onsolve Product Setting" x="617.7889" y="152.41754">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Onsolve Product</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_23</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_23" name="Get Polling Artifact Cleanup Setting" x="876.7658" y="151.40967">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Polling Artifact Cleanup Days</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value">30</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Determine Start and End Times" x="1136.7343" y="285.37082">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Determine start and end time to use in query. Store them as output for use in the Robot output trigger.
+# Probably using the output from the last execution run, with additional logic to use a the last x minutes if the last execution time is beyond some threshold.
+# An idea is below:
+
+# Evaluate previous run time.  If none, or if &gt; threshold between last run time and now, use current time (meaning the first run will probably find no records). 
+current_time = Time.now
+previous_run_data = JSON.parse(@source['Data'])['Kinetic Robot Previous Execution Output'] || {}
+previous_run_query_end_time = 
+begin
+  Time.parse(previous_run_data['end_query_time'] || current_time.to_s)
+rescue
+  current_time
+end
+
+# If (current_time - previous_run_query_end_time) &gt; 1 hour (60 min * 60 sec), use current time.
+if (current_time - previous_run_query_end_time).to_i &gt; (60*60)
+  previous_run_query_end_time = current_time
+end 
+
+# Set up new query start and end times, ignoring seconds / milliseconds
+query_start_time = Time.new(previous_run_query_end_time.year, previous_run_query_end_time.month, previous_run_query_end_time.day, previous_run_query_end_time.hour, previous_run_query_end_time.min)
+query_end_time = Time.new(current_time.year, current_time.month, current_time.day, current_time.hour, current_time.min)
+
+# 
+# Format like this  2017-08-29T22:00:00Z to store last action time....
+
+
+output = {}
+output['query_start_time'] = query_start_time.iso8601
+output['query_end_time'] = query_end_time.iso8601
+output.to_json
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_77</task>
+                    <task label="" type="Complete" value="">routine_onsolve_sql_database_call_85</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_36" name="Add Task Run Cleanup Entry" x="1428.5925" y="648.80414">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%={
+  "Task Run Id" =&gt; @run['Id'],
+  "Delete After Date Time" =&gt; (Time.now + (86400 * (@results['Get Polling Artifact Cleanup Setting']['Value']).to_i)).iso8601
+}.to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_45" name="Junction: Robot" x="1423.8608" y="553.89026">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="350.7096" y="162.24423">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_22</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_76" name="Join 2" x="1139.6313" y="416.53625">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not from Robot" type="Complete" value="if !@source['Data']&#10;  true&#10;elsif !JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;  true&#10;else&#10;  false&#10;end">system_junction_v1_45</task>
+                    <task label="Robot Initiated" type="Complete" value="if @source['Data']&#10;  JSON.parse(@source['Data']).has_key? ('Kinetic Robot Execution Record Id')&#10;else &#10;  false&#10;end">utilities_create_trigger_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="875.69385" y="282.48846">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">60</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="No Database Search result" type="Complete" value="!@results['Database Search'].has_key?('Handler Error Message')">routine_onsolve_error_v1_79</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_79" name="Error Notification: Database Timeout" x="878.64185" y="411.43948">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Database Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Database Search query did not respond</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: Database Search Error" x="1370.1177" y="148.14235">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Database Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['Database Search']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@source['Data'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration__sql_database__process_incoming_data" id="routine_onsolve_integration__sql_database__process_incoming_data_82" name="Process Data" x="1981.4497" y="348.1581">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%= ( JSON.parse( @results['Database Search']['JSON Results'] )[@results['Loop Begin']['Index']] ).to_json %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_sql_database_call" id="routine_onsolve_sql_database_call_85" name="Database Search" x="1371.4354" y="282.2684">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="jdbc_database" menu="" required="true" tooltip="">&lt;%=
+JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Type']
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="dbname" label="dbname" menu="" required="true" tooltip="">&lt;%=
+JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Name']
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="action" menu="" required="true" tooltip="">fetch</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="query" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+integration_config = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+query_start_time = Time.parse( extracted_times['query_start_time'] )
+query_end_time = Time.parse( extracted_times['query_end_time'] )
+
+if !integration_config['Date Time Format'].to_s.empty?
+  formatted_start_date = query_start_time.strftime( integration_config['Date Time Format'] )
+  formatted_end_date = query_end_time.strftime( integration_config['Date Time Format'] )
+else
+  formatted_start_date = query_start_time.iso8601
+  formatted_end_date = query_end_time.iso8601
+end
+
+query = integration_config['Qualification']
+
+query.gsub!( "{{Start Date}}", formatted_start_date )
+query.gsub!( "{{End Date}}", formatted_end_date )
+
+query
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="!@results['Database Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: Database Timeout')">routine_onsolve_error_v1_80</task>
+                    <task label="No error" type="Complete" value="@results['Database Search']['Handler Error Message'].to_s.empty?">system_loop_head_v1_5</task>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

@@ -1,0 +1,134 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_cherwell_determine_user</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>OnSolve Cherwell Determine User</name>
+        <author></author>
+        <notes></notes>
+        <lastID>26</lastID>
+        <taskDefinition id="routine_onsolve_cherwell_determine_user" name="OnSolve Cherwell Determine User" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Error Handling" label="Error Handling" required="false" tooltip=""></parameter>
+                <parameter id="Login Id" label="Login Id" required="true" tooltip=""></parameter>
+                <parameter id="Login Id Type" label="Login Id Type" required="true" tooltip=""></parameter>
+                <parameter id="Full Name" label="Full Name" required="true" tooltip=""></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="Message" tooltip=""></result>
+                <result name="User JSON" tooltip=""></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_cherwell_user_retrieve_v1_23</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_21" name="Return by Login" x="315" y="169">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%= @results['Lookup by Login']['Message'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%= @results['Lookup by Login']['User JSON'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_cherwell_user_retrieve_v1" id="routine_onsolve_cherwell_user_retrieve_v1_23" name="Lookup by Login" x="10" y="171">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Login Id" label="Login Id" menu="" required="true" tooltip="">&lt;%= @inputs['Login Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Login Id Type" label="Login Id Type" menu="" required="true" tooltip="">&lt;%= @inputs['Login Id Type'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not Found" type="Complete" value="!@results['Lookup by Login']['Message'].to_s.empty? &amp;&amp; @results['Lookup by Login']['Message'].to_s.include?(&quot;User not found&quot;)">routine_onsolve_cherwell_user_retrieve_by_name_24</task>
+                    <task label="Found or Error" type="Complete" value="#Not empty, and not 'User Not Found' --&gt; Means &quot;real&quot; error &lt;or&gt;&#10;#User JSON has actual content and the error message is blank --&gt; Means &quot;real&quot; value found&#10;(!@results['Lookup by Login']['Message'].to_s.empty? &amp;&amp; !@results['Lookup by Login']['Message'].to_s.include?(&quot;User not found&quot;)) || &#10;(@results['Lookup by Login']['User JSON']!= &quot;null&quot; &amp;&amp; @results['Lookup by Login']['Message'].to_s.empty?)">system_tree_return_v1_21</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_cherwell_user_retrieve_by_name" id="routine_onsolve_cherwell_user_retrieve_by_name_24" name="Lookup by Name" x="10" y="371">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Full Name" label="Full Name" menu="" required="true" tooltip="">&lt;%= @inputs['Full Name'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="">system_tree_return_v1_25</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_25" name="Return by Name" x="320" y="376">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%=
+error_message = @results['Lookup by Name']['Message']
+
+if error_message.to_s.empty?
+
+  users = JSON.parse(@results['Lookup by Name']['User JSON'] || "{}")['users'] || []
+
+  user_found = false
+
+  users.each{|user|
+    if user['EmployeeID'] == @inputs['Login Id']
+      user_found = true
+    end
+  }
+
+  if !user_found
+    error_message = "User not found (#{@inputs['Login Id']} / #{@inputs['Full Name']})"
+  end
+end
+
+error_message
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%=
+users = JSON.parse(@results['Lookup by Name']['User JSON'] || "{}")['users'] || []
+
+user_json = nil
+
+users.each{|user|
+  if user['EmployeeID'] == @inputs['Login Id']
+    user_json = user
+  end
+}
+user_json.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

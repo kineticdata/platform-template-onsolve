@@ -70,7 +70,10 @@ end
 # Configuration of which submissions should be exported
 SUBMISSIONS_TO_EXPORT = [
   {"datastore" => true, "formSlug" => "notification-data"},
-  {"datastore" => true, "formSlug" => "notification-template-dates"}
+  {"datastore" => true, "formSlug" => "notification-template-dates"},
+  {"datastore" => true, "formSlug" => "robot-definitions"},
+  {"datastore" => true, "formSlug" => "task-handler-passwords"},
+
 ]
 
 REMOVE_DATA_PROPERTIES = [
