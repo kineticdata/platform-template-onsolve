@@ -224,8 +224,8 @@ space_attributes_map = {
   "Web Server Url" => [vars["core"]["server"]]
 }
 # set space attributes passed in the variable data
-vars_space_attributes_map = (vars["data"].has_key?("space") && 
-    vars["data"]["space"].has_key?("attributesMap")) ? 
+vars_space_attributes_map = (vars["data"].has_key?("space") &&
+    vars["data"]["space"].has_key?("attributesMap")) ?
     vars["data"]["space"]["attributesMap"] : {}
 # merge in any space attributes passed in the variable data
 space_attributes_map = space_attributes_map.merge(vars_space_attributes_map)
@@ -440,10 +440,35 @@ end
 
 # update the engine properties
 task_sdk.update_engine({
-  "Max Threads" => "2",
+  "Max Threads" => "5",
   "Sleep Delay" => "1",
   "Trigger Query" => "'Selection Criterion'=null"
 })
+
+# ------------------------------------------------------------------------------
+# OnSolve specific
+# ------------------------------------------------------------------------------
+
+# create requesting user that was specified
+if (vars["data"]["requesting_user"])
+  space_sdk.add_user({
+    "username" => vars["data"]["requesting_user"]["username"],
+    "email" => vars["data"]["requesting_user"]["email"],
+    "displayName" => vars["data"]["requesting_user"]["displayName"],
+    "password" => KineticSdk::Utils::Random.simple(16),
+    "enabled" => true,
+    "spaceAdmin" => true,
+    "memberships" => [
+      { "team" => { "name" => "Administrators" } },
+      { "team" => { "name" => "Default" } },
+      { "team" => { "name" => "Role::Form Developer" } },
+      { "team" => { "name" => "Role::Task Developer" } },
+      { "team" => { "name" => "Role::Data Admin" } },
+      { "team" => { "name" => "Role::Employee" } },
+      { "team" => { "name" => "Role::Submission Support" } },
+    ],
+  })
+end
 
 # ------------------------------------------------------------------------------
 # complete
