@@ -190,9 +190,9 @@
       "unique": false
     },
     {
-      "name": "values[Field to Update Upon Notification]",
+      "name": "values[Fields to Update Upon Notification]",
       "parts": [
-        "values[Field to Update Upon Notification]"
+        "values[Fields to Update Upon Notification]"
       ],
       "unique": false
     },
@@ -1044,7 +1044,7 @@
                     },
                     {
                       "type": "field",
-                      "name": "Field to Update Upon Notification",
+                      "name": "Fields to Update Upon Notification",
                       "label": "Field(s) to Update Upon Notification (JSON structure)",
                       "key": "f51",
                       "defaultValue": null,

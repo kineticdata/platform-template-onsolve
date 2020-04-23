@@ -149,7 +149,7 @@
   "defaultLocale": "en",
   "defaultTimezone": "America/Chicago",
   "displayType": "Single Page App",
-  "displayValue": "spa.jsp?location=https://s3.amazonaws.com/bundles.kineticdata.com/onSolve/build-2020-01-15",
+  "displayValue": "spa.jsp?location=https://s3.amazonaws.com/kinops.io/bundles/onsolve/releases/2.x.x",
   "enabledLocales": [
     "en"
   ],

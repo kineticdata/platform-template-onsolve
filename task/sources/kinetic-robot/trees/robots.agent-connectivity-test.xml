@@ -122,7 +122,7 @@ end
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="No Agent Error" type="Complete" value="#@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; JSON.parse( @results['Call Kinetic Task Tree Run on Agent']['output'] || &quot;{}&quot; )['Handler Error Message'].to_s.empty?&#10;!@results.has_key?('Robot return trigger') &amp;&amp; (!@results.has_key?('Call Kinetic Task Tree Run on Agent') || @results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty?)">routine_onsolve_error_v1_35</task>
+                    <task label="No Agent Error" type="Complete" value="#@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; JSON.parse( @results['Call Kinetic Task Tree Run on Agent']['output'] || &quot;{}&quot; )['Handler Error Message'].to_s.empty?&#10;!@results.has_key?('Robot return trigger') &amp;&amp; (!@results.has_key?('Call Kinetic Task Tree Run on Agent') || (@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; @results['Call Kinetic Task Tree Run on Agent']['output'].to_s.empty?))">routine_onsolve_error_v1_35</task>
                     <task label="" type="Create" value="">kinetic_agent_handler_execute_v1_32</task>
                 </dependents>
             </task>
@@ -301,9 +301,7 @@ end
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters></parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_create_v1_26</task>
                 </dependents>

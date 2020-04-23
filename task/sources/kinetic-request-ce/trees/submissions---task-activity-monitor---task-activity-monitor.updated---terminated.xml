@@ -1,0 +1,154 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>Submissions > task-activity-monitor > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>Updated - Terminated</name>
+        <author></author>
+        <notes></notes>
+        <lastID>107</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_105</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_64" name="Send Update Trigger (Stop Notifications)" x="409.0792" y="262.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Update</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=  @values['Deferral Token'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip="">Stop Notification</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_106</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_activity_create_v1" id="routine_kinetic_submission_activity_create_v1_102" name="Add Manual Termination Activity Record" x="408.0792" y="144.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="true" tooltip="Id of the submission to create the activity record for">&lt;%=  @submission['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Data" label="Data" menu="" required="false" tooltip="Data to store in the submission activity">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Completed",
+  "Comments" =&gt; "Termination from Kinetic Task Activity Monitor Requested"
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Description" label="Description" menu="" required="false" tooltip="Description of the submission activity">Source Name: &lt;%=@source['Name']%&gt;
+Source Group: &lt;%=@source['Group']%&gt;
+Source Id: &lt;%=@source['Id']%&gt;
+Run Id: &lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Label" label="Label" menu="" required="false" tooltip="Label for the submission activity">MIR3 Notification Termination Requested</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Type" label="Type" menu="" required="false" tooltip="Type of submission activity">Notification Completed</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_create_trigger_v1_64</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_create_v1" id="kinetic_request_ce_datastore_submission_create_v1_103" name="Add Task Run Cleanup Entry" x="104.0792" y="505.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being created in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Datastore Form Slug" menu="" required="true" tooltip="The slug of the datastore form the submission is for.">task-run-cleanup</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="JSON map of submission field values.">&lt;%=
+integration_config = JSON.parse(@results['Get Integration Configuration']['Values JSON'])
+duration = integration_config['Task History Duration'].to_i
+
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Delete After Date Time" =&gt; (Time.now + (86400 * duration)).iso8601
+}.to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_107</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_104" name="End" x="422.0792" y="600.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_105" name="Get Integration Configuration" x="103.0792" y="147.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=  @values['Integration Id'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Status to Terminate" type="Complete" value="@values['Onsolve Status'] == &quot;Terminate&quot; &amp;&amp;  @values_previous['Onsolve Status'] != &quot;Terminate&quot;">routine_kinetic_submission_activity_create_v1_102</task>
+                    <task label="" type="Complete" value="">system_junction_v1_106</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_106" name="Junction" x="101.0792" y="388.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not Forever" type="Complete" value="integration_config = JSON.parse(@results['Get Integration Configuration']['Values JSON'])&#10;integration_config['Keep Task History'] == &quot;Not Forever&quot;">kinetic_request_ce_datastore_submission_create_v1_103</task>
+                    <task label="Forever" type="Complete" value="integration_config = JSON.parse(@results['Get Integration Configuration']['Values JSON'])&#10;integration_config['Keep Task History'] != &quot;Not Forever&quot;">system_junction_v1_107</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_107" name="Junction: End" x="419.0792" y="509.99725">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_104</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>
