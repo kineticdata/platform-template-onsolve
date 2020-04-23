@@ -297,17 +297,17 @@ rows = [report_result['row']] if report_result['row'].is_a? (Hash)
 assignment_status = nil
 if assignment_logic_output['notificationStatus'] == "RESPONDED" &amp;&amp; !['Broadcast','Bulletin Board'].include?(notification_method)
   if integration_config['Assign Responder'] == "Yes"
-    if @results['Get Cherwell User'] &amp;&amp; !JSON.parse( @results['Get Cherwell User']['User JSON'] || "{}" ).empty?
+    if @results['Get Cherwell User'] &amp;&amp; @results['Get Cherwell User']['User JSON'] != "null" &amp;&amp; !JSON.parse( @results['Get Cherwell User']['User JSON'] || "{}" ).empty?
         # If successfully assigned
         if @results.has_key?('Assign Cherwell') &amp;&amp; @results['Assign Cherwell']['Handler Error Message'].to_s.empty?
           # Assignment successful
           assignment_status = "completed and assigned #{assignment_logic_output['responderName']} as the responder accepting the issue with the response: #{assignment_logic_output['responderResponse']}."
         else
           # Assignment unsuccessful
-          assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']} - HOWEVER, assignment to that Service Now user was unsuccessful."
+          assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']} - HOWEVER, assignment to that Cherwell user was unsuccessful."
         end
       else
-        assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']} - HOWEVER, assignment to that Service Now user was unsuccessful."
+        assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']} - HOWEVER, assignment to that Cherwell user was unsuccessful."
       end
   else
     assignment_status = "completed and #{assignment_logic_output['responderName']} accepted the issue with the response: #{assignment_logic_output['responderResponse']}."
@@ -339,7 +339,9 @@ end
 work_note_text
 %&gt;</parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_36</task>
                 </dependents>
@@ -684,11 +686,7 @@ end
 
 </parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_28</task>
                 </dependents>

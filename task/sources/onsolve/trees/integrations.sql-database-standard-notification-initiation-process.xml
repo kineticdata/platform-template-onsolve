@@ -388,7 +388,7 @@ results['error'].each{|key,value|
                     <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 source_data = JSON.parse( @source['Data'] )['Source Data']
-client_reference = source_data[integration_config['External Unique Key Field Name']]['display_value']
+client_reference = source_data[integration_config['External Unique Key Field Name']]['display_value'] || source_data[integration_config['External Unique Key Field Name']]
 
 "Unable to initiate notification in MIR3 for #{client_reference} (integration: #{integration_config['Name']})"
 %&gt;</parameter>
@@ -406,7 +406,9 @@ comments
                     <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents></dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_113" name="Work Note Content" x="1005" y="380">
@@ -589,9 +591,7 @@ end
                     <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_119" name="Outbound Activity - Database Update - Alerting Initiated" x="1292" y="515">
@@ -689,9 +689,7 @@ end
                     <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Cherwell Object" x="1294" y="652">

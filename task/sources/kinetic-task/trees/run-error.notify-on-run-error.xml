@@ -119,9 +119,11 @@
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=JSON.parse(@results['Retrieve Space Admins']['Response Body'])['users'].select {|user| user['email'] &amp;&amp; !user["email"].include?("@kinops.io")}.map { |user| user["email"]  }.join(',')%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=JSON.parse(@results['Retrieve Space Admins']['Response Body'])['users'].select {|user| user['email'] &amp;&amp; !user['email'].to_s.empty? &amp;&amp; !user["email"].include?("@kinops.io")}.map { |user| user["email"]  }.join(',')%&gt;</parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_19</task>
                 </dependents>
@@ -141,9 +143,7 @@ has_web_server_attribute ? space_data['space']['attributesMap']['Web Server Url'
 
 </parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="Configured?" type="Complete" value="!@results['Configure From Email Address']['output'].empty? &amp;&amp; !@results['Configure System Owner Email Address']['output'].empty? &amp;&amp; !@results['Configure Web Server']['output'].empty?">system_noop_v1_7</task>
                 </dependents>
