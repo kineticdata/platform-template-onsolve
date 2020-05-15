@@ -1,6 +1,12 @@
 {
   "attributes": [
     {
+      "name": "Datastore Hidden",
+      "values": [
+        "True"
+      ]
+    },
+    {
       "name": "Integration Config",
       "values": [
         "True"
@@ -467,6 +473,40 @@
         {
           "type": "section",
           "renderType": null,
+          "name": "Top Buttons Section",
+          "title": null,
+          "visible": true,
+          "omitWhenHidden": null,
+          "renderAttributes": {
+            "style": "padding-bottom: 32px;"
+          },
+          "elements": [
+            {
+              "type": "content",
+              "renderType": "html",
+              "name": "Integration Timestamps",
+              "text": null,
+              "visible": true,
+              "renderAttributes": {
+                "style": "float:left;"
+              }
+            },
+            {
+              "type": "button",
+              "label": "Save",
+              "name": "Top Submit",
+              "visible": true,
+              "enabled": true,
+              "renderType": "submit-page",
+              "renderAttributes": {
+                "style": "float:right;"
+              }
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "renderType": null,
           "name": "General Info Container",
           "title": null,
           "visible": true,
@@ -877,6 +917,15 @@
               },
               "elements": [
                 {
+                  "type": "content",
+                  "renderType": "html",
+                  "name": "Polling Note",
+                  "text": "<font color=red><strong>Polling Details can only be configured after the integeration is saved.</strong></font>",
+                  "visible": false,
+                  "renderAttributes": {
+                  }
+                },
+                {
                   "type": "field",
                   "name": "Polling",
                   "label": "Polling",
@@ -893,7 +942,13 @@
 
                   ],
                   "events": [
-
+                    {
+                      "name": "Warning if not saved",
+                      "type": "Change",
+                      "action": "Custom",
+                      "code": "K('content[Polling Note]').show();\nK('field[Polling]').value(\"No\");",
+                      "runIf": "!K('submission').id() && values('Polling') === \"Yes\""
+                    }
                   ],
                   "renderAttributes": {
                   },
@@ -1532,8 +1587,8 @@
                           "defaultResourceName": null,
                           "visible": true,
                           "enabled": true,
-                          "required": "1===2 && values('Recipients JSON') === null",
-                          "requiredMessage": "Individuals, Groups, and/or Schedules must have a value",
+                          "required": false,
+                          "requiredMessage": null,
                           "omitWhenHidden": null,
                           "pattern": null,
                           "constraints": [
@@ -1563,8 +1618,8 @@
                           "defaultResourceName": null,
                           "visible": true,
                           "enabled": true,
-                          "required": "1===2 && values('Recipients JSON') === null",
-                          "requiredMessage": "Individuals, Groups, and/or Schedules must have a value",
+                          "required": false,
+                          "requiredMessage": null,
                           "omitWhenHidden": null,
                           "pattern": null,
                           "constraints": [
@@ -1594,8 +1649,8 @@
                           "defaultResourceName": null,
                           "visible": true,
                           "enabled": true,
-                          "required": "1===2 && values('Recipients JSON') === null",
-                          "requiredMessage": "Individuals, Groups, and/or Schedules must have a value",
+                          "required": false,
+                          "requiredMessage": null,
                           "omitWhenHidden": null,
                           "pattern": null,
                           "constraints": [
@@ -1625,8 +1680,8 @@
                           "defaultResourceName": null,
                           "visible": false,
                           "enabled": false,
-                          "required": "1===2",
-                          "requiredMessage": "Recipients must be provided for at least one level.",
+                          "required": false,
+                          "requiredMessage": null,
                           "omitWhenHidden": false,
                           "pattern": null,
                           "constraints": [
@@ -2653,6 +2708,13 @@
           "runIf": "values('Polling') === \"Yes\"",
           "bridgedResourceName": "Last Robot Execution",
           "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);"
+        },
+        {
+          "name": "Get Integration Timestamps",
+          "type": "Load",
+          "action": "Custom",
+          "code": "$.ajax({\n    type: \"GET\",\n url: \"/app/api/v1/datastore/submissions/\"+K('submission').id(), \n dataType: 'json',\n data: {include: \"details\"},\n    success: function (data) { \n\t\tK('content[Integration Timestamps]').element().innerHTML = \"Created by \" + data.submission.createdBy + \" on \" + moment(data.submission.createdAt).format('MMMM Do YYYY [at] h:mm:ss a')+\".<br>Last Updated by \" + data.submission.updatedBy + \" on \" + moment(data.submission.updatedAt).format('MMMM Do YYYY [at] h:mm:ss a')+\".\"\n    }\n});",
+          "runIf": "K('submission').id() != null"
         }
       ],
       "name": "Page 1",

@@ -203,6 +203,13 @@
       "unique": false
     },
     {
+      "name": "values[Fields to Update Upon Unsuccessful Notification]",
+      "parts": [
+        "values[Fields to Update Upon Unsuccessful Notification]"
+      ],
+      "unique": false
+    },
+    {
       "name": "values[Groups]",
       "parts": [
         "values[Groups]"
@@ -364,6 +371,20 @@
       "unique": false
     },
     {
+      "name": "values[Polling Process]",
+      "parts": [
+        "values[Polling Process]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Polling Task Tree]",
+      "parts": [
+        "values[Polling Task Tree]"
+      ],
+      "unique": false
+    },
+    {
       "name": "values[Polling]",
       "parts": [
         "values[Polling]"
@@ -515,12 +536,47 @@
         {
           "type": "section",
           "renderType": null,
+          "name": "Top Buttons Section",
+          "title": null,
+          "visible": true,
+          "omitWhenHidden": null,
+          "renderAttributes": {
+            "style": "padding-bottom: 32px;"
+          },
+          "elements": [
+            {
+              "type": "content",
+              "renderType": "html",
+              "name": "Integration Timestamps",
+              "text": null,
+              "visible": true,
+              "renderAttributes": {
+                "style": "float:left;"
+              }
+            },
+            {
+              "type": "button",
+              "label": "Save",
+              "name": "Top Submit",
+              "visible": true,
+              "enabled": true,
+              "renderType": "submit-page",
+              "renderAttributes": {
+                "style": "float:right;"
+              }
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "renderType": null,
           "name": "General Info Container",
           "title": null,
           "visible": true,
           "omitWhenHidden": null,
           "renderAttributes": {
-            "class": "card"
+            "class": "card",
+            "style": "clear:both;"
           },
           "elements": [
             {
@@ -753,11 +809,20 @@
               },
               "elements": [
                 {
+                  "type": "content",
+                  "renderType": "html",
+                  "name": "Schema Notes",
+                  "text": "<small>Ivanti API calls to retrieve object records must append an 's' to the end of the object name, even if the object name already ends in 's'.  For example Logs should be entered as Logss or Incident should be entered as Incidents.</small>",
+                  "visible": true,
+                  "renderAttributes": {
+                  }
+                },
+                {
                   "type": "field",
                   "name": "Schema Name",
-                  "label": "Business Object Type",
+                  "label": "Business Object Name",
                   "key": "f7",
-                  "defaultValue": "Incident",
+                  "defaultValue": "",
                   "defaultResourceName": null,
                   "visible": true,
                   "enabled": true,
@@ -807,13 +872,13 @@
                   "name": "Schema Type Id",
                   "label": "Business Object Type Id",
                   "key": "f50",
-                  "defaultValue": "6dd53665c0c24cab86870a21cf6434ae",
+                  "defaultValue": "",
                   "defaultResourceName": null,
-                  "visible": true,
-                  "enabled": true,
+                  "visible": false,
+                  "enabled": false,
                   "required": false,
                   "requiredMessage": null,
-                  "omitWhenHidden": null,
+                  "omitWhenHidden": true,
                   "pattern": null,
                   "constraints": [
 
@@ -1003,7 +1068,7 @@
                   "type": "content",
                   "renderType": "html",
                   "name": "Unique Individual Identifier Field Note",
-                  "text": "<small>The Ivanti lookup expects to uniquely identify an individual user based on <strong>Login Id</strong>. Identify if the Ivanti users are Internal or Windows users.",
+                  "text": "<small>The Ivanti lookup expects to uniquely identify an individual user based on <strong>Login Id</strong>. Identify if the Ivanti users are Internal or Windows users.</small>",
                   "visible": true,
                   "renderAttributes": {
                     "class": "margin-top:-10px;"
@@ -1086,6 +1151,15 @@
               },
               "elements": [
                 {
+                  "type": "content",
+                  "renderType": "html",
+                  "name": "Polling Note",
+                  "text": "<font color=red><strong>Polling Details can only be configured after the integeration is saved.</strong></font>",
+                  "visible": false,
+                  "renderAttributes": {
+                  }
+                },
+                {
                   "type": "field",
                   "name": "Polling",
                   "label": "Polling",
@@ -1102,7 +1176,13 @@
 
                   ],
                   "events": [
-
+                    {
+                      "name": "Warning if not saved",
+                      "type": "Change",
+                      "action": "Custom",
+                      "code": "K('content[Polling Note]').show();\nK('field[Polling]').value(\"No\");",
+                      "runIf": "!K('submission').id() && values('Polling') === \"Yes\""
+                    }
                   ],
                   "renderAttributes": {
                   },
@@ -1131,6 +1211,79 @@
                   "renderAttributes": {
                   },
                   "elements": [
+                    {
+                      "type": "field",
+                      "name": "Polling Process",
+                      "label": "Polling Process",
+                      "key": "f57",
+                      "defaultValue": "Standard",
+                      "defaultResourceName": null,
+                      "visible": true,
+                      "enabled": true,
+                      "required": false,
+                      "requiredMessage": null,
+                      "omitWhenHidden": null,
+                      "pattern": null,
+                      "constraints": [
+
+                      ],
+                      "events": [
+                        {
+                          "name": "Set Polling Task Tree Name",
+                          "type": "Change",
+                          "action": "Set Fields",
+                          "mappings": [
+                            {
+                              "field": "Polling Task Tree",
+                              "value": "OnSolve Integration - ${form('name')}",
+                              "visible": null
+                            }
+                          ],
+                          "runIf": "values('Polling Process') === \"Standard\""
+                        }
+                      ],
+                      "renderAttributes": {
+                      },
+                      "dataType": "string",
+                      "renderType": "radio",
+                      "choicesResourceName": null,
+                      "choicesRunIf": null,
+                      "choices": [
+                        {
+                          "label": "Standard",
+                          "value": "Standard"
+                        },
+                        {
+                          "label": "Custom",
+                          "value": "Custom"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "field",
+                      "name": "Polling Task Tree",
+                      "label": "Polling Task Tree",
+                      "key": "f56",
+                      "defaultValue": "OnSolve Integration - ${form('name')}",
+                      "defaultResourceName": null,
+                      "visible": "values('Polling Process') === \"Custom\"",
+                      "enabled": true,
+                      "required": true,
+                      "requiredMessage": null,
+                      "omitWhenHidden": false,
+                      "pattern": null,
+                      "constraints": [
+
+                      ],
+                      "events": [
+
+                      ],
+                      "renderAttributes": {
+                      },
+                      "dataType": "string",
+                      "renderType": "text",
+                      "rows": 1
+                    },
                     {
                       "type": "field",
                       "name": "Qualification",
@@ -1193,9 +1346,9 @@
                     },
                     {
                       "type": "field",
-                      "name": "Stop Notification Criteria",
-                      "label": "Stop Notification Criteria",
-                      "key": "f33",
+                      "name": "Fields to Update Upon Unsuccessful Notification",
+                      "label": "Fields to Update Upon Unsuccessful Notification",
+                      "key": "f58",
                       "defaultValue": null,
                       "defaultResourceName": null,
                       "visible": true,
@@ -1218,16 +1371,41 @@
                     },
                     {
                       "type": "field",
+                      "name": "Stop Notification Criteria",
+                      "label": "Stop Notification Criteria",
+                      "key": "f33",
+                      "defaultValue": null,
+                      "defaultResourceName": null,
+                      "visible": false,
+                      "enabled": false,
+                      "required": false,
+                      "requiredMessage": null,
+                      "omitWhenHidden": true,
+                      "pattern": null,
+                      "constraints": [
+
+                      ],
+                      "events": [
+
+                      ],
+                      "renderAttributes": {
+                      },
+                      "dataType": "string",
+                      "renderType": "text",
+                      "rows": 1
+                    },
+                    {
+                      "type": "field",
                       "name": "Restart Notification Criteria",
                       "label": "Restart Notification Criteria",
                       "key": "f34",
                       "defaultValue": null,
                       "defaultResourceName": null,
-                      "visible": true,
-                      "enabled": true,
+                      "visible": false,
+                      "enabled": false,
                       "required": false,
                       "requiredMessage": null,
-                      "omitWhenHidden": null,
+                      "omitWhenHidden": true,
                       "pattern": null,
                       "constraints": [
 
@@ -1372,7 +1550,7 @@
                           "type": "content",
                           "renderType": "html",
                           "name": "Poll Activity",
-                          "text": "<div id=\"poll-activity\">\n  <div id=\"next-poll\"></div>\n  <div id=\"last-poll\"></div>\n</div>",
+                          "text": "<div id=\"poll-activity\" style=\"margin-bottom: 12px;\">\n  <div id=\"next-poll\"></div>\n  <div id=\"last-poll\"></div>\n</div>",
                           "visible": true,
                           "renderAttributes": {
                           }
@@ -1391,7 +1569,7 @@
                               "name": "Display Recurrence Modal",
                               "type": "Click",
                               "action": "Custom",
-                              "code": "var url = bundle.spaceLocation();\nvar recurrence_exists = K('field[Recurrence Submission Id]').value() !== null ? true : false;\nif ( recurrence_exists ) {\n  url += '/app/datastore/submissions/' + K('field[Recurrence Submission Id]').value();\n} else {\n  url += '/app/datastore/forms/robot-definitions';\n}\n\nK.load({\n  path: url + \"?values[Embedded]=Embedded\",\n  container: '#recurrenceModal .modal-body',\n  loaded: function(form) { \n    // Set values ... but only for defaults the first time you open.\n    if ( !recurrence_exists ) {\n      form.select( 'field[Robot Name]' ).value( 'OnSolve Integration - ' + K('field[Name]').value() );\n      form.select( 'field[Description]' ).value( 'This robot was created from a submission to the OnSolve Integration form: \\'' + K('form').name() + '\\'.  It is normally not updated directly from the Robot Definition form, but through updates to the OnSolve Integration form.' );\n      form.select( 'field[Category]' ).value( 'OnSolve Integration' );\n      //form.select( 'field[Status]' ).value( 'Active' );\n      form.select( 'field[Task Tree]' ).value( 'OnSolve Integration - ' + K('form').name() );\n      form.select( 'field[Runtime Inputs]' ).value( '{\"Integration Configuration Submission Id\":\"' + K('submission').id() + '\"}' );\n      form.select( 'field[Notify Upon Each Run Completion]' ).value( 'No' );\n      form.select( 'field[Start Date]' ).value( (new Date).toISOString() );\n    } else {\n      // passing values on the parameter line (i.e., to set the embedded field flag) only works on create, so you pass it as a value after load on existing records.\n      form.select( 'field[Embedded]' ).value( 'Embedded' );\n    }\n  },\n  created: function(data) { \n    K('field[Recurrence Submission Id]').value( data['submission']['id'] );\n    K('field[Recurrence Description]').value( data['submission']['values']['Recurrence Description'] );\n    K('field[Recurrence Status]').value( data['submission']['values']['Status'] );\n    $('#recurrenceModal').modal('hide');\n  },\n  updated: function(data) { \n    K('field[Recurrence Description]').value( data['submission']['values']['Recurrence Description'] );\n    K('field[Recurrence Status]').value( data['submission']['values']['Status'] );\n    $('#recurrenceModal').modal('hide');\n  },\n  completed: function(data, action) {  }\n});\n                           \n$('#recurrenceModal').modal('show');"
+                              "code": "var url = bundle.spaceLocation();\nvar recurrence_exists = K('field[Recurrence Submission Id]').value() !== null ? true : false;\nif ( recurrence_exists ) {\n  url += '/app/datastore/submissions/' + K('field[Recurrence Submission Id]').value();\n} else {\n  url += '/app/datastore/forms/robot-definitions';\n}\n\nK.load({\n  path: url + \"?values[Embedded]=Embedded\",\n  container: '#recurrenceModal .modal-body',\n  loaded: function(form) { \n    // Set values ... but only for defaults the first time you open.\n    if ( !recurrence_exists ) {\n      form.select( 'field[Robot Name]' ).value( 'OnSolve Integration - ' + K('field[Name]').value() );\n      form.select( 'field[Description]' ).value( 'This robot was created from a submission to the OnSolve Integration form: \\'' + K('form').name() + '\\'.  It is normally not updated directly from the Robot Definition form, but through updates to the OnSolve Integration form.' );\n      form.select( 'field[Category]' ).value( 'OnSolve Integration' );\n      //form.select( 'field[Status]' ).value( 'Active' );\n      //form.select( 'field[Task Tree]' ).value( 'OnSolve Integration - ' + K('form').name() );\n      form.select( 'field[Task Tree]' ).value( K('field[Polling Task Tree]').value() );\n      form.select( 'field[Runtime Inputs]' ).value( '{\"Integration Configuration Submission Id\":\"' + K('submission').id() + '\"}' );\n      form.select( 'field[Notify Upon Each Run Completion]' ).value( 'No' );\n      form.select( 'field[Start Date]' ).value( (new Date).toISOString() );\n    } else {\n      // passing values on the parameter line (i.e., to set the embedded field flag) only works on create, so you pass it as a value after load on existing records.\n      form.select( 'field[Embedded]' ).value( 'Embedded' );\n    }\n  },\n  created: function(data) { \n    K('field[Recurrence Submission Id]').value( data['submission']['id'] );\n    K('field[Recurrence Description]').value( data['submission']['values']['Recurrence Description'] );\n    K('field[Recurrence Status]').value( data['submission']['values']['Status'] );\n    $('#recurrenceModal').modal('hide');\n  },\n  updated: function(data) { \n    K('field[Recurrence Description]').value( data['submission']['values']['Recurrence Description'] );\n    K('field[Recurrence Status]').value( data['submission']['values']['Status'] );\n    $('#recurrenceModal').modal('hide');\n  },\n  completed: function(data, action) {  }\n});\n                           \n$('#recurrenceModal').modal('show');"
                             }
                           ]
                         }
@@ -2873,6 +3051,13 @@
           "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);",
           "runIf": "values('Polling') === \"Yes\"",
           "bridgedResourceName": "Last Robot Execution"
+        },
+        {
+          "name": "Get Integration Timestamps",
+          "type": "Load",
+          "action": "Custom",
+          "code": "$.ajax({\n    type: \"GET\",\n url: \"/app/api/v1/datastore/submissions/\"+K('submission').id(), \n dataType: 'json',\n data: {include: \"details\"},\n    success: function (data) { \n\t\tK('content[Integration Timestamps]').element().innerHTML = \"Created by \" + data.submission.createdBy + \" on \" + moment(data.submission.createdAt).format('MMMM Do YYYY [at] h:mm:ss a')+\".<br>Last Updated by \" + data.submission.updatedBy + \" on \" + moment(data.submission.updatedAt).format('MMMM Do YYYY [at] h:mm:ss a')+\".\"\n    }\n});",
+          "runIf": "K('submission').id() != null"
         }
       ],
       "name": "Page 1",

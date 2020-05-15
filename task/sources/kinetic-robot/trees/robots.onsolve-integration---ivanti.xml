@@ -123,8 +123,9 @@ end
 # Handler errored
 if @results.has_key?("Ivanti Search") &amp;&amp; @results['Ivanti Search'].has_key?('Handler Error Message') &amp;&amp; !@results['Ivanti Search']['Handler Error Message'].to_s.empty?
   outcome = "Unsuccessful"
+  ESCAPE_CHARACTERS = {'&amp;'=&gt;'&amp;amp;', '&gt;'=&gt;'&amp;gt;', '&lt;'=&gt;'&amp;lt;', '"' =&gt; '&amp;quot;'}
   output = {
-    "message" =&gt; "Retrieve error: #{@results['Ivanti Search']['Handler Error Message']}"
+    "message" =&gt; "Retrieve error: #{@results['Ivanti Search']['Handler Error Message'].to_s.gsub(/[&amp;"&gt;&lt;]/) { |special| ESCAPE_CHARACTERS[special] }}"
   }.to_json
 end
 

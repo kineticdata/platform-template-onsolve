@@ -7,7 +7,7 @@
         <name>Submitted or Updated</name>
         <author></author>
         <notes></notes>
-        <lastID>54</lastID>
+        <lastID>59</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -64,7 +64,12 @@ agent_handler_slugs =
   "Cherwell - Update" =&gt; "cherwell_object_update_v1",
   "OBM - Annotation Add" =&gt; "obm_event_annotation_add_v1",
   "OBM - Event Retrieve" =&gt; "obm_event_retrieve_v1",
-  "OBM - Event Update" =&gt; "obm_event_update_v1"
+  "OBM - Event Update" =&gt; "obm_event_update_v1",
+  "SQL Database - All" =&gt; "sql_generic_v1",
+  "Ivanti - Create" =&gt; "ivanti_generic_api_v1",
+  "Ivanti - Find" =&gt; "ivanti_generic_api_v1",
+  "Ivanti - Retrieve" =&gt; "ivanti_generic_api_v1",
+  "Ivanti - Update" =&gt; "ivanti_generic_api_v1",
 }
 
 ## Look up value using matching criteria.  If not found, use the @values['Action'] as a default.
@@ -85,7 +90,7 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <task label="" type="Complete" value="">kinetic_agent_handler_execute_v1_1</task>
                 </dependents>
             </task>
-            <task definition_id="system_noop_v1" id="system_noop_v1_10" name="No Agent" x="424" y="557">
+            <task definition_id="system_noop_v1" id="system_noop_v1_10" name="No Agent" x="251" y="593">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -99,6 +104,7 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <task label="Cherwell" type="Complete" value="@values['Source'].to_s.downcase == &quot;cherwell&quot;">system_noop_v1_14</task>
                     <task label="OBM" type="Complete" value="@values['Source'].to_s.downcase == &quot;obm&quot;">system_noop_v1_19</task>
                     <task label="SQL Database" type="Complete" value="@values['Source'].to_s.downcase == &quot;sql database&quot;">system_noop_v1_53</task>
+                    <task label="Ivanti" type="Complete" value="@values['Source'].to_s.downcase == &quot;ivanti&quot;">system_noop_v1_55</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_11" name="Remedy" x="707" y="298">
@@ -114,7 +120,7 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">remedy_generic_create_v2_52</task>
                 </dependents>
             </task>
-            <task definition_id="system_noop_v1" id="system_noop_v1_12" name="ServiceNow" x="707" y="518">
+            <task definition_id="system_noop_v1" id="system_noop_v1_12" name="ServiceNow" x="719" y="408">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -126,7 +132,7 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                     <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">servicenow_object_update_v1_13</task>
                 </dependents>
             </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_13" name="ServiceNow Update" x="1029" y="497">
+            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_13" name="ServiceNow Update" x="942" y="422">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -582,7 +588,7 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="system_join_v1" id="system_join_v1_45" name="Join: Continue Processing" x="427" y="270">
+            <task definition_id="system_join_v1" id="system_join_v1_45" name="Join: Continue Processing" x="399" y="259">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -613,7 +619,7 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                     <task label="" type="Complete" value="">routine_kinetic_submission_retrieve_with_child_values_v1_35</task>
                 </dependents>
             </task>
-            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_48" name="Cherwell Create" x="1027" y="629">
+            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_48" name="Cherwell Create" x="897" y="678">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -630,7 +636,7 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                     <task label="Error" type="Complete" value="!@results['Cherwell Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
                 </dependents>
             </task>
-            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_49" name="Cherwell Update" x="1026" y="701">
+            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_49" name="Cherwell Update" x="907" y="759">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -690,9 +696,7 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters></parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="All" type="Complete" value="">sql_generic_v1_54</task>
                 </dependents>
@@ -710,12 +714,90 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                     <parameter dependsOnId="" dependsOnValue="" id="action" label="SQL Action" menu="" required="true" tooltip="SQL Action Type. Use fetch for a SELECT statement or run for an UPDATE query.">&lt;%= JSON.parse( @values['Payload'] )['action']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="query" label="Command to Perform" menu="" required="true" tooltip="SQL Command to be performed.">&lt;%= JSON.parse( @values['Payload'] )['query']%&gt;</parameter>
                 </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Error" type="Complete" value="!@results['SQL Command']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                    <task label="No Error" type="Complete" value="@results['SQL Command']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_55" name="Ivanti" x="517" y="567">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Create" type="Complete" value="@values['Action'].to_s.downcase == &quot;create&quot;">ivanti_generic_api_v1_58</task>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">ivanti_generic_api_v1_59</task>
+                </dependents>
+            </task>
+            <task definition_id="cherwell_object_create_v1" id="cherwell_object_create_v1_56" name="Ivanti Create xxx" x="-246" y="620">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be created with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="cherwell_object_update_v1" id="cherwell_object_update_v1_57" name="Ivanti Update xxx" x="-238" y="706">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to update (ie. Incident).">&lt;%= JSON.parse( @values['Payload'] )['object_name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_id" label="Object Id" menu="" required="true" tooltip="Public id for the object that should be updated..">&lt;%= JSON.parse( @values['Payload'] )['object_id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="object_json" label="Object JSON" menu="" required="true" tooltip="A JSON representation of the displayName/values for the fields that the object should be updated with.">&lt;%= JSON.parse( @values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="ivanti_generic_api_v1" id="ivanti_generic_api_v1_58" name="Ivanti Create" x="755" y="518">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="" required="true" tooltip="GET,POST,PUT,DELETE">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Path to the businessobject (include filter options if needed) for example: incidents?$filter=Status eq 'Active'"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT)"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['Ivanti Create']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Ivanti Create']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="ivanti_generic_api_v1" id="ivanti_generic_api_v1_59" name="Ivanti Update" x="756" y="608">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="" required="true" tooltip="GET,POST,PUT,DELETE">PUT</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Path to the businessobject (include filter options if needed) for example: incidents?$filter=Status eq 'Active'">&lt;%=JSON.parse(@values['Payload'])['schema_name']%&gt;('&lt;%=@values['Source Id']%&gt;')</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT)">&lt;%=JSON.parse(@values['Payload'] )['object_json']%&gt;</parameter>
+                </parameters>
                 <messages>
                     <message type="Complete"></message>
                 </messages>
                 <dependents>
-                    <task label="Error" type="Complete" value="!@results['SQL Command']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
-                    <task label="No Error" type="Complete" value="@results['SQL Command']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="No Error" type="Complete" value="@results['Ivanti Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['Ivanti Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
                 </dependents>
             </task>
         </request>
