@@ -1,6 +1,12 @@
 {
   "attributes": [
     {
+      "name": "Datastore Hidden",
+      "values": [
+        "True"
+      ]
+    },
+    {
       "name": "Integration Config",
       "values": [
         "True"
@@ -214,6 +220,13 @@
       "name": "values[Groups]",
       "parts": [
         "values[Groups]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Inbound Integration Data Retrieval Query]",
+      "parts": [
+        "values[Inbound Integration Data Retrieval Query]"
       ],
       "unique": false
     },
@@ -555,6 +568,40 @@
       "displayCondition": null,
       "displayPage": null,
       "elements": [
+        {
+          "type": "section",
+          "renderType": null,
+          "name": "Top Buttons Section",
+          "title": null,
+          "visible": true,
+          "omitWhenHidden": null,
+          "renderAttributes": {
+            "style": "padding-bottom: 32px;"
+          },
+          "elements": [
+            {
+              "type": "content",
+              "renderType": "html",
+              "name": "Integration Timestamps",
+              "text": null,
+              "visible": true,
+              "renderAttributes": {
+                "style": "float:left;"
+              }
+            },
+            {
+              "type": "button",
+              "label": "Save",
+              "name": "Top Submit",
+              "visible": true,
+              "enabled": true,
+              "renderType": "submit-page",
+              "renderAttributes": {
+                "style": "float:right;"
+              }
+            }
+          ]
+        },
         {
           "type": "section",
           "renderType": null,
@@ -1093,11 +1140,20 @@
               },
               "elements": [
                 {
+                  "type": "content",
+                  "renderType": "html",
+                  "name": "Polling Note",
+                  "text": "<font color=red><strong>Polling Details can only be configured after the integeration is saved.</strong></font>",
+                  "visible": false,
+                  "renderAttributes": {
+                  }
+                },
+                {
                   "type": "field",
                   "name": "Polling",
                   "label": "Polling",
                   "key": "f4",
-                  "defaultValue": null,
+                  "defaultValue": "No",
                   "defaultResourceName": null,
                   "visible": true,
                   "enabled": true,
@@ -1109,7 +1165,13 @@
 
                   ],
                   "events": [
-
+                    {
+                      "name": "Warning if not saved",
+                      "type": "Change",
+                      "action": "Custom",
+                      "code": "K('content[Polling Note]').show();\nK('field[Polling]').value(\"No\");",
+                      "runIf": "!K('submission').id() && values('Polling') === \"Yes\""
+                    }
                   ],
                   "renderAttributes": {
                   },
@@ -1127,6 +1189,41 @@
                       "value": "No"
                     }
                   ]
+                },
+                {
+                  "type": "field",
+                  "name": "Inbound Integration Data Retrieval Query",
+                  "label": "Inbound Integration Data Retrieval Query",
+                  "key": "f64",
+                  "defaultValue": null,
+                  "defaultResourceName": null,
+                  "visible": "values('Polling') === \"No\"",
+                  "enabled": true,
+                  "required": false,
+                  "requiredMessage": null,
+                  "omitWhenHidden": true,
+                  "pattern": null,
+                  "constraints": [
+
+                  ],
+                  "events": [
+
+                  ],
+                  "renderAttributes": {
+                  },
+                  "dataType": "string",
+                  "renderType": "text",
+                  "rows": 2
+                },
+                {
+                  "type": "content",
+                  "renderType": "html",
+                  "name": "Inbound Integration Data Retrieval Query Note",
+                  "text": "<small>If a process will be sending inbound API calls to initiate notification and the triggers do NOT contain all the necessary data, a SQL Query can be made to retrieve all appropriate information. The incoming data will be sent in JSON format, and you can use any of the incoming fields in the query by wrapping them in double brackets as shown in the example.<br/>\n  <br/>\nExample: SELECT * FROM TABLE_NAME WHERE ID = {{id}}\n</small>",
+                  "visible": "values('Polling') === \"No\"",
+                  "renderAttributes": {
+                    "style": "margin-top:-10px"
+                  }
                 },
                 {
                   "type": "section",
@@ -1240,7 +1337,7 @@
                       "type": "content",
                       "renderType": "html",
                       "name": "Qualification Note",
-                      "text": "<small>Use {{Start Date}} and {{End Date}} to have Kinetic automatically replace them with database formatted date/time values since the last run time.<br />Example query: sys_updated_on&gt={{Start Date}}^sys_updated_on&lt{{End Date}}<br /><i>Note:  Any time the last run is greater than 60 minutes ago is considered a problem, and the times will be reset to the current time.</i><small>",
+                      "text": "<small>Use {{Start Date}} and {{End Date}} to have Kinetic automatically replace them with database formatted date/time values since the last run time.<br />Example query: UPDATED_ON &gt= '{{Start Date}}' AND UPDATED_ON &lt '{{End Date}}'<br /><i>Note:  Any time the last run is greater than 60 minutes ago is considered a problem, and the times will be reset to the current time.</i><small>",
                       "visible": true,
                       "renderAttributes": {
                         "style": "margin-top:-10px"
@@ -3169,6 +3266,13 @@
           "code": "var lastPollEnd = \"<div id='last-poll-date'>Last Poll Activity: \" + moment( resource[ 'End' ] ).format( 'L LTS' ) + \" (\" + moment( resource[ 'End' ] ).fromNow() + \")</div>\";\nvar lastPollOutputObj = JSON.parse( resource[ 'Output' ] || {\"message\":\"No output\"} );\nvar lastPollOutput = $(\"<div id='last-poll-output' class=''></div>\");\n$.each( lastPollOutputObj, function( k, v ) {\n  var vOutput = moment(v).isValid() ? moment(v).format('L LTS') : v\n  lastPollOutput.append(\"<div class='row'><div class='last-poll-output-key col-md-2'>\" + k + \": </div><div class='last-poll-output-value col-md-10'>\" + vOutput + \"</div></div>\")\n})\n\n$('#last-poll').html(lastPollEnd).append(lastPollOutput);",
           "runIf": "values('Polling') === \"Yes\"",
           "bridgedResourceName": "Last Robot Execution"
+        },
+        {
+          "name": "Get Integration Timestamps",
+          "type": "Load",
+          "action": "Custom",
+          "code": "$.ajax({\n    type: \"GET\",\n url: \"/app/api/v1/datastore/submissions/\"+K('submission').id(), \n dataType: 'json',\n data: {include: \"details\"},\n    success: function (data) { \n\t\tK('content[Integration Timestamps]').element().innerHTML = \"Created by \" + data.submission.createdBy + \" on \" + moment(data.submission.createdAt).format('MMMM Do YYYY [at] h:mm:ss a')+\".<br>Last Updated by \" + data.submission.updatedBy + \" on \" + moment(data.submission.updatedAt).format('MMMM Do YYYY [at] h:mm:ss a')+\".\"\n    }\n});",
+          "runIf": "K('submission').id() != null"
         }
       ],
       "name": "Page 1",
