@@ -376,7 +376,7 @@ results['error'].each{|key,value|
                 <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_14</task>
-                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_118</task>
+                    <task label="Update Source Record?" type="Complete" value="integration_config = JSON.parse( @source['Data'] )['Integration Configuration']&#10;&#10;integration_config['Polling'] == &quot;Yes&quot; &amp;&amp; !integration_config['Fields to Update Upon Unsuccessful Notification'].to_s.empty?">routine_kinetic_submission_create_v1_118</task>
                 </dependents>
             </task>
             <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_111" name="OnSolve Error Notification" x="389" y="142">
@@ -525,10 +525,7 @@ results['error'].each{|key,value|
   "Action" =&gt; "Update",
   "Payload" =&gt; {
     "schema_name" =&gt; integration_config['Schema Name'],
-    "object_json" =&gt; { 
-      "PageStatus":"Failed",
-      "Status":"Completed"
-    }.to_json
+    "object_json" =&gt; integration_config['Fields to Update Upon Unsuccessful Notification']
   }.to_json
 }.to_json
 %&gt;</parameter>
@@ -536,7 +533,9 @@ results['error'].each{|key,value|
                     <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@source['Data'])['Task Activity Monitor Submission']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents></dependents>
             </task>
             <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_119" name="Outbound Activity - Add Ivanti Journal Entry - Alerting Initiated" x="985" y="592">
@@ -582,7 +581,7 @@ source_type_id = JSON.parse( @source['Data'] )['Schema Type Id']
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Ivanti Object" x="771" y="656">
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_120" name="Outbound Activity - Update Ivanti Object" x="770" y="657">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -627,7 +626,7 @@ source_id = JSON.parse( @source['Data'] )['Source Id']
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">Adventist does not use intrerim results and this would be used if an Ivanti client does post updates back to Ivanti</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">Adventist does not use journal entries</parameter>
                 </parameters>
                 <messages>
                     <message type="Complete"></message>
