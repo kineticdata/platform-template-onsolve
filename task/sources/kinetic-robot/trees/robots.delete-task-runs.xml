@@ -71,11 +71,13 @@ task_runs = JSON.parse( @results['Retrieve Records from Datastore']['Result'] )
                     <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@source['Data'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running"}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running", "Run Id":&lt;%= @run['Id'] %&gt;}</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_27</task>
                 </dependents>
@@ -91,9 +93,7 @@ task_runs = JSON.parse( @results['Retrieve Records from Datastore']['Result'] )
                     <parameter dependsOnId="" dependsOnValue="" id="signature_key" label="Signature Key" menu="" required="false" tooltip="The id of the access key to use to sign the request (overrides info value)."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="signature_secret" label="Signature Secret" menu="" required="false" tooltip="The secret of the access key to use to sign the request (overrides info value)."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="kinetic_request_ce_datastore_submission_search_v2" id="kinetic_request_ce_datastore_submission_search_v2_20" name="Retrieve Records from Datastore" x="497" y="118">
@@ -152,9 +152,7 @@ id = JSON.parse( @results['Retrieve Records from Datastore']['Result'] )[@result
                     <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/runs/&lt;%=@results['Loop Begin']['Value']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_core_api_v1_23</task>
                 </dependents>
