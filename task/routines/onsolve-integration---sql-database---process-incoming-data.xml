@@ -121,9 +121,7 @@ source_ref_id = begin
                     <parameter dependsOnId="" dependsOnValue="" id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_3</task>
                 </dependents>
@@ -223,7 +221,8 @@ def evaluate(field_input, check)
   when "{{Not Empty}}"
     evaluation_result = true if !new_field_value.to_s.empty?
   else
-    evaluation_result = true if new_field_value == check
+    #evaluation_result = true if new_field_value == check
+    evaluation_result = true if check.split("||").include?(new_field_value)
   end
   return evaluation_result
 end
@@ -249,7 +248,9 @@ restart_result = determine(restart_criteria)
 restart_result
 %&gt;</parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents>
                     <task label="True" type="Complete" value="@results['Evaluate Restart Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_6</task>
                 </dependents>
@@ -320,9 +321,7 @@ source_ref_id = begin
                     <parameter dependsOnId="" dependsOnValue="" id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_8</task>
                 </dependents>
@@ -349,7 +348,7 @@ source_ref_id = begin
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_9" name="Evaluate Stop Condition" x="424" y="197">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_9" name="Evaluate Stop Condition" x="425" y="197">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -409,7 +408,8 @@ def evaluate(field_input, check)
   when "{{Not Empty}}"
     evaluation_result = true if !new_field_value.to_s.empty?
   else
-    evaluation_result = true if new_field_value == check
+    #evaluation_result = true if new_field_value == check
+    evaluation_result = true if check.split("||").include?(new_field_value)
   end
   return evaluation_result
 end
@@ -448,7 +448,9 @@ end
 stop_result
 %&gt;</parameter>
                 </parameters>
-                <messages></messages>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
                 <dependents>
                     <task label="True" type="Complete" value="@results['Evaluate Stop Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_10</task>
                 </dependents>

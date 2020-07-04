@@ -5,9 +5,9 @@
     <status>Active</status>
     <taskTree builder_version="" schema_version="1.0" version="">
         <name>StandardInboundIntegration</name>
-        <author></author>
+        <author>mark.klein@kineticdata.com</author>
         <notes></notes>
-        <lastID>80</lastID>
+        <lastID>82</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -24,6 +24,7 @@
                     <task label="BMC Remedy" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;bmc-remedy&quot;">routine_onsolve_inbound_integration_remedy_v1_78</task>
                     <task label="OBM / OMi" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;obm&quot;">routine_onsolve_inbound_integration_obm_v1_79</task>
                     <task label="SQL Database" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;sql&quot;">routine_onsolve_inbound_integration_sql_database_80</task>
+                    <task label="ivanti" type="Complete" value="JSON.parse( @source['Data'].gsub(/\n/,&quot; &quot;).gsub(/\t/,&quot; &quot;).downcase )['source'] == &quot;ivanti&quot;">routine_onsolve_inbound_integration_ivanti_v1_81</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1028" y="569">
@@ -139,7 +140,7 @@
                     <task label="" type="Complete" value="">system_join_v1_69</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_inbound_integration_remedy_v1" id="routine_onsolve_inbound_integration_remedy_v1_78" name="Remedy" x="507.3" y="279.41667">
+            <task definition_id="routine_onsolve_inbound_integration_remedy_v1" id="routine_onsolve_inbound_integration_remedy_v1_78" name="Remedy" x="507.3" y="279.41666">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -179,9 +180,22 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_69</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_inbound_integration_ivanti_v1" id="routine_onsolve_inbound_integration_ivanti_v1_81" name="Ivanti" x="495.3" y="614.4167">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Action" label="Action" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['action']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Data" label="Data" menu="" required="true" tooltip="">&lt;%=JSON.parse( @source['Data'].gsub(/\n/," ").gsub(/\t/," ") )['data'].to_json%&gt;</parameter>
+                </parameters>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_join_v1_69</task>
                 </dependents>

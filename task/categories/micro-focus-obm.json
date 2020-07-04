@@ -11,6 +11,9 @@
 
   ],
   "trees": [
-
+    "routine_onsolve_integration_micro_focus_obm_process_incoming_data_v1",
+    "routine_onsolve_obm_event_annotation_add",
+    "routine_onsolve_obm_event_retrieve",
+    "routine_onsolve_obm_event_update"
   ]
 }

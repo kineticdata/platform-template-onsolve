@@ -145,9 +145,7 @@ jsonreturn%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Total Matched" label="Total Matched" menu="" required="false" tooltip=""></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Count" label="Count" menu="" required="false" tooltip=""></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="cherwell_object_find_v1" id="cherwell_object_find_v1_13" name="Cherwell Search" x="14" y="389">
@@ -173,7 +171,7 @@ jsonreturn%&gt;</parameter>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="" required="true" tooltip="GET,POST,PUT,DELETE">GET</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Path to the businessobject (include filter options if needed) for example: incidents?$filter=Status eq 'Active'">&lt;%= @inputs['Object Name'] %&gt;?$filter=&lt;%= @inputs['Filters'] %&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT)"></parameter>
