@@ -191,6 +191,6 @@
   ],
   "slug": "task-activity-dashboard-hourly",
   "status": "Active",
-  "submissionLabelExpression": null,
+  "submissionLabelExpression": "${values('Start Time')} :: ${values('Count')} :: ${values('Source')}",
   "type": "Summary"
 }

@@ -291,6 +291,6 @@
   ],
   "slug": "outbound-activity",
   "status": "Active",
-  "submissionLabelExpression": null,
+  "submissionLabelExpression": "${values('Status')} :: ${values('Source')} :: ${values('Action')} :: ${values('Task Activity Monitor Record')}",
   "type": null
 }
