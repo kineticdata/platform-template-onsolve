@@ -1,0 +1,16 @@
+{
+  "name": "Ivanti",
+  "description": null,
+  "type": "Stored",
+  "handlers": [
+
+  ],
+  "policyRules": [
+
+  ],
+  "trees": [
+    "routine_onsolve_inbound_integration_ivanti_v1",
+    "routine_onsolve_integration_ivanti_process_incoming_data_v1",
+    "routine_onsolve_ivanti_data_search_v1"
+  ]
+}
