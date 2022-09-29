@@ -1,5 +1,9 @@
 {
   "afterLogoutPath": "",
+  "allowedIps": [
+
+  ],
+  "allowedIpsEnabled": false,
   "attributes": [
     {
       "name": "Admin Kapp Slug",
@@ -122,9 +126,27 @@
       ]
     },
     {
+      "name": "Task Server Host",
+      "values": [
+        "onsolve-master.kinops.io"
+      ]
+    },
+    {
+      "name": "Task Server Scheme",
+      "values": [
+        "https"
+      ]
+    },
+    {
       "name": "Task Server Space Slug",
       "values": [
-        "3210843"
+        "onsolve-master"
+      ]
+    },
+    {
+      "name": "Task Server Url",
+      "values": [
+        "https://onsolve-master.kinops.io/kinetic-task"
       ]
     },
     {
@@ -136,7 +158,7 @@
     {
       "name": "Web Server Url",
       "values": [
-        "https://3210843.kinops.io"
+        "https://onsolve-master.kinops.io"
       ]
     }
   ],
@@ -144,8 +166,6 @@
   "customTranslationContexts": [
 
   ],
-  "defaultDatastoreFormConfirmationPage": null,
-  "defaultDatastoreFormDisplayPage": null,
   "defaultLocale": "en",
   "defaultTimezone": "America/Chicago",
   "displayType": "Single Page App",
@@ -157,7 +177,12 @@
   "name": "Kinetic Data",
   "platformComponents": {
     "agents": [
-
+      {
+        "config": {
+        },
+        "slug": "client-agent",
+        "url": ""
+      }
     ]
   },
   "resetPasswordPage": null,
@@ -201,14 +226,11 @@
   ],
   "sessionInactiveLimitInSeconds": 2592000,
   "sharedBundleBase": "hydrogen-v1",
-  "slug": "3210843",
+  "slug": "onsolve-master",
   "trustedFrameDomains": [
 
   ],
   "trustedResourceDomains": [
-
-  ],
-  "webApis": [
 
   ]
 }

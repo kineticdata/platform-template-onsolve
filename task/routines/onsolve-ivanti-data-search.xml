@@ -13,7 +13,6 @@
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Error Handling" label="Error Handling" required="false" tooltip=""></parameter>
                 <parameter id="Object Name" label="Object Name" required="true" tooltip=""></parameter>
                 <parameter id="Fields To Return" label="Fields To Return" required="false" tooltip=""></parameter>
                 <parameter id="Filters" label="Filters" required="true" tooltip=""></parameter>
@@ -40,7 +39,7 @@
                     <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_9</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_1" name="Agent" x="240" y="33">
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_1" name="Agent" x="234.65108" y="33">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -48,13 +47,22 @@
                 <visible>true</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%=@results['Retrieve Space']['Slug']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">cherwell_object_find_v1</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">ivanti_generic_api_v1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%=
+path = ["#{@inputs['Object Name']}?$filter=#{@inputs['Filters']}"]
+if @inputs['Fields To Return'].to_s.empty?
+  path.push("$select=#{@inputs['Fields To Return']}")
+end
+if @inputs['Max Results'].to_s.empty?
+  path.push("$top=#{@inputs['Max Results']}"}
+end
+
 {
   "error_handling" =&gt; "Error Message",
   "method" =&gt; "GET",
-  "path" =&gt; "employees?$filter=DisplayName eq '&lt;%=@inputs['Full Name']%&gt;'"
+  "path" =&gt; path.join("&amp;"),
+  "body" =&gt; ""
 }.to_json
 %&gt;</parameter>
                 </parameters>
@@ -82,7 +90,7 @@
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v1_1</task>
+                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v3_1</task>
                     <task label="No Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase != &quot;true&quot;">ivanti_generic_api_v1_15</task>
                 </dependents>
             </task>
@@ -98,37 +106,43 @@
                     <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_8</task>
                 </dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_11" name="Return Agent" x="504" y="30">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_11" name="Return Agent" x="550.0008" y="32.139572">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%= @results['Agent']['Handler Error Message'] %&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="JSON Results" label="JSON Results" menu="" required="false" tooltip="">&lt;%=
+jsonreturn = []
 begin
-  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['JSON Results']
+  jsonreturn = JSON.parse( @results['Agent']['Response Body'] )['value']
 rescue
 end
+jsonreturn.to_json
 %&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Total Matched" label="Total Matched" menu="" required="false" tooltip="">&lt;%=
+total_matched = ""
 begin
-  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['Total Matched']
+  total_matched = JSON.parse( JSON.parse( @results['Agent']['Response Body'] )['@odata.count']
 rescue
 end
+total_matched
 %&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Count" label="Count" menu="" required="false" tooltip="">&lt;%=
+count = ""
 begin
-  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['Count']
+  count =  JSON.parse( @results['Agent']['Response Body'] )['value'].size
 rescue
 end
+count
 %&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_12" name="Return Direct" x="602" y="348">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_12" name="Return Direct" x="559.20856" y="340.5115">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -139,32 +153,26 @@ end
                     <parameter dependsOnId="" dependsOnValue="" id="JSON Results" label="JSON Results" menu="" required="false" tooltip="">&lt;%=
 jsonreturn = []
 if @results['Ivanti Search']['Response Code'] == "200"
-jsonreturn = @results['Ivanti Search']['Response Body']
+  jsonreturn = JSON.parse(@results['Ivanti Search']['Response Body'])['value']
 end
-jsonreturn%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Total Matched" label="Total Matched" menu="" required="false" tooltip=""></parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Count" label="Count" menu="" required="false" tooltip=""></parameter>
+jsonreturn.to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Total Matched" label="Total Matched" menu="" required="false" tooltip="">&lt;%=
+total_matched = ""
+if @results['Ivanti Search']['Response Code'] == "200"
+  total_matched = JSON.parse(@results['Ivanti Search']['Response Body'])['@odata.count']
+end
+total_matched%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Count" label="Count" menu="" required="false" tooltip="">&lt;%=
+count = ""
+if @results['Ivanti Search']['Response Code'] == "200"
+  count = JSON.parse(@results['Ivanti Search']['Response Body'])['value'].size
+end
+count%&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="cherwell_object_find_v1" id="cherwell_object_find_v1_13" name="Cherwell Search" x="14" y="389">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="object_name" label="Object Name" menu="" required="true" tooltip="Readable name of the object to retrieve (ie. Incident).">&lt;%=@inputs['Object Name']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="fields" label="Fields to Return" menu="" required="false" tooltip="Comma separated list of fields to return (if none entered, all fields will be returned).">&lt;%=@inputs['Fields To Return']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="filters" label="Filters" menu="" required="false" tooltip="A JSON object with key/value pairs that will be searched for equality.">&lt;%=@inputs['Filters']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="page_size" label="Max Results" menu="" required="false" tooltip="The maximum amount of results that can be returned in a single handler execution (if blank, as many as possible will be returned).">&lt;%=@inputs['Max Results']%&gt;</parameter>
-                </parameters>
-                <messages></messages>
-                <dependents></dependents>
-            </task>
-            <task definition_id="ivanti_generic_api_v1" id="ivanti_generic_api_v1_15" name="Ivanti Search" x="231" y="346">
+            <task definition_id="ivanti_generic_api_v1" id="ivanti_generic_api_v1_15" name="Ivanti Search" x="237.27914" y="343.86044">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -173,12 +181,19 @@ jsonreturn%&gt;</parameter>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="" required="true" tooltip="GET,POST,PUT,DELETE">GET</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Path to the businessobject (include filter options if needed) for example: incidents?$filter=Status eq 'Active'">&lt;%= @inputs['Object Name'] %&gt;?$filter=&lt;%= @inputs['Filters'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Path to the businessobject (include filter options if needed) for example: incidents?$filter=Status eq 'Active'">&lt;%=
+path = ["#{@inputs['Object Name']}?$filter=#{@inputs['Filters']}"]
+if @inputs['Fields To Return'].to_s.empty?
+  path.push("$select=#{@inputs['Fields To Return']}")
+end
+if @inputs['Max Results'].to_s.empty?
+  path.push("$top=#{@inputs['Max Results']}"}
+end
+path.join("&amp;")
+%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT)"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_12</task>
                 </dependents>

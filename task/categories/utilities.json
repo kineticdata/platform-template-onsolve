@@ -3,7 +3,9 @@
   "description": "Holds misc helpful utilities",
   "type": "Stored",
   "handlers": [
+    "smtp_email_send_v1",
     "utility_csv_to_xml_v1",
+    "utility_date_in_timezone_v2",
     "utility_json_to_xml_v1",
     "utility_message_formatter_v1"
   ],

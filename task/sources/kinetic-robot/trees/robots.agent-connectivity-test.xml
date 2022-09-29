@@ -123,10 +123,10 @@ end
                 <messages></messages>
                 <dependents>
                     <task label="No Agent Error" type="Complete" value="#@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; JSON.parse( @results['Call Kinetic Task Tree Run on Agent']['output'] || &quot;{}&quot; )['Handler Error Message'].to_s.empty?&#10;!@results.has_key?('Robot return trigger') &amp;&amp; (!@results.has_key?('Call Kinetic Task Tree Run on Agent') || (@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; @results['Call Kinetic Task Tree Run on Agent']['output'].to_s.empty?))">routine_onsolve_error_v1_35</task>
-                    <task label="" type="Create" value="">kinetic_agent_handler_execute_v1_32</task>
+                    <task label="" type="Create" value="">kinetic_agent_handler_execute_v3_32</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_32" name="Call Kinetic Task Tree Run on Agent" x="1354" y="140">
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_32" name="Call Kinetic Task Tree Run on Agent" x="1354" y="140">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -134,9 +134,9 @@ end
                 <visible>true</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%= @results['Get Space']['Slug'] %&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">kinetic_task_tree_run_v2</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">kinetic_task_tree_run_v2</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%=
 {
   "source" =&gt; "OnSolve",
   "group" =&gt; "Agent",
@@ -177,12 +177,7 @@ end
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Kinetic Agent Connectivity Error</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=
-error = ""
-if !@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty?
-  error = @results['Call Kinetic Task Tree Run on Agent']['Handler Error Message']
-else
-  error = JSON.parse( @results['Call Kinetic Task Tree Run on Agent']['output'] )['Handler Error Message']
-end
+error = @results['Call Kinetic Task Tree Run on Agent']['Handler Error Message']
 
 message = "Agent Connectivity Test could not reach the Agent to attempt the round-trip test.\n\nError Message: #{error}\n\nPossible network connectivity issue, or the Agent is not responding (Server Issue?  Tomcat Issue?)"
 %&gt;</parameter>

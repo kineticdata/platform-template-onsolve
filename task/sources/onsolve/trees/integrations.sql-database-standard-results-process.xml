@@ -712,7 +712,6 @@ end
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="jdbc_database" menu="" required="true" tooltip="">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 integration_config['Database Type']
@@ -787,11 +786,7 @@ end
 query
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="No user" type="Complete" value="@results['Get Database User']['User JSON'].to_s.empty?">system_junction_v1_28</task>
                     <task label="Not empty" type="Complete" value="!@results['Get Database User']['User JSON'].to_s.empty?">system_join_v1_53</task>
@@ -804,7 +799,6 @@ query
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="jdbc_database" menu="" required="true" tooltip="">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 integration_config['Database Type']
@@ -883,11 +877,7 @@ end
 query
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_28</task>
                 </dependents>

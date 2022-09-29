@@ -4,5 +4,7 @@
   "type": "Adhoc",
   "policyRules": [
 
-  ]
+  ],
+  "properties": {
+  }
 }

@@ -45,13 +45,9 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@results['Call self - Get next records']['Total Count']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@results['Call self - Get next records']['Total Count']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="system_tree_return_v1" id="system_tree_return_v1_7" name="Return - Complete page" x="319" y="99">
@@ -61,14 +57,10 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;
+                    <parameter dependsOnId="" dependsOnValue="" id="Total Count" label="Total Count" menu="" required="false" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;
 </parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_8" name="Retrieve Submission records" x="111" y="94">
@@ -78,19 +70,18 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
-                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
-                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
-                    <parameter id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">include=details&amp;timeline=createdAt&amp;direction=ASC&amp;start=&lt;%=@inputs['Start Time']%&gt;&amp;end=&lt;%=@inputs['End Time']%&gt;&amp;limit=100&amp;q=values[Integration Name]="&lt;%=@inputs['Source']%&gt;"</parameter>
-                    <parameter id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@inputs['Page Token']%&gt;</parameter>
-                    <parameter id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">ID List</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used.">ASC</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">createdAt BETWEEN ("&lt;%=@inputs['Start Time']%&gt;","&lt;%=@inputs['End Time']%&gt;") AND values[Integration Name]="&lt;%=@inputs['Source']%&gt;"</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return.">100</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">details</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@inputs['Page Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">ID List</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="No more records" type="Complete" value="@results['Retrieve Submission records']['Next Page Token'].nil?">system_tree_return_v1_7</task>
                     <task label="More records" type="Complete" value="!@results['Retrieve Submission records']['Next Page Token'].nil?">routine_onsolve_task_activity_monitor_submission_count_v1_11</task>
@@ -103,18 +94,14 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
-                    <parameter id="Starting Count" label="Starting Count" menu="" required="true" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;</parameter>
-                    <parameter id="Start Time" label="Start Time" menu="" required="true" tooltip="">&lt;%=@inputs['Start Time']%&gt;</parameter>
-                    <parameter id="End Time" label="End Time" menu="" required="true" tooltip="">&lt;%=@inputs['End Time']%&gt;</parameter>
-                    <parameter id="Source" label="Source" menu="" required="true" tooltip="">&lt;%=@inputs['Source']%&gt;</parameter>
-                    <parameter id="Page Token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@results['Retrieve Submission records']['Next Page Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Starting Count" label="Starting Count" menu="" required="true" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Start Time" label="Start Time" menu="" required="true" tooltip="">&lt;%=@inputs['Start Time']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="End Time" label="End Time" menu="" required="true" tooltip="">&lt;%=@inputs['End Time']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Source" label="Source" menu="" required="true" tooltip="">&lt;%=@inputs['Source']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Page Token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@results['Retrieve Submission records']['Next Page Token']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_6</task>
                 </dependents>

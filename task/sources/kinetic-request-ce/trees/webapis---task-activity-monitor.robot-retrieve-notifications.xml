@@ -1,0 +1,301 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>robot-retrieve-notifications</name>
+        <author></author>
+        <notes></notes>
+        <lastID>58</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_58</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="341.0719199499686" y="165.96747967479664">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running", "Run Id":&lt;%= @run['Id'] %&gt;}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_56</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="340.8824265165729" y="297.0956848030017">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Get Notification List']['Result']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">notification_entry</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_49</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="341.8755472170105" y="549.0675422138833">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">utilities_create_trigger_v1_15</task>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_54</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="195.94871794871796" y="700.1250781738588">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+notification_items=[]
+notificationList = JSON.parse(@results['Get Notification List']['Result'])
+notificationList.each do |notification|
+    notification_items.push(notification["values"]['Notification Name'])
+end
+string = "&lt;results&gt;&lt;result name=\"output\"&gt;{\"message\":\"#{@results['Get Notification List']['Count']} notifications retrieved\", \"notifications\":\"#{notification_items.join(', ')}\"}&lt;/result&gt;&lt;/results&gt;"
+string
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_54</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="494.75046904315195" y="813.3414634146343">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_search_v2" id="kinetic_request_ce_datastore_submission_search_v2_36" name="Get Notification List" x="66.0637898686679" y="299.9893683552221">
+                <version>2</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="The slug of the Datastore Form to search for submissions in.">onsolve-notifications</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used.">ASC</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search.">values[Custom XML]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">values[Custom XML]="No"</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return.">1000</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">details,values</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_5</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_search_notifications_v1" id="routine_onsolve_mir3_search_notifications_v1_39" name="Get Notifications" x="956.9293308317701" y="300.0988117573483">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%=@results['Echo Title']['output']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Expected Output" type="Complete" value="@results['Get Notifications']['Success'].downcase == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_43</task>
+                    <task label="Unexpected Output" type="Complete" value="@results['Get Notifications']['Success'].downcase != &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_51</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_43" name="Update Notification XML Content" x="1284.1307066916838" y="292.0062539086928">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=
+loopValue = JSON.parse(@results['Loop Begin']['Value'])
+loopValue["id"]
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{"Notification XML" =&gt; @results['Get Notifications']['Output'],
+ "Notification Method" =&gt; @results['Get Notifications']['Notification Method'],
+ "Last Retrieved At" =&gt; Time.now.iso8601,
+ "Retrieval Error" =&gt; "No",
+ "Retrieval Message" =&gt; nil}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_extract_notification_parameters_v1_48</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_extract_notification_parameters_v1" id="routine_onsolve_mir3_extract_notification_parameters_v1_48" name="Handle Notification Parameters" x="1287.093808630394" y="547.1485019045997">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Title" label="Notification Title" menu="" required="true" tooltip="">&lt;%=@results['Echo Title']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="">&lt;%=@results['Get Notifications']['Output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_50</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_49" name="Echo Title" x="646.9199499687298" y="299.095684803002">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+loopValue = JSON.parse(@results['Loop Begin']['Value'])
+loopValue["values"]["Notification Name"]
+%&gt;
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_search_notifications_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_50" name="Junction" x="962.1105994276729" y="560.090056285177">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_51" name="Update Notification XML Content-Unexpected Output" x="959.1125703564734" y="436.1013133208255">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=
+loopValue = JSON.parse(@results['Loop Begin']['Value'])
+loopValue["id"]
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{"Last Retrieved At" =&gt; Time.now.iso8601,
+ "Retrieval Error" =&gt; "Yes",
+ "Retrieval Message" =&gt; @results['Get Notifications']['Output']}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_50</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_54" name="Junction 2" x="495.02188868042526" y="703.1801125703565">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_56" name="Junction: Robot Initiated" x="68.03939962476548" y="178.9749843652283">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_search_v2_36</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_58" name="Was Robot Initiated" x="209.07442151344586" y="13.954346466541589">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+begin 
+  JSON.parse(@request['Body']).has_key? ('Kinetic Robot Execution Record Id')
+rescue
+  false
+end
+%&gt;</parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_56</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

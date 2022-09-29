@@ -1,0 +1,1022 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>kinetic-source-system-tickets-initiation-custom-bigpanda</name>
+        <author></author>
+        <notes></notes>
+        <lastID>136</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_create_v1_96</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_14" name="Junction" x="1519" y="308">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_create_trigger_v1_94</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="2009.0127" y="298.15164">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_35" name="Process Placeholders" x="242" y="228">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+#placeholder_entries = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+placeholders = JSON.parse( integration_config['Placeholder Data'] || "[]" )
+
+## Review each placeholder and handle any replacements in the values field.
+#  Set up source data
+source_data = JSON.parse( @request['Body'] )['Source Data'][0]
+
+#  Set up Working Data - Data that has been determined be earlier processing
+working_data={}
+working_data['Message'] = @results['Device Summarization']['output']
+working_data['Message Title'] = JSON.parse( @request['Body'] )['Source Id']
+
+#  Do replacements
+placeholders.each_index{|i|
+  ph = placeholders[i]['value']
+  if !ph.nil?
+    ph.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+      # remove opening and closing brackets from match
+      key = match[2..-3]
+
+      # determine which part of the field to retrieve - the 'display_value' or the 'value'
+      field_qualifier = 'value'
+      field = key
+      field_array = key.split(".")
+      if field_array.length &gt; 0
+        if ["display_value","value"].include? field_array[1]
+          field_qualifier = field_array[1]
+        end
+        field = field_array[0]
+      end
+
+      if source_data.keys.include?(field)
+        source_data[field][field_qualifier] || source_data[field]
+      elsif source_data.keys.include?('fields')
+        if source_data['fields'].keys.include?(field)
+          source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+        else
+          match
+        end
+      else
+        match
+      end
+    end
+
+    # Need to replace internal variables in the statement...
+    ph.gsub!(/\$\$(?:(?!\$\$).)*?\$\$/) do |match|
+      # remove opening and closing dollar signs from match
+      key = match[2..-3]
+
+      if working_data.keys.include?(key)
+        working_data[key]
+      else
+        match
+      end
+    end
+    
+    placeholders[i]['value'] = ph
+  end
+}
+
+placeholders.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_88</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_retrieve_v2" id="kinetic_request_ce_submission_retrieve_v2_41" name="Retrieve Notification XML" x="11" y="230">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Query</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="Slug of the kapp to query">datastore</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Form Slug" menu="" required="true" tooltip="Slug of the form to query">onsolve-notifications</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="true" tooltip="A query that will retrieve a single submission">values[Notification Name] = "&lt;%= JSON.parse( @request['Body'] )['Integration Configuration']['Notification Message Template']%&gt;"</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being retrieved."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_126</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="700" y="382">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= JSON.parse( @request['Body'] )['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+if @results['MIR3 One Step Notification']['Title'].to_s.empty?
+  notification_title = integration_config['Notification Message Template']
+else
+  notification_title = @results['MIR3 One Step Notification']['Title']
+end
+
+{
+ "Onsolve Id" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+ "Onsolve Status" =&gt; "Open",
+ "OnSolve Notification Title" =&gt; notification_title
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_113</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_88" name="Do Recipient Replacements" x="466" y="229">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+recipients = JSON.parse( @request['Body'] )['Integration Configuration']['Recipients JSON']
+source_data = JSON.parse( @request['Body'] )['Source Data'][0]
+
+recipient_group = source_data['incident']['alerts'][0]['tags'].select{ |tag| 
+  tag['name'] == "bp_mir3recipient"
+}[0]['value']
+
+
+#  Do replacements
+if !recipients.nil?
+  recipients.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+    # remove opening and closing brackets from match
+    key = match[2..-3]
+
+    # determine which part of the field to retrieve - the 'display_value' or the 'value'
+    field_qualifier = 'value'
+    field = key
+    field_array = field.split(".")
+    if field_array.length &gt; 0
+      if ["display_value","value"].include? field_array[1]
+        field_qualifier = field_array[1]
+      end
+      field = field_array[0]
+    end
+
+## Trying to be too generic here.  This includes how Cherwell worked with fields contained within a hash called fields....  For SQL, it doesn't work this way.
+#  And for Cardinal Health, it's 1 to many entries in the array, which is why
+#  the source data (at the top of this code) is hard coded to look at the first entry in this cae.
+###    if source_data.keys.include?(field)
+###      source_data[field][field_qualifier] || source_data[field]
+###    elsif source_data.keys.include?('fields')
+###      if source_data['fields'].keys.include?(field)
+###        source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+###      else
+###        match
+###      end
+###    else
+###      match
+###    end
+    
+## Figure out this later
+#incident
+#incident['alert'][0]
+#incident['alert'][0]['tags'] -&gt; filter by name
+
+    if field=="RecipientGroup"
+      recipient_group
+    else
+      match
+    end
+    
+  end
+end
+
+recipients
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_one_step_notification_v1_127</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_94" name="Return Trigger" x="1731" y="297">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%= JSON.parse( @request['Body'] )['Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;results&gt;
+  &lt;result name="Onsolve Notification UUID"&gt;&lt;%=@results['MIR3 One Step Notification']['Notification Report UUID']%&gt;&lt;/result&gt;
+  &lt;result name="Success"&gt;&lt;%=@results['MIR3 One Step Notification']['Success']%&gt;&lt;/result&gt;
+&lt;/results&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_96" name="Add Activity Record" x="11" y="110">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "In Process"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_retrieve_v2_41</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_97" name="Update Activity Record" x="1291" y="377">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Activity Record']['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Completed",
+  "Comments" =&gt; @results['Work Note Content']['output'],
+  "WebAPI Name" =&gt; JSON.parse( @request['Body'] )['WebAPI Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_14</task>
+                    <task label="" type="Complete" value="">kinetic_core_api_v1_134</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_108" name="Update Submission with UUID - Error" x="1001" y="232">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= JSON.parse( @request['Body'] )['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{
+ "Onsolve Status" =&gt; "Initiation Error"
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_109</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_109" name="Update Activity Record - Error" x="1288" y="231">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Activity Record']['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation - Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+comments = "MIR3 Initiation Error:"
+results['error'].each{|key,value|
+  comments &lt;&lt; "\n#{key}: #{value}"
+}
+
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Errored",
+  "Comments" =&gt; comments,
+  "WebAPI Name" =&gt; JSON.parse( @request['Body'] )['WebAPI Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_14</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_111" name="OnSolve Error Notification" x="700.00336" y="80">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+source_data = JSON.parse( @request['Body'] )['Source Data']
+#client_reference = source_data[integration_config['External Unique Key Field Name']]['display_value']
+client_reference = JSON.parse( @request['Body'] )['Source Id']
+
+"Unable to initiate notification in MIR3 for #{client_reference} (integration: #{integration_config['Name']})"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+comments = ""
+results['error'].each{|key,value|
+  comments &lt;&lt; "\n#{key}: #{value}"
+}
+comments
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @request['Body'] )['Integration Configuration']['Error Notification Email']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; JSON.parse( @request['Body'] )['WebAPI Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_113" name="Work Note Content" x="1005" y="380">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+# Build note
+work_notes = ["#{notification_method} Notification"]
+if @results['MIR3 One Step Notification']['Title'].to_s.empty?
+  work_notes.push( "\"#{integration_config['Notification Message Template']}\"" )
+else
+  work_notes.push( "\"#{@results['MIR3 One Step Notification']['Title']}\"" )
+end
+work_notes.push( "(UUID #{@results['MIR3 One Step Notification']['Notification Report UUID']})" )
+work_notes.push( "was successfully initiated" )
+
+recipients = JSON.parse(@results['Do Recipient Replacements']['output'])
+if notification_method == "Callout" || notification_method == "First Response"
+  if recipients.has_key?("Escalation Level 1") &amp;&amp; !recipients['Escalation Level 1']['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['Escalation Level 1']['groups']}" )
+  end
+end
+if notification_method == "Broadcast" || notification_method == "Bulletin Board"
+  if recipients.has_key?("groups") &amp;&amp; !recipients['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['groups']}" )
+  end
+end
+
+work_notes.join(" ")+"."
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_97</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_one_step_notification__cardinal" id="routine_onsolve_mir3_one_step_notification__cardinal_117" name="MIR3 One Step Notification - Orig" x="548.0312" y="128.369">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%=JSON.parse(@results['Retrieve Notification XML']['Values JSON'])['Notification XML']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]">&lt;%=@results['Process Placeholders']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" menu="" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">&lt;%= 
+default = "username"
+unique_field = JSON.parse( @request['Body'] )['MIR3 Unique User Match Field']
+
+if unique_field.to_s.empty?
+  default
+else
+  unique_field
+end
+%&gt;
+
+</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipients JSON" label="Recipients JSON" menu="" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}">&lt;%=@results['Do Recipient Replacements']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="OnCall JSON" label="OnCall JSON" menu="" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="CSV File Name" label="CSV File Name" menu="" required="false" tooltip="The filename of the CSV file to include">&lt;%=
+filename = JSON.parse( @request['Body'] )['Source Id']
+
+filename.gsub!('::',"-")
+# Filenames can only be 40 characters long, including the extension
+filename[0...36] + ".txt"
+
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="CSV Content" label="CSV Content" menu="" required="false" tooltip="The Base64 encoded content of the CSV file">&lt;%=@results['Generate CSV Content']['output']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_118" name="Outbound Activity - Database Update - Alerting Initiated - Error" x="1288" y="81">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+parameters = JSON.parse( integration_config['Initiation Custom Action Parameters'] )
+source_data = JSON.parse( @request['Body'] )['Source Data']
+source_id = JSON.parse( @request['Body'] )['Source Id']
+transaction_keys = []
+source_data.each{|transaction|
+  transaction_keys.push(transaction['TransactionKey'])
+}
+
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+results['error'].each{|key,value|
+  work_notes.push( "#{key}: #{value}" )
+}
+
+working_data = {}
+working_data['Initiation Output'] = work_notes.join("\n")
+working_data['Status'] = "Error"
+working_data['UUID'] = nil
+#working_data['Notification Title'] = integration_config['Notification Message Template']
+working_data['Notification Title'] = nil
+working_data['Transaction Keys'] = transaction_keys.join(',')
+
+query = integration_config['SQL Statement - Initiation']
+# Notes: SQL statements need to have single quotes in text strings replaced with two single quotes next to each other.
+
+# Need to replace a source data references
+query.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    begin
+      source_data[field][field_qualifier] || source_data[field]
+    rescue
+      source_data[field]
+    end
+  elsif source_data.keys.include?('fields')
+    if source_data['fields'].keys.include?(field)
+      begin
+        source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+      rescue
+        source_data['fields'][field]
+      end
+    else
+      match
+    end
+  else
+    match
+  end
+end
+
+# Need to replace internal variables in the statement...
+query.gsub!(/\$\$(?:(?!\$\$).)*?\$\$/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+
+
+  if working_data.keys.include?(key)
+    working_data[key]
+  else
+    match
+  end
+end
+
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "SQL Database",
+  "Source Id" =&gt; source_id,
+  #"Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "Source Reference Id" =&gt; source_id,
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@request['Body'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "All",  #One SQL Handler is used for all types of actions
+  "Payload" =&gt; {
+    "jdbc_database" =&gt; integration_config['Database Type'],
+    #"db_name" =&gt; integration_config['Database Name'],
+    "dbname" =&gt; integration_config['Database Name'],
+    "action" =&gt; "run",
+    "query" =&gt; query,
+    "error_handling" =&gt; "Error Message"
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_119" name="Outbound Activity - Database Update - Alerting Initiated" x="1297" y="551">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+parameters = JSON.parse( integration_config['Initiation Custom Action Parameters'] )
+source_data = JSON.parse( @request['Body'] )['Source Data']
+source_id = JSON.parse( @request['Body'] )['Source Id']
+transaction_keys = []
+source_data.each{|transaction|
+  transaction_keys.push(transaction['TransactionKey'])
+}
+
+working_data = {}
+working_data['Initiation Output'] = @results['Work Note Content']['output']
+working_data['Status'] = "Initiated"
+working_data['UUID'] = @results['MIR3 One Step Notification']['Notification Report UUID']
+working_data['Notification Title'] = @results['MIR3 One Step Notification']['Title']
+working_data['Transaction Keys'] = transaction_keys.join(',')
+
+query = integration_config['SQL Statement - Initiation']
+
+# Need to replace a source data references
+query.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    begin
+      source_data[field][field_qualifier] || source_data[field]
+    rescue
+      source_data[field]
+    end
+  elsif source_data.keys.include?('fields')
+    if source_data['fields'].keys.include?(field)
+      begin
+        source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+      rescue
+        source_data['fields'][field]
+      end
+    else
+      match
+    end
+  else
+    match
+  end
+end
+
+# Need to replace internal variables in the statement...
+query.gsub!(/\$\$(?:(?!\$\$).)*?\$\$/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+
+  if working_data.keys.include?(key)
+    working_data[key]
+  else
+    match
+  end
+end
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "SQL Database",
+  "Source Id" =&gt; source_id,
+  #"Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "Source Reference Id" =&gt; source_id,
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@request['Body'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "All", #One SQL Handler is used for all types of actions
+  "Payload" =&gt; {
+     "jdbc_database" =&gt; integration_config['Database Type'],
+     #"db_name" =&gt; integration_config['Database Name'],
+     "dbname" =&gt; integration_config['Database Name'],
+     "action" =&gt; "run",
+     "query" =&gt; query,
+     "error_handling" =&gt; 'Error Message'
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_122" name="Generate CSV Content" x="466" y="429">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=require "base64"
+fileData = ""
+rows = JSON.parse(@request['Body'])['Source Data']
+rows.each do |row|
+  rowData = row["AttachmentData"].gsub("\n", "\\n")
+  fileData = fileData  + rowData  + "\\n"
+end
+Base64.encode64(fileData.gsub!("\\n","\n"))
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_123" name="Device Summarization - Orig" x="4.993626" y="538.7011">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+rows = JSON.parse( @request['Body'] )['Source Data']
+
+#Devices should already be sorted, by device and timestamp order so no sorting needed...
+
+notification_content = ""
+
+if rows.size == 1
+  notification_content = "A Notification has been received for a device you support.\n"
+  notification_content += "The alert is for device: #{rows[0]['Device']}\n"
+  notification_content += "Message: #{rows[0]['Message']}"
+elsif rows.size &lt; 21
+  notification_content = "A total of #{rows.size} alert notifications have been received for devices you support.\n"
+  notification_content += "The first alert is for device: #{rows.first['Device']}\n"
+  notification_content += "Message: #{rows.first['Message']}\n"
+  rows.drop(1).each{|row|
+    notification_content += "Next alert is for device: #{row['Device']}\n"
+    notification_content += "Message: #{row['Message']}\n"
+  }
+else
+  device_groups = {}
+  rows.each{|row|
+    if !device_groups.has_key?(row['Device'])
+      device_groups[row['Device']] = 0
+    end
+    device_groups[row['Device']] += 1
+  }
+  
+  notification_content = "A total of #{rows.size} alert notifications have been received for one or more devices you support.\n"
+  notification_content += "Due to the number of alerts, details are not included in this notification, but\n"
+  device_groups.each{|device,count|
+    notification_content += "#{count} alerts were received for device, #{device}\n"
+  }
+end
+
+notification_content
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_126" name="Device Summarization" x="5.0318685" y="469.97653">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+rows = JSON.parse( @request['Body'] )['Source Data']
+
+#Sort rows by 'bp_host' tag and 'startedOn'
+rows.sort_by!{ |row| 
+  [
+    row['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_host"
+    }[0]['value'],
+    row['incident']['alerts'][0]['startedOn'] 
+  ]
+}
+
+notification_content = ""
+
+if rows.size == 1
+  device = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+    tag['name'] == "bp_host"
+  }[0]['value']
+  description = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+    tag['name'] == "bp_description"
+  }[0]['value']
+  
+  notification_content = "A Notification has been received for a device you support.\n"
+  notification_content += "The alert is for device: #{device}\n"
+  notification_content += "Message: #{description}"
+elsif rows.size &lt; 21
+  device = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+    tag['name'] == "bp_host"
+  }[0]['value']
+  description = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+    tag['name'] == "bp_description"
+  }[0]['value']
+  
+  notification_content = "A total of #{rows.size} alert notifications have been received for devices you support.\n"
+  notification_content += "The first alert is for device: #{device}\n"
+  notification_content += "Message: #{description}\n"
+  rows.drop(1).each{|row|
+    device = row['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_host"
+    }[0]['value']
+    description = row['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_description"
+    }[0]['value']
+  
+    notification_content += "Next alert is for device: #{device}\n"
+    notification_content += "Message: #{description}\n"
+  }
+else
+  device_groups = {}
+  rows.each{|row|
+    device = row['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_host"
+    }[0]['value']
+  
+    if !device_groups.has_key?(device)
+      device_groups[device] = 0
+    end
+    device_groups[device] += 1
+  }
+  
+  notification_content = "A total of #{rows.size} alert notifications have been received for one or more devices you support.\n"
+  notification_content += "Due to the number of alerts, details are not included in this notification, but\n"
+  device_groups.each{|device,count|
+    notification_content += "#{count} alerts were received for device, #{device}\n"
+  }
+end
+
+notification_content
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_127" name="MIR3 One Step Notification" x="700.4361" y="220.39584">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%=JSON.parse(@results['Retrieve Notification XML']['Values JSON'])['Notification XML']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]">&lt;%=@results['Process Placeholders']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" menu="" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">&lt;%= 
+default = "username"
+unique_field = JSON.parse( @request['Body'] )['MIR3 Unique User Match Field']
+
+if unique_field.to_s.empty?
+  default
+else
+  unique_field
+end
+%&gt;
+
+</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipients JSON" label="Recipients JSON" menu="" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}">&lt;%=@results['Do Recipient Replacements']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="OnCall JSON" label="OnCall JSON" menu="" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="CSV File Name" label="CSV File Name" menu="" required="false" tooltip="The filename of the CSV file to include"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="CSV Content" label="CSV Content" menu="" required="false" tooltip="The Base64 encoded content of the CSV file"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_111</task>
+                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">kinetic_request_ce_submission_update_v1_108</task>
+                    <task label="Successful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] == &quot;true&quot;">kinetic_request_ce_submission_update_v1_53</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_128" name="Placeholder1" x="1292" y="149">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_118</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_129" name="Placeholder2" x="1295" y="455">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="If updates configured" type="Complete" value="JSON.parse( @request['Body'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_119</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_130" name="Raise Stop Error" x="521.8017523649769" y="307.73754784252804">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+#raise ("Stopping Point")
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_131" name="Loop Begin" x="1528" y="563">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%= JSON.parse(JSON.parse(@results['Get Task Activity Monitor Submission']['Response Body'])['submission']['values']['Message'])['Source Submission Ids'].to_json %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$.[*]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_132</task>
+                    <task label="" type="Complete" value="">kinetic_core_api_v1_133</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_132" name="Loop End" x="1526" y="799">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_133" name="Update Source System Ticket Submission" x="1689" y="677">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">PUT</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/submissions/&lt;%= @results['Loop Begin']['Value'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)">&lt;%=
+{
+  "coreState" =&gt; "Closed",
+  "values" =&gt; {
+    "Status" =&gt; "Inactive"
+  }
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_132</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_134" name="Get Task Activity Monitor Submission" x="1525" y="441">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/submissions/&lt;%= JSON.parse(@request['Body'])['Task Activity Monitor Submission'] %&gt;?include=&lt;%=CGI.escape("values[Message]")%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_131</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

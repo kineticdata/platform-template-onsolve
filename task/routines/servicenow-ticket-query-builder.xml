@@ -1,0 +1,184 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_servicenow_ticket_query_builder</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>ServiceNow Ticket Query Builder</name>
+        <author></author>
+        <notes></notes>
+        <lastID>11</lastID>
+        <taskDefinition id="routine_servicenow_ticket_query_builder" name="ServiceNow Ticket Query Builder" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Form Slug" label="Form Slug" required="false" tooltip=""></parameter>
+                <parameter id="Limit" label="Limit" required="false" tooltip=""></parameter>
+                <parameter id="Next Page Token" label="Next Page Token" required="false" tooltip=""></parameter>
+                <parameter id="Current Tickets" label="Current Tickets" required="false" tooltip=""></parameter>
+                <parameter id="Query" label="Query" required="false" tooltip=""></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="Total Tickets" tooltip=""></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_1</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_1" name="Source System Tickets" x="48" y="130">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">&lt;%= @inputs['Form Slug'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%= @inputs['Query'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return.">&lt;%= @inputs['Limit'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">values[Source Id]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@inputs['Next Page Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Found Values" type="Complete" value="@results['Source System Tickets']['Count'].to_i&gt;0">utilities_echo_v1_11</task>
+                    <task label="No Tickets" type="Complete" value="@results['Source System Tickets']['Count'].to_i==0">system_tree_return_v1_10</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_5" name="ServiceNow Query" x="376" y="316">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+ticket_info = JSON.parse(@results['Source System Ticket Information']['output'])
+
+"sys_id=#{ticket_info.join('^ORsys_id=')}"
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_9</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_6" name="Return" x="379" y="654">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Total Tickets" label="Total Tickets" menu="" required="false" tooltip="">&lt;%= @results['ServiceNow Queries']['output']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_7" name="Return after Looping" x="800" y="662">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Total Tickets" label="Total Tickets" menu="" required="false" tooltip="">&lt;%= @results['Run ServiceNow Ticket Query Builder Routine']['Total Tickets'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_servicenow_ticket_query_builder" id="routine_servicenow_ticket_query_builder_8" name="Run ServiceNow Ticket Query Builder Routine" x="798" y="457">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="false" tooltip="">&lt;%=@inputs['Form Slug']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="">&lt;%=@inputs['Limit']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="">&lt;%= @results['Source System Tickets']['Next Page Token'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Tickets" label="Current Tickets" menu="" required="false" tooltip="">&lt;%=@results['ServiceNow Queries']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="false" tooltip="">&lt;%= @inputs['Query'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_7</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_9" name="ServiceNow Queries" x="378" y="459">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+if !@inputs['Current Tickets'].nil?
+  queryarray = JSON.parse(@inputs['Current Tickets'])
+else
+  queryarray = []
+end
+query = {"query" =&gt; @results['ServiceNow Query']['output']}
+queryarray &lt;&lt; query
+queryarray.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Token" type="Complete" value="@results['Source System Tickets']['Next Page Token'].to_s.empty?">system_tree_return_v1_6</task>
+                    <task label="Found Token" type="Complete" value="!@results['Source System Tickets']['Next Page Token'].to_s.empty?">routine_servicenow_ticket_query_builder_8</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_10" name="Return No Data" x="50" y="657">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Total Tickets" label="Total Tickets" menu="" required="false" tooltip="">[]</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_11" name="Source System Ticket Information" x="375" y="129">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= 
+servicenow_ids = []
+
+JSON.parse(@results['Source System Tickets']['Result']).each{ |item|
+  servicenow_ids.push(item['values']['Source Id'])
+}
+
+servicenow_ids.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_5</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

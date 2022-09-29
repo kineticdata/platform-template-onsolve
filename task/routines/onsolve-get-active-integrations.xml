@@ -28,36 +28,33 @@
                 <parameters></parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="" type="Complete" value="">routine_kinetic_datastore_forms_retrieve_list_custom_v1_1</task>
+                    <task label="" type="Complete" value="">routine_forms_retrieve_list__custom_1</task>
                 </dependents>
             </task>
-            <task definition_id="routine_kinetic_datastore_forms_retrieve_list_custom_v1" id="routine_kinetic_datastore_forms_retrieve_list_custom_v1_1" name="Get Datastore Forms" x="99" y="110">
+            <task definition_id="routine_forms_retrieve_list__custom" id="routine_forms_retrieve_list__custom_1" name="Get Datastore Forms" x="99" y="110">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch datastore forms. All datastore forms fetched when left blank"></parameter>
-                    <parameter id="Include" label="Include" menu="" required="false" tooltip="Comma-separated list of properties to include in the response (defaults to: details,attributesMap,indexDefinitions,pages,securityPolicies,fields,customHeadContent)">attributes[Integration Config]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to find forms in">datastore</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch forms. All forms fetched when left blank"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Include" label="Include" menu="" required="false" tooltip="Comma-separated list of properties to include in the response (defaults to: details,attributesMap,pages,securityPolicies,fields,customHeadContent)">attributes[Integration Config]</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_2</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_2" name="Extract forms into XML" x="242" y="110">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_2" name="Extract forms into XML" x="357" y="111">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 forms = JSON.parse(@results['Get Datastore Forms']['Datastore Forms List JSON'])
 
 config_forms=[]
@@ -72,87 +69,75 @@ forms.each {|form|
 "&lt;formSlugs&gt;#{config_forms.map{|form| "&lt;formSlug&gt;#{form}&lt;/formSlug&gt;"}.join}&lt;/formSlugs&gt;"
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_loop_head_v1_3</task>
                 </dependents>
             </task>
-            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_3" name="Loop Head" x="385" y="130">
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_3" name="Loop Head" x="616" y="108">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Extract forms into XML']['output']%&gt;</parameter>
-                    <parameter id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/formSlugs/formSlug</parameter>
-                    <parameter id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Extract forms into XML']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">/formSlugs/formSlug</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_loop_tail_v1_4</task>
-                    <task label="" type="Complete" value="">routine_kinetic_datastore_submissions_retrieve_list_v1_5</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submissions_retrieve_list_v1_5</task>
                 </dependents>
             </task>
-            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_4" name="Loop Tail" x="382.0833435058594" y="214.96669006347656">
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_4" name="Loop Tail" x="617.0833" y="231.96669">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
                     <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_6</task>
                 </dependents>
             </task>
-            <task definition_id="routine_kinetic_datastore_submissions_retrieve_list_v1" id="routine_kinetic_datastore_submissions_retrieve_list_v1_5" name="Get Datastore Form Submissions" x="565" y="99">
+            <task definition_id="routine_kinetic_submissions_retrieve_list_v1" id="routine_kinetic_submissions_retrieve_list_v1_5" name="Get Datastore Form Submissions" x="919" y="156">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Form Slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to find submissions in.">&lt;%=@results['Loop Head']['Value']%&gt;</parameter>
-                    <parameter id="Index To Search" label="Index To Search" menu="" required="false" tooltip="The Index definition to search (i.e. values[Name],values[Status])"></parameter>
-                    <parameter id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."></parameter>
-                    <parameter id="Direction" label="Direction" menu="" required="false" tooltip="Result Set sorting direction. The default value is ascending."></parameter>
-                    <parameter id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000">1000</parameter>
-                    <parameter id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch submissions. (i.e values[First Name]=&quot;Fred&quot;)"></parameter>
-                    <parameter id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to find submissions in.">datastore</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to find submissions in. If none provided, can only use Kapp Fields in search query">&lt;%=@results['Loop Head']['Value']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Type" label="Form Type" menu="" required="false" tooltip="The Type of Form to find submissions in."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Core State" label="Core State" menu="" required="false" tooltip="Searches for submissions that have a core state that matches this parameter. If no value is provided, the results will contain submissions in all core states."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="Limit the number of results returned. If not provided, the server will limit the results to 25 submissions. Maximum limit 1000">1000</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="false" tooltip="Query to use to fetch submissions. (i.e values[First Name]=&quot;Fred&quot;)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Timeline" label="Timeline" menu="" required="false" tooltip="Date property to search by. The default value is createdAt."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Direction" label="Direction" menu="" required="false" tooltip="Result Set sorting direction. The default value is descending."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Start Date/Time" label="Start Date/Time" menu="" required="false" tooltip="Start date/time of the timeline. This value should be used to both refine and limit the search results. Format should be yyyy-MM-dd'T'HH:mm:ss'Z'"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="End Date/Time" label="End Date/Time" menu="" required="false" tooltip="End date/time of the timeline. This value should be used to both refine and limit the search results. Formatshould be yyyy-MM-dd'T'HH:mm:ss'Z'"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_loop_tail_v1_4</task>
                 </dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_6" name="Return" x="385.0833435058594" y="321.96669006347656">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_6" name="Return" x="617.0833" y="353.96667">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="JSON Output" label="JSON Output" menu="" required="false" tooltip="">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="JSON Output" label="JSON Output" menu="" required="false" tooltip="">&lt;%=
 submissions = []
 
 @results['Get Datastore Form Submissions'].collect{|results|
@@ -165,11 +150,7 @@ submissions = []
 submissions.to_json
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
         </request>

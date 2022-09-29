@@ -1,0 +1,123 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_webapi_execute</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>WebAPI Execute</name>
+        <author>matthew.howe@kineticdata.com</author>
+        <notes></notes>
+        <lastID>5</lastID>
+        <taskDefinition id="routine_webapi_execute" name="WebAPI Execute" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Path" label="Path" required="true" tooltip="Relative path to the WebAPI (ex: /app/webApis/:webapislug or /app/kapps/:kapp-slug/webApis/:webapislug"></parameter>
+                <parameter id="Body" label="Body" required="true" tooltip="Body content in JSON format"></parameter>
+                <parameter id="Timeout" label="Timeout" required="true" tooltip="0 to exclude timeout from the call, otherwise the number of seconds to wait for output."></parameter>
+                <parameter id="Method" label="Method" required="true" tooltip="Options are GET, POST, PUT, DELETE"></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="Response Code" tooltip="Response Code"></result>
+                <result name="Response Body" tooltip="Response Body"></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="41" y="71">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_core_webapi_v1_1</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_core_webapi_v1" id="kinetic_core_webapi_v1_1" name="API" x="269" y="77">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">&lt;%= @inputs['Method'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">&lt;%=
+timeout = "?timeout=#{@inputs['Timeout']}" if @inputs['Timeout'] != "0"
+"#{@inputs['Path']}#{timeout}"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)">&lt;%=@inputs['Body']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['API']['Handler Error Message'].to_s.empty?">system_tree_return_v1_2</task>
+                    <task label="Has Error" type="Complete" value="!@results['API']['Handler Error Message'].to_s.empty?">routine_handler_failure_error_process_v1_3</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_2" name="Return Results" x="267" y="197">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Response Code" label="Response Code" menu="" required="false" tooltip="Response Code">&lt;%= @results['API']['Response Code'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Response Body" label="Response Body" menu="" required="false" tooltip="Response Body">&lt;%= @results['API']['Response Body'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_handler_failure_error_process_v1" id="routine_handler_failure_error_process_v1_3" name="Error Process" x="576" y="75">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message" label="Error Message" menu="" required="false" tooltip="Error Message">&lt;%=@results['API']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Handler Name" label="Handler Name" menu="" required="false" tooltip="">Core API v1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Run Id" label="Run Id" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Inputs JSON" label="Inputs JSON" menu="" required="false" tooltip="">&lt;%=@inputs.to_json%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_webapi_execute_4</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_webapi_execute" id="routine_webapi_execute_4" name="Retry" x="819" y="75">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Path" label="Path" menu="" required="true" tooltip="Relative path to the WebAPI (ex: /app/webApis/:webapislug or /app/kapps/:kapp-slug/webApis/:webapislug">&lt;%=@results['Error Process']['Path']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Body" label="Body" menu="" required="true" tooltip="Body content in JSON format">&lt;%=@results['Error Process']['Body']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Timeout" label="Timeout" menu="" required="true" tooltip="0 to exclude timeout from the call, otherwise the number of seconds to wait for output.">&lt;%=@results['Error Process']['Timeout']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Method" label="Method" menu="" required="true" tooltip="Options are GET, POST, PUT, DELETE">&lt;%=@results['Error Process']['Method']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_5</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_5" name="Return From Error" x="1057" y="76">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Response Code" label="Response Code" menu="" required="false" tooltip="Response Code">&lt;%= @results['Retry']['Response Code'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Response Body" label="Response Body" menu="" required="false" tooltip="Response Body">&lt;%= @results['Retry']['Response Body'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

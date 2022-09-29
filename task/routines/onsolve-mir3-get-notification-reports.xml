@@ -42,7 +42,7 @@
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 require 'rexml/document'
 
 str_xml = "&lt;getNotificationReports&gt;&lt;apiVersion&gt;4.14&lt;/apiVersion&gt;&lt;/getNotificationReports&gt;"
@@ -65,11 +65,7 @@ doc.write(output)
 output
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
                 </dependents>
@@ -81,7 +77,7 @@ output
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 response = JSON.parse(@results['MIR3 Call: Get Notification Reports']['output'])
 
 successful = response['success']
@@ -113,11 +109,7 @@ output['Closed Notifications'] = closed_notifications
 output.to_json
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_14</task>
                 </dependents>
@@ -129,16 +121,12 @@ output.to_json
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
-                    <parameter id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
-                    <parameter id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">get_notification_reports_op</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">get_notification_reports_op</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">utilities_echo_v1_4</task>
                 </dependents>
@@ -150,15 +138,11 @@ output.to_json
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
-                    <parameter id="Closed Notifications" label="Closed Notifications" menu="" required="false" tooltip="JSON object of closed UUIDs">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Closed Notifications'].to_json%&gt;</parameter>
-                    <parameter id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML/JSON block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Success']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Closed Notifications" label="Closed Notifications" menu="" required="false" tooltip="JSON object of closed UUIDs">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Closed Notifications'].to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML/JSON block, or the error message">&lt;%=JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON'].to_json%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_15" name="Generate XML Body - Original" x="12" y="192">
@@ -168,7 +152,7 @@ output.to_json
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
 require 'rexml/document'
 
 str_xml = "&lt;wrapper&gt;&lt;apiVersion&gt;4.14&lt;/apiVersion&gt;&lt;/wrapper&gt;"
@@ -191,11 +175,7 @@ doc.write(output)
 output
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
         </request>

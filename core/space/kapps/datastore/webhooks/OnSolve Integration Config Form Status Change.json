@@ -1,0 +1,8 @@
+{
+  "event": "Updated",
+  "filter": "form('attribute:Integration Config') === \"True\" && values('Status') !== valuesPrevious('Status')",
+  "name": "OnSolve Integration Config Form Status Change",
+  "type": "Submission",
+  "url": "/app/api/v1/run-tree/${space('attribute:Task Source Name')}/Submissions%20%3E%20${kapp('slug')}/OnSolve%20Integration%20Config%20Updated%20-%20Status%20Change",
+  "attributes": null
+}

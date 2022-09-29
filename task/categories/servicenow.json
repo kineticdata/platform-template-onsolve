@@ -3,6 +3,7 @@
   "description": null,
   "type": "Stored",
   "handlers": [
+    "servicenow_api_v1",
     "servicenow_object_query_retrieve_v1",
     "servicenow_object_update_v1",
     "servicenow_oncall_retrieve_v1"
@@ -11,6 +12,15 @@
 
   ],
   "trees": [
-    "routine_onsolve_integration_servicenow_process_incoming_data_v1"
+    "routine_onsolve_integration__servicenow_parent_poller__search_result_processing",
+    "routine_onsolve_integration__sysaid_parent_poller__search_result_processing",
+    "routine_onsolve_integration_servicenow_process_incoming_data_v1",
+    "routine_onsolve_servicenow_data_retrieve_v1",
+    "routine_onsolve_servicenow_oncall_retrieve_v1",
+    "routine_servicenow_ticket_query_builder",
+    "routine_servicenow_ticket_scan_routine",
+    "routine_servicenow_ticket_scan_routine_backup",
+    "routine_servicenow_ticket_scan_routine_step_2",
+    "routine_servicenow_ticket_scan_routine_step_3"
   ]
 }

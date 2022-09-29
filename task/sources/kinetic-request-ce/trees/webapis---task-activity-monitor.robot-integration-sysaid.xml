@@ -1,0 +1,590 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>robot-integration-sysaid</name>
+        <author></author>
+        <notes></notes>
+        <lastID>98</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_98</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="355" y="171">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running", "Run Id":&lt;%= @run['Id'] %&gt;}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="78" y="316">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_32</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="1460" y="318">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%= @results['SysAid Search']['Response Body'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">sysaid_record</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                    <task label="Include Information From Related ServiceNow Form" type="Complete" value="!JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Include Information From Related SysAid Form'].to_s.empty?">system_loop_head_v1_88</task>
+                    <task label="No External Information" type="Complete" value="JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Include Information From Related SysAid Form'].to_s.empty?">system_join_v1_96</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="1460" y="919">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="953" y="608">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+ESCAPE_CHARACTERS = {'&amp;'=&gt;'&amp;amp;', '&gt;'=&gt;'&amp;gt;', '&lt;'=&gt;'&amp;lt;', '"' =&gt; '&amp;quot;'}
+# Normal output
+if @results.has_key?("SysAid Search") &amp;&amp; @results['SysAid Search'].has_key?('Handler Error Message') &amp;&amp; @results['SysAid Search']['Handler Error Message'].to_s.empty?
+
+start_query_time = Time.at(JSON.parse(@results['Determine Start and End Times']['output'])['query_start_time'])
+end_query_time = Time.at(JSON.parse(@results['Determine Start and End Times']['output'])['query_end_time'])
+
+start_query_time = Time.new(start_query_time.year, start_query_time.month, start_query_time.day, start_query_time.hour, start_query_time.min)
+end_query_time = Time.new(end_query_time .year, end_query_time .month, end_query_time .day, end_query_time .hour, end_query_time .min)
+
+  outcome = "Successful"
+  output = {
+    "message" =&gt; "#{JSON.parse(@results['SysAid Search']['Response Body']).length} results returned",
+    "start_query_time" =&gt; start_query_time,
+    "end_query_time" =&gt; end_query_time  
+  }.to_json
+end
+
+# If timeout
+if !@results.has_key?("SysAid Search") || !@results['SysAid Search'].has_key?('Handler Error Message')
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Timeout during attempted data retrieve"
+  }.to_json
+end
+
+# Handler errored
+if @results.has_key?("SysAid Search") &amp;&amp; @results['SysAid Search'].has_key?('Handler Error Message') &amp;&amp; !@results['SysAid Search']['Handler Error Message'].to_s.empty?
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Retrieve error: #{@results['SysAid Search']['Handler Error Message'].to_s.gsub(/[&amp;"&gt;&lt;]/) { |special| ESCAPE_CHARACTERS[special] }}"
+  }.to_json
+end
+
+results = %|&lt;results&gt;&lt;result name="outcome"&gt;#{outcome}&lt;/result&gt;&lt;result name="output"&gt;#{output}&lt;/result&gt;&lt;/results&gt;|
+results
+#raise "#{results}"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1270" y="742">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Determine Start and End Times" x="735" y="314">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Determine start and end time to use in query. Store them as output for use in the Robot output trigger.
+# Probably using the output from the last execution run, with additional logic to use a the last x minutes if the last execution time is beyond some threshold.
+# An idea is below:
+
+# Evaluate previous run time.  If none, or if &gt; threshold between last run time and now, use current time (meaning the first run will probably find no records). 
+current_time = Time.now
+previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+previous_run_query_end_time = 
+begin
+  Time.parse(previous_run_data['end_query_time'] || current_time.to_s)
+rescue
+  current_time
+end
+
+# If (current_time - previous_run_query_end_time) &gt; 1 hour (60 min * 60 sec), use current time.
+if (current_time - previous_run_query_end_time).to_i &gt; (60*60)
+  previous_run_query_end_time = current_time
+end 
+
+# Set up new query start and end times, ignoring seconds / milliseconds
+query_start_time = Time.new(previous_run_query_end_time.year, previous_run_query_end_time.month, previous_run_query_end_time.day, previous_run_query_end_time.hour, previous_run_query_end_time.min)
+query_end_time = Time.new(current_time.year, current_time.month, current_time.day, current_time.hour, current_time.min)
+
+output = {}
+output['query_start_time'] = (query_start_time.to_f).to_i
+output['query_end_time'] = (query_end_time.to_f).to_i
+output.to_json
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_sysaid_data_retrieve_86</task>
+                    <task label="" type="Complete" value="">system_wait_v1_77</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_45" name="Junction: Robot" x="1269" y="614">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="78" y="182">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_76" name="Join 2" x="1110" y="459">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_45</task>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">utilities_create_trigger_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="736" y="455">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">60</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="No SysAid Search result" type="Complete" value="!@results['SysAid Search'].has_key?('Handler Error Message')">routine_onsolve_error_v1_79</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_79" name="Error Notification: SysAid Timeout" x="737" y="610">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">SysAid Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">SysAid Search query did not respond</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; "robot-integration-sysaid"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: SysAid Search Error" x="1109" y="158">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">SysAid Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['SysAid Search']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; "robot-integration-sysaid"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration__sysaid__process_incoming_data" id="routine_onsolve_integration__sysaid__process_incoming_data_85" name="Process Data" x="1875" y="922">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the SysAid ticket details">&lt;%=
+if @results.has_key?("Add To Source Data")
+  new_source_data = JSON.parse(@results['Loop Begin']['Value'])
+  @results['Add To Source Data'].collect{|key,values|
+    new_source_data['info'][0].merge!(JSON.parse(values['output']))
+  }
+  new_source_data.to_json
+else
+  @results['Loop Begin']['Value']
+end
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_sysaid_data_retrieve" id="routine_onsolve_sysaid_data_retrieve_86" name="SysAid Search" x="1109" y="312.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Method" label="Method" menu="" required="true" tooltip="">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Path" label="Path" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+
+query = (JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name']).downcase + "?" + JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+query.gsub!("{{Start Date}}", (extracted_times['query_start_time'].to_f*1000).to_i.to_s)
+query.gsub!("{{End Date}}", (extracted_times['query_end_time'].to_f*1000).to_i.to_s)
+
+query
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Body" label="Body" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="!@results['SysAid Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: SysAid Timeout')">routine_onsolve_error_v1_80</task>
+                    <task label="No error" type="Complete" value="@results['SysAid Search']['Handler Error Message'].to_s.empty?">system_loop_head_v1_5</task>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_87</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_87" name="SysAid Search Query" x="910" y="211.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+
+query = (JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name']).downcase + "?" + JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+query.gsub!("{{Start Date}}", (extracted_times['query_start_time'].to_f*1000).to_i.to_s)
+query.gsub!("{{End Date}}", (extracted_times['query_end_time'].to_f*1000).to_i.to_s)
+
+query
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_88" name="Loop Head External Data" x="1871" y="322">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Include Information From Related SysAid Form']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">info_related_sysAid</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_89</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_90</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_89" name="Loop Tail External Data" x="1871" y="620">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_96</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_90" name="Validate Qualification" x="2219" y="320">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="True" type="Complete" value="@results['Validate Qualification']['output']==&quot;True&quot;">utilities_echo_v1_91</task>
+                    <task label="False" type="Complete" value="@results['Validate Qualification']['output']!=&quot;True&quot;">system_join_v1_93</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_91" name="Process Qualification" x="2720" y="318">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = @results['Loop Head External Data']['Value']
+source_data = JSON.parse(@results['Loop Begin']['Value'])
+
+#  Do replacements
+
+
+
+    qualification.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+      # remove opening and closing brackets from match
+      key = match[2..-3]
+
+      # determine which part of the field to retrieve - 'value', 'valueClass', 'keyCaption', 'valueCaption'
+      # all keys $.info[:0].key
+      # just the part needed
+      # $.info[[?(@.key == 'third_level_category')]]
+      # see https://jsonpath.com/
+    
+      field_qualifier = 'value'
+      field = key
+      field_array = key.split(".")
+      if field_array.length &gt; 1
+        field_qualifier = field_array[1]
+        field = field_array[0]
+      end
+
+      if source_data.keys.include?(field)
+        source_data[field][field_qualifier] || source_data[field]
+      else
+        findkey=""
+        source_data['info'].each do |sysaid_data|
+          if sysaid_data.keys.include?('key') &amp;&amp; sysaid_data['key'] == field
+            findkey = sysaid_data[field_qualifier] || sysaid_data
+            break
+          end
+        end
+        findkey
+      end
+    end
+    #qualification[i]['value'] = ph
+
+
+
+qualification
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_sysaid_data_retrieve_92</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_sysaid_data_retrieve" id="routine_onsolve_sysaid_data_retrieve_92" name="SysAid External Data" x="2719" y="457">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Method" label="Method" menu="" required="true" tooltip="">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Path" label="Path" menu="" required="true" tooltip="">&lt;%=
+lookup_specs = JSON.parse(@results['Process Qualification']['output'])
+lookup_specs['Form']+"/"+lookup_specs['Id']+"?limit=1&amp;fields="+lookup_specs['Return']
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Body" label="Body" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not Found" type="Complete" value="@results['SysAid External Data']['Response Body']==&quot;{}&quot;">system_join_v1_93</task>
+                    <task label="Found Data" type="Complete" value="@results['SysAid External Data']['Response Body']!=&quot;{}&quot;">utilities_echo_v1_94</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_93" name="Join External Data" x="2218" y="631">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_89</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_94" name="Add To Source Data" x="2720" y="623">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+dataToAdd = JSON.parse(@results['SysAid External Data']['Response Body'])
+dataToAdd['info'][0]['key']=JSON.parse(@results['Process Qualification']['output'])['Mapping']
+dataToAdd['info'][0].to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_93</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_96" name="Join Ready To Process Data" x="1872.5" y="800">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_integration__sysaid__process_incoming_data_85</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_98" name="Was Robot Initiated" x="225" y="14">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+begin 
+  JSON.parse(@request['Body']).has_key? ('Kinetic Robot Execution Record Id')
+rescue
+  false
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_join_v1_74</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

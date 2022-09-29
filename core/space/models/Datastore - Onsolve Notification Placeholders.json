@@ -56,15 +56,15 @@
           "structureField": "${fields('id')}"
         }
       ],
-      "bridgeSlug": "kinetic-core",
+      "bridgeSlug": "kinetic-platform",
       "name": "Datastore - Onsolve Notification Placeholders",
       "qualifications": [
         {
           "name": "By Notification Name",
-          "query": "formSlug=onsolve-notification-placeholders&index=values[Notification Name]&q=values[Notification Name]=\"${parameters('Notification Name')}\""
+          "query": "q=values[Notification Name]=\"${parameters('Notification Name')}\""
         }
       ],
-      "structure": "Datastore Submissions"
+      "structure": "Submissions > datastore > onsolve-notification-placeholders"
     }
   ],
   "name": "Datastore - Onsolve Notification Placeholders",

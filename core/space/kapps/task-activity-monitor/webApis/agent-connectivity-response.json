@@ -1,0 +1,11 @@
+{
+  "method": "POST",
+  "securityPolicies": [
+    {
+      "endpoint": "Execution",
+      "name": "Authenticated Users"
+    }
+  ],
+  "slug": "agent-connectivity-response",
+  "attributes": null
+}

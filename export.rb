@@ -69,10 +69,10 @@ end
 
 # Configuration of which submissions should be exported
 SUBMISSIONS_TO_EXPORT = [
-  {"datastore" => true, "formSlug" => "notification-data"},
-  {"datastore" => true, "formSlug" => "notification-template-dates"},
-  {"datastore" => true, "formSlug" => "robot-definitions"},
-  {"datastore" => true, "formSlug" => "task-handler-passwords"},
+  {"kappSlug" => "datastore", "formSlug" => "notification-data"},
+  {"kappSlug" => "datastore", "formSlug" => "notification-template-dates"},
+  {"kappSlug" => "datastore", "formSlug" => "robot-definitions"},
+  {"kappSlug" => "datastore", "formSlug" => "task-handler-passwords"},
 
 ]
 
@@ -149,7 +149,8 @@ if space.has_key?("platformComponents")
     space["platformComponents"].delete("task")
   end
   (space["platformComponents"]["agents"] || []).each do |agent|
-    space["platformComponents"]["agents"]["url"] = ""
+    #space["platformComponents"]["agents"]["url"] = ""
+    agent["url"] = ""
   end
 end
 # rewrite the space file

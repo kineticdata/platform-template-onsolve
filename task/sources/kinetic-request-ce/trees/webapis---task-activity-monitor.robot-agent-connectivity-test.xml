@@ -1,0 +1,316 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>robot-agent-connectivity-test</name>
+        <author></author>
+        <notes></notes>
+        <lastID>42</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_42</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_12" name="Update Robot Execution Status" x="54" y="148">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running", "Run Id":&lt;%= @run['Id'] %&gt;}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_27</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_27" name="Junction: Robot Initiated" x="369" y="152">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_28" name="Robot return trigger" x="857" y="308">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+prev_execution_output = JSON.parse( @request['Body'] )['Kinetic Robot Previous Execution Output']
+
+output = {
+  "Agent Connectivity Test Result" =&gt; @results['Get Deferral Token']['output'],
+}
+if @results['Get Deferral Token']['output'] != "Success"
+  output['Failure Count'] = (prev_execution_output['Failure Count'].to_i + 1).to_s
+end
+
+"&lt;results&gt;
+&lt;result name=\"output\"&gt;#{(output.to_json).encode(:xml =&gt; :text)}&lt;/result&gt;
+&lt;/results&gt;"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_40</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_30" name="Wait" x="1112" y="141">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">&lt;%=
+begin
+  JSON.parse( @request['Body'] )['Runtime Inputs']['Timeout']
+rescue
+  60
+end
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Agent Error" type="Complete" value="#@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; JSON.parse( @results['Call Kinetic Task Tree Run on Agent']['output'] || &quot;{}&quot; )['Handler Error Message'].to_s.empty?&#10;!@results.has_key?('Robot return trigger') &amp;&amp; (!@results.has_key?('Call Kinetic WebAPI Run on Agent') || (@results['Call Kinetic WebAPI Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; @results['Call Kinetic WebAPI Run on Agent']['output'].to_s.empty?))">routine_onsolve_error_v1_35</task>
+                    <task label="" type="Create" value="">kinetic_agent_handler_execute_v3_32</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_32" name="Call Kinetic WebAPI Run on Agent" x="1354" y="140">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">kinetic_core_webapi_v1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%=
+{
+  "error_handling" =&gt; "Error Message",
+  "method" =&gt; "POST",
+  "path" =&gt; "/kapps/task-activity-monitor/webApis/agent-connectivity-response",
+  "body" =&gt; {
+    "Deferral Token" =&gt; @results['Get Deferral Token']['deferral_token']
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_defer_v1" id="utilities_defer_v1_33" name="Get Deferral Token" x="856" y="143">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_value" label="Initial Deferral Value" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Create" value="">system_wait_v1_30</task>
+                    <task label="Robot Initiaited" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">utilities_create_trigger_v1_28</task>
+                    <task label="Not From Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_40</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_34" name="Error Notification: Agent Connectivity Problem" x="1360" y="363">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Kinetic Agent Connectivity Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=
+error = @results['Call Kinetic WebAPI Run on Agent']['Handler Error Message']
+
+message = "Agent Connectivity Test could not reach the Agent to attempt the round-trip test.\n\nError Message: #{error}\n\nPossible network connectivity issue, or the Agent is not responding (Server Issue?  Tomcat Issue?)"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=
+begin
+  JSON.parse( @request['Body'] )['Runtime Inputs']['Recipients']
+rescue
+  nil
+end
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%= @run['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_create_trigger_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_35" name="Error Notification: Agent Timeout" x="1114" y="300">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Agent Connectivity Timeout</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=
+seconds = begin
+  JSON.parse( @request['Body'] )['Runtime Inputs']['Timeout']
+rescue
+  60
+end
+
+message = "Agent Connectivity Test did not complete within #{seconds} seconds. Possible network connectivity issue reaching kinops.io from the client site, or possible backlog issue."
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=
+begin
+  JSON.parse( @request['Body'] )['Runtime Inputs']['Recipients']
+rescue
+  nil
+end
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%= @run['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_create_trigger_v1_38</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_36" name="Get Space" x="617" y="142">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_defer_v1_33</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_37" name="Agent Error: Complete Deferral" x="1360.0319" y="471.9367">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%= @results['Get Deferral Token']['deferral_token'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;results&gt;&lt;result name="output"&gt;Agent Call Error&lt;/result&gt;&lt;/results&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_38" name="Timeout: Complete Deferral" x="1112.9862" y="470.07538">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%= @results['Get Deferral Token']['deferral_token'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;results&gt;&lt;result name="output"&gt;Timeout&lt;/result&gt;&lt;/results&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_39" name="Wait 1 second" x="1358" y="238">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="#(!@results['Call Kinetic Task Tree Run on Agent']['Handler Error Message'].to_s.empty? || !JSON.parse( @results['Call Kinetic Task Tree Run on Agent']['output'] || &quot;{}&quot; )['Handler Error Message'].to_s.empty?) &amp;&amp; !@results.has_key?('Error Notification: Agent Timeout')&#10;!@results['Call Kinetic WebAPI Run on Agent']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: Agent Timeout')">routine_onsolve_error_v1_34</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_40" name="Robot Junction" x="564" y="316">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_41</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_41" name="End" x="565" y="464">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_42" name="Was Robot Initiated" x="181" y="15.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+begin 
+  JSON.parse(@request['Body']).has_key? ('Kinetic Robot Execution Record Id')
+rescue
+  false
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_12</task>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_27</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

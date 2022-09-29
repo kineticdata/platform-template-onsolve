@@ -1,0 +1,270 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>inbound-integration-sqldatabase</name>
+        <author></author>
+        <notes></notes>
+        <lastID>76</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="105" y="148">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Query</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query">cherwell</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval">values[Name]</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission">values[Name]="&lt;%=JSON.parse( @request['body'] )['action']%&gt;"</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Found" type="Complete" value="!@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_sql_database_call_69</task>
+                    <task label="Not found" type="Complete" value="@results['Retrieve Integration Config']['ID'].to_s.empty?">kinetic_core_api_v1_76</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="485" y="596">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_sql_database_call" id="routine_onsolve_sql_database_call_69" name="Get SQL Data" x="480" y="143">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="jdbc_database" menu="" required="true" tooltip="">&lt;%= JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Type']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="dbname" label="dbname" menu="" required="true" tooltip="">&lt;%= JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="action" menu="" required="true" tooltip="">fetch</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="query" menu="" required="true" tooltip="">&lt;%= 
+# The configuration will dictate the query
+
+integration_config = JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )
+source_data = JSON.parse( @request['body'] )['data']
+
+query = integration_config['Inbound Integration Data Retrieval Query']
+# Notes: SQL statements need to have single quotes in text strings replaced with two single quotes next to each other.
+
+# Need to replace a source data references
+query.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    begin
+      source_data[field][field_qualifier] || source_data[field]
+    rescue
+      source_data[field]
+    end
+  elsif source_data.keys.include?('fields')
+    if source_data['fields'].keys.include?(field)
+      begin
+        source_data['fields'][field][field_qualifier] || source_data['fields'][field]
+      rescue
+        source_data['fields'][field]
+      end
+    else
+      match
+    end
+  else
+    match
+  end
+end
+
+query
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Successful" type="Complete" value="@results['Get SQL Data']['Handler Error Message'].to_s.empty?">routine_onsolve_integration__sql_database__process_incoming_data_70</task>
+                    <task label="Has Error" type="Complete" value="!@results['Get SQL Data']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_72</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration__sql_database__process_incoming_data" id="routine_onsolve_integration__sql_database__process_incoming_data_70" name="Process Data" x="855" y="142">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%= @results['Get SQL Data']['JSON Results'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_71" name="Dev Notes" x="449" y="26">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">Clone this tree and add actions if incoming data needs to do multiple things or could trigger special work flows.  Evaluate based on the source data's 'action' value.</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_72" name="Get SQL Data Error Notifiction" x="481" y="305">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Could not retrieve object details from SQL Database.</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Kinetic received an inbound integration for a SQL Database, but could not retrieve additional information.  No notification was attempted.
+
+Received data:
+&lt;%=@request['body']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; "inbound-integration-sqldatabase"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_73" name="Junction" x="481" y="452">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_74" name="Get Integration Config Error Notifiction" x="106" y="441">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Could not retrieve Kinetic configuration record.</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Kinetic received an inbound integration for a SQL Database notification, but could not retrieve the related integration configuration record. No notification could be attempted.
+
+The 'action' value could be missing from the source data, or the value of 'action' has no correlating integration entry.
+
+Received data:
+&lt;%=@request['body']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; "inbound-integration-sqldatabase"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_73</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_75" name="Note: Inbound Data Format" x="286" y="25">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">The inbound data should follow this format:
+
+{
+  "action":"a value that matches the configuration or that this Task Tree knows how to handle",
+  "data":{
+   "Field name 1":"Field Value 1",
+   "Field Name 2":"Field Value 2"
+   }
+}
+
+**This can also support more complicated structure:
+{
+  "action":"a value that matches the configuration or that this Task Tree knows how to handle",
+  "data":{
+    "Field name 1":{
+      "display_value":"username",
+      "value":"userid"
+    },
+    "Field Name 2":{
+      "display_value":"groupname",
+      "value":"groupid"
+    }
+  }
+}</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_76" name="Retrieve Space Admins" x="106" y="298">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/users?q=spaceAdmin="true"</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_error_v1_74</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

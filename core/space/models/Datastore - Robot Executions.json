@@ -28,15 +28,15 @@
           "structureField": "${fields('values[Output]')}"
         }
       ],
-      "bridgeSlug": "kinetic-core",
+      "bridgeSlug": "kinetic-platform",
       "name": "Datastore - Robot Executions",
       "qualifications": [
         {
           "name": "Last Execution by By Id",
-          "query": "formSlug=robot-executions&direction=DESC&limit=1&index=values[Robot ID],values[Status],createdAt&q=values[Robot ID]=\"${parameters('Id')}\" AND values[Status]=\"Completed\""
+          "query": "q=values[Robot ID]=\"${parameters('Id')}\" AND values[Status]=\"Completed\"&direction=DESC&limit=1"
         }
       ],
-      "structure": "Datastore Submissions"
+      "structure": "Submissions > datastore > robot-executions"
     }
   ],
   "name": "Datastore - Robot Executions",

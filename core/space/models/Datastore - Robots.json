@@ -21,15 +21,15 @@
           "structureField": "${fields('values[Status]')}"
         }
       ],
-      "bridgeSlug": "kinetic-core",
+      "bridgeSlug": "kinetic-platform",
       "name": "Datastore - Robots",
       "qualifications": [
         {
           "name": "By Id",
-          "query": "id=${parameters('Robot Id')}"
+          "query": "q=id=\"${parameters('Robot Id')}\""
         }
       ],
-      "structure": "Datastore Submissions"
+      "structure": "Submissions > datastore"
     }
   ],
   "name": "Datastore - Robots",

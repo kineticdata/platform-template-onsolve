@@ -8,7 +8,7 @@
         <name>OnSolve Integration - SQL Database - Process Incoming Data</name>
         <author></author>
         <notes></notes>
-        <lastID>12</lastID>
+        <lastID>14</lastID>
         <taskDefinition id="routine_onsolve_integration__sql_database__process_incoming_data" name="OnSolve Integration - SQL Database - Process Incoming Data" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
@@ -32,10 +32,10 @@
                 <parameters></parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_1</task>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_13</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_1" name="Active Alerts" x="80.3" y="78.41667">
+            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_1" name="Active Alerts" x="454.3" y="115.41667">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -46,6 +46,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">task-activity-monitor</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%=
 details = JSON.parse( @inputs['Source Data'] )
 integration_config = JSON.parse( @inputs['Integration Config Values'] )
@@ -61,20 +62,22 @@ if integration_config['Notify more than once per record'] == "Yes"
   query_addendum = %|AND values[Onsolve Status] IN ("Pending","Open")|
 end
 
-query = %|include=details,values&amp;q=values[Integration Id]="#{@inputs['Integration Config Id']}" AND values[Source Id]="#{source_id_value}"| + query_addendum
+query = %|coreState="Submitted" AND values[Integration Id]="#{@inputs['Integration Config Id']}" AND values[Source Id]="#{source_id_value}"| + query_addendum
 
 query%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">details,values</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="None" type="Complete" value="@results['Active Alerts']['Count'].to_i == 0">kinetic_request_ce_submission_create_v1_2</task>
-                    <task label="Any - Non Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;integration_config['Notify more than once per record'] == &quot;Yes&quot; &amp;&amp; &#10;@results['Active Alerts']['Count'].to_i &gt; 0">system_noop_v1_4</task>
-                    <task label="Any - Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;integration_config['Notify more than once per record'] == &quot;No&quot; &amp;&amp; &#10;@results['Active Alerts']['Count'].to_i &gt; 0">system_junction_v1_11</task>
+                    <task label="Any Active Alert" type="Complete" value="@results['Active Alerts']['Count'].to_i &gt; 0">system_noop_v1_4</task>
+                    <task label="Non Active Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;integration_config['Notify more than once per record'] == &quot;No&quot; &amp;&amp; &#10;@results['Active Alerts']['Count'].to_i &gt; 0&#10;&#10;integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;integration_config['Notify more than once per record'] == &quot;No&quot; &amp;&amp; @results['Active Alerts']['Count'].to_i == 0">system_junction_v1_11</task>
+                    <task label="Non Active Non Unique" type="Complete" value="integration_config = JSON.parse( @inputs['Integration Config Values'] )&#10;@results['Active Alerts']['Count'].to_i == 0 &amp;&amp; integration_config['Notify more than once per record'] == &quot;Yes&quot;">system_join_v1_14</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_2" name="Create Submission" x="80" y="326">
+            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_2" name="Create Submission" x="89" y="351">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -126,7 +129,7 @@ source_ref_id = begin
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_3</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_3" name="Change State" x="79" y="483">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_3" name="Change State" x="89" y="499">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -148,7 +151,7 @@ source_ref_id = begin
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
                 </dependents>
             </task>
-            <task definition_id="system_noop_v1" id="system_noop_v1_4" name="Existing Notification In Process" x="425" y="73">
+            <task definition_id="system_noop_v1" id="system_noop_v1_4" name="Existing Notification In Process" x="778" y="111">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -161,7 +164,7 @@ source_ref_id = begin
                     <task label="Has Stop Criteria" type="Complete" value="!(JSON.parse( @inputs['Integration Config Values'] )['Stop Notification Criteria']).nil?">utilities_echo_v1_9</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_5" name="Evaluate Restart Condition" x="756" y="73">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_5" name="Evaluate Restart Condition" x="1124" y="110">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -248,14 +251,12 @@ restart_result = determine(restart_criteria)
 restart_result
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="True" type="Complete" value="@results['Evaluate Restart Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_6</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_6" name="Send Stop Notification Update Trigger (Restarting)" x="1096" y="79">
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_6" name="Send Stop Notification Update Trigger (Restarting)" x="1125" y="236">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -275,7 +276,7 @@ existing_activity_record[0]['values']['Deferral Token']
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_create_v1_7</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_7" name="Create Submission (Restart)" x="1097" y="197">
+            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_7" name="Create Submission (Restart)" x="1126" y="350">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -326,7 +327,7 @@ source_ref_id = begin
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_8</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_8" name="Change State (Restart)" x="1100" y="327">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_8" name="Change State (Restart)" x="1128" y="480">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -348,7 +349,7 @@ source_ref_id = begin
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_9" name="Evaluate Stop Condition" x="425" y="197">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_9" name="Evaluate Stop Condition" x="776" y="232">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -448,14 +449,12 @@ end
 stop_result
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="True" type="Complete" value="@results['Evaluate Stop Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_10</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_10" name="Send Stop Notification Update Trigger" x="421" y="328">
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_10" name="Send Stop Notification Update Trigger" x="772" y="369">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -475,7 +474,7 @@ existing_activity_record[0]['values']['Deferral Token']
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
                 </dependents>
             </task>
-            <task definition_id="system_junction_v1" id="system_junction_v1_11" name="Junction" x="421" y="495">
+            <task definition_id="system_junction_v1" id="system_junction_v1_11" name="Junction" x="452" y="506">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -487,7 +486,7 @@ existing_activity_record[0]['values']['Deferral Token']
                     <task label="" type="Complete" value="">system_tree_return_v1_12</task>
                 </dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_12" name="Return" x="418" y="608">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_12" name="Return" x="450" y="610">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -498,6 +497,60 @@ existing_activity_record[0]['values']['Deferral Token']
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_13" name="Any Alerts" x="88" y="116">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%=
+details = JSON.parse( @inputs['Source Data'] )
+integration_config = JSON.parse( @inputs['Integration Config Values'] )
+#source_id_value = details[integration_config['Internal Unique Key Field Name']]['value'] || details[integration_config['Internal Unique Key Field Name']]
+source_id_value = begin
+    details[integration_config['Internal Unique Key Field Name']]['value'] || details[integration_config['Internal Unique Key Field Name']]
+  rescue
+    details[integration_config['Internal Unique Key Field Name']]
+  end
+
+
+query = %|coreState="Submitted" AND values[Integration Id]="#{@inputs['Integration Config Id']}" AND values[Source Id]="#{source_id_value}"|
+
+query%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">details,values</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Alert" type="Complete" value="@results['Any Alerts']['Count'].to_i &gt; 0">kinetic_request_ce_submission_search_v2_1</task>
+                    <task label="None" type="Complete" value="@results['Any Alerts']['Count'].to_i == 0">system_join_v1_14</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_14" name="Join" x="89.64999999999998" y="259.20833500000003">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_create_v1_2</task>
+                </dependents>
             </task>
         </request>
     </taskTree>

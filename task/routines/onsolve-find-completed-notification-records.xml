@@ -8,7 +8,7 @@
         <name>OnSolve Find Completed Notification Records</name>
         <author></author>
         <notes></notes>
-        <lastID>27</lastID>
+        <lastID>46</lastID>
         <taskDefinition id="routine_onsolve_find_completed_notification_records_v1" name="OnSolve Find Completed Notification Records" schema_version="1.0" version="1">
             <visible>false</visible>
             <deferrable>true</deferrable>
@@ -16,10 +16,14 @@
                 <parameter id="Kapp Slug" label="Kapp Slug" required="true" tooltip=""></parameter>
                 <parameter id="Starting Count" label="Starting Count" required="true" tooltip="">0</parameter>
                 <parameter id="Page Token" label="Page Token" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+                <parameter id="Search Start Date" label="Search Start Date" required="false" tooltip=""></parameter>
+                <parameter id="Error Notification SMTP Addresses" label="Error Notification SMTP Addresses" required="true" tooltip="Comma separated list of SMTP addresses to notify if there is a processing error"></parameter>
+                <parameter id="Error Notification Time Window" label="Error Notification Time Window" required="false" tooltip="Array of hours in UTC when notification should be send.  If not included, notifications will always be sent"></parameter>
             </parameters>
             <handler name="system_tree_call" version="1"></handler>
             <results format="xml">
                 <result name="Notifications Evaluated" tooltip=""></result>
+                <result name="Oldest open record create date" tooltip=""></result>
             </results>
         </taskDefinition>
         <request>
@@ -32,10 +36,10 @@
                 <parameters></parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_8</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_44</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_8" name="Retrieve Submission records" x="110" y="99">
+            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_8" name="Retrieve Submission records" x="101" y="197">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -46,124 +50,28 @@
                     <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">task-activity-monitor</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">include=details,values[Response Expected],values[Onsolve Status],values[Onsolve Id],values[Deferral Token]&amp;limit=100&amp;q=values[Response Expected]="Yes" AND values[Onsolve Status] IN ("Open","Terminate")</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used.">ASC</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%=
+addendum = ""
+if !@inputs['Search Start Date'].to_s.empty?
+  addendum = " AND createdAt&gt;=\"#{@inputs['Search Start Date']}\""
+end
+
+%|coreState="Submitted" AND values[Onsolve Status] IN ("Open","Terminate")#{addendum}|
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return.">100</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used.">details,values[Response Expected],values[Onsolve Status],values[Onsolve Id],values[Deferral Token]</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@inputs['Page Token']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
-                    <task label="Has any records" type="Complete" value="@results['Retrieve Submission records']['Count'].to_i &gt; 0">routine_onsolve_mir3_get_notification_reports_v1_10</task>
+                    <task label="Has any records" type="Complete" value="@results['Retrieve Submission records']['Count'].to_i &gt; 0">utilities_echo_v1_30</task>
                     <task label="No records" type="Complete" value="@results['Retrieve Submission records']['Count'].to_i == 0">system_junction_v1_21</task>
                     <task label="More records" type="Complete" value="!@results['Retrieve Submission records']['Next Page Token'].nil?">routine_onsolve_find_completed_notification_records_v1_26</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_mir3_get_notification_reports_v1" id="routine_onsolve_mir3_get_notification_reports_v1_10" name="Get Notification Reports" x="459" y="101">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>true</defers>
-                <deferrable>true</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="UUIDs JSON" label="UUIDs JSON" menu="" required="true" tooltip="A JSON object of open MIR3 Notification UUIDs">&lt;%=
-uuids = []
-
-open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
-
-open_records.each{| record |
-  uuids.push( record['values']['Onsolve Id'] )
-}
-
-uuids.to_json
-%&gt;</parameter>
-                </parameters>
-                <messages></messages>
-                <dependents>
-                    <task label="Successful" type="Complete" value="@results['Get Notification Reports']['Success'] == &quot;true&quot;">utility_json_to_xml_v1_17</task>
-                    <task label="Unsuccessful" type="Complete" value="@results['Get Notification Reports']['Success'] != &quot;true&quot;">system_junction_v1_21</task>
-                </dependents>
-            </task>
-            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_13" name="Send Complete Trigger" x="1277" y="187">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=
-## Extract deferral token from the already retrieved list of records 
-## rather than looking up each record again based on UUID.
-
-open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
-
-token = nil
-
-open_records.each{|record|
-  if record['values']['Onsolve Id'] == @results['Loop Begin']['Value']
-    token = record['values']['Deferral Token']
-    break
-  end
-}
-
-token
-%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;results&gt;&lt;result name="status"&gt;Closed&lt;/result&gt;&lt;/results&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
-                </parameters>
-                <messages></messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_loop_tail_v1_15</task>
-                </dependents>
-            </task>
-            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_14" name="Loop Begin" x="1034" y="101">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Closed Notifications JSON to XML']['XML']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">//node/node</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">closed_uuid</parameter>
-                </parameters>
-                <messages></messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_loop_tail_v1_15</task>
-                    <task label="" type="Complete" value="">utilities_create_trigger_v1_13</task>
-                </dependents>
-            </task>
-            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_15" name="Loop End" x="1036" y="283">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
-                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
-                </parameters>
-                <messages></messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_junction_v1_21</task>
-                </dependents>
-            </task>
-            <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_17" name="Closed Notifications JSON to XML" x="792" y="97">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="json" label="JSON" menu="" required="true" tooltip="The JSON String to be converted to XML">&lt;%=@results['Get Notification Reports']['Closed Notifications']%&gt;</parameter>
-                </parameters>
-                <messages></messages>
-                <dependents>
-                    <task label="" type="Complete" value="">system_loop_head_v1_14</task>
-                </dependents>
-            </task>
-            <task definition_id="system_junction_v1" id="system_junction_v1_21" name="Junction" x="462" y="294">
+            <task definition_id="system_junction_v1" id="system_junction_v1_21" name="Junction" x="846" y="376">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -172,10 +80,10 @@ token
                 <parameters></parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="Not more records" type="Complete" value="@results['Retrieve Submission records']['Next Page Token'].nil?">system_tree_return_v1_24</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_42</task>
                 </dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_23" name="Return - Multiple Pages" x="110" y="435">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_23" name="Return - Multiple Pages" x="96" y="595">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -183,11 +91,15 @@ token
                 <visible>false</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="Notifications Evaluated" label="Notifications Evaluated" menu="" required="false" tooltip="">&lt;%=@results['Call self - Get next records']['Notifications Evaluated']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Oldest open record create date" label="Oldest open record create date" menu="" required="false" tooltip="">&lt;%= 
+# put the two dates into an array, sort the array, and pick the first one to find the oldest.
+[@results['Call self - Get next records']['Oldest open record create date'],@results['Determine Oldest Open Ticket Create Date']['output']].sort[0]
+%&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_24" name="Return - Complete page" x="465" y="422">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_24" name="Return - Complete page" x="849" y="595">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -195,11 +107,12 @@ token
                 <visible>false</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="Notifications Evaluated" label="Notifications Evaluated" menu="" required="false" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Oldest open record create date" label="Oldest open record create date" menu="" required="false" tooltip="">&lt;%= @results['Determine Oldest Open Ticket Create Date']['output'] %&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="routine_onsolve_find_completed_notification_records_v1" id="routine_onsolve_find_completed_notification_records_v1_26" name="Call self - Get next records" x="110" y="287">
+            <task definition_id="routine_onsolve_find_completed_notification_records_v1" id="routine_onsolve_find_completed_notification_records_v1_26" name="Call self - Get next records" x="98" y="363">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -209,11 +122,434 @@ token
                     <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="">&lt;%=@inputs['Kapp Slug']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Starting Count" label="Starting Count" menu="" required="true" tooltip="">&lt;%=@inputs['Starting Count'].to_i + @results['Retrieve Submission records']['Count'].to_i%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Page Token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@results['Retrieve Submission records']['Next Page Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Search Start Date" label="Search Start Date" menu="" required="false" tooltip="">&lt;%= @inputs['Search Start Date'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notify on Error SMTP Address" label="Notify on Error SMTP Address" menu="" required="true" tooltip="Comma separated list of SMTP addresses to notify if there is a processing error">&lt;%= @inputs['Notify on Error SMTP Address'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notify on Error Time Window" label="Notify on Error Time Window" menu="" required="false" tooltip="Array of hours in UTC when notification should be send.  If not included, notifications will always be sent">&lt;%= @inputs['Notify on Error Time Window'] %&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="" type="Complete" value="">system_tree_return_v1_23</task>
+                    <task label="" type="Complete" value="">system_junction_v1_43</task>
                 </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_28" name="Get Deferral Tokens" x="1140" y="199">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+## Extract deferral token from the already retrieved list of records 
+## rather than looking up each record again based on UUID.
+
+open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
+#closed_notifications = JSON.parse(@results['Get Notification Reports']['Closed Notifications'])
+closed_notifications = JSON.parse(@results['Parse or handle output']['output'])['Closed Notifications']
+
+tokens = []
+
+open_records.each{|record|
+  #if record['values']['Onsolve Id'] == @results['Loop Begin']['Value']
+  if closed_notifications.include?(record['values']['Onsolve Id'])
+    tokens.push(record['values']['Deferral Token'])
+  end
+}
+
+tokens.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">onsolve_send_closed_triggers_v1_29</task>
+                </dependents>
+            </task>
+            <task definition_id="onsolve_send_closed_triggers_v1" id="onsolve_send_closed_triggers_v1_29" name="Send Complete Triggers" x="1142" y="360">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="trigger_input_json" label="Deferral Tokens (JSON array)" menu="" required="true" tooltip="JSON array of deferral tokens for which to send complete triggers">&lt;%= @results['Get Deferral Tokens']['output'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_21</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_30" name="Generate XML Body" x="419.5" y="69">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+require 'rexml/document'
+
+uuids = []
+
+open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
+open_records.each{| record |
+  if record['values']['Response Expected'] == "Yes"
+    uuids.push( record['values']['Onsolve Id'] )
+  end
+}
+
+str_xml = "&lt;getNotificationReports&gt;&lt;apiVersion&gt;4.14&lt;/apiVersion&gt;&lt;/getNotificationReports&gt;"
+
+doc = REXML::Document.new(str_xml)
+
+## add notificationReportUUID
+wrapper = doc.elements['//getNotificationReports']
+#uuids = JSON.parse(@inputs['UUIDs JSON'])
+uuids.each{|uuid|
+    nruuid = wrapper.add_element 'notificationReportUUID'
+    nruuid.text = uuid
+}
+
+output = "" 
+doc.write(output)
+#To pretty print, do this:
+#doc.write(output, 2)
+
+output
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_31" name="MIR3 Call: Get Notification Reports" x="845.5" y="69">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">get_notification_reports_op</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_32</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Parse or handle output" x="843.5" y="187">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+output = {}
+if !@results['MIR3 Call: Get Notification Reports']['Handler Error Message'].to_s.empty?
+  output['Success'] = "Handler Error"
+else
+  response = JSON.parse(@results['MIR3 Call: Get Notification Reports']['output'] || "{}")
+
+  successful = response['success']
+
+  output['Success'] = successful.to_s
+  output['Full Output JSON'] = response
+
+  closed_notifications=[]
+
+  if successful || !response['get_notification_reports_response'].to_s.empty?
+    reports = response['get_notification_reports_response']['notification_report']
+
+    if reports.is_a? (Hash)
+      if reports['status'] == "COMPLETED"
+        closed_notifications.push( reports['notification_report_uuid'] )
+      end 
+    elsif reports.is_a? (Array)
+      reports.each{| report |
+        if report['status'] == "COMPLETED"
+          closed_notifications.push( report['notification_report_uuid'] )
+        end
+      }
+    end
+  end
+  output['Closed Notifications'] = closed_notifications
+end
+output.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Successful" type="Complete" value="#@results['Get Notification Reports']['Success'] == &quot;true&quot;&#10;JSON.parse(@results['Parse or handle output']['output'])['Success'] == &quot;true&quot; || !JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON']['get_notification_reports_response'].to_s.empty?">utilities_echo_v1_28</task>
+                    <task label="Unsuccessful or Error" type="Complete" value="JSON.parse(@results['Parse or handle output']['output'])['Success'] == &quot;Handler Error&quot; || (JSON.parse(@results['Parse or handle output']['output'])['Success'] != &quot;true&quot; &amp;&amp; JSON.parse(@results['Parse or handle output']['output'])['Full Output JSON']['get_notification_reports_response'].to_s.empty?)">system_junction_v1_21</task>
+                    <task label="Unsuccessful" type="Complete" value="JSON.parse(@results['Parse or handle output']['output'])['Success'] != &quot;Handler Error&quot; &amp;&amp; JSON.parse(@results['Parse or handle output']['output'])['Success'] != &quot;true&quot;">utilities_echo_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="smtp_email_send_v1" id="smtp_email_send_v1_34" name="Send Notice that an Error Occurred" x="1686" y="361">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="from" label="From (email address)" menu="" required="true" tooltip="The email address of the simulated sender.">wally@kinops.io</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="to" label="To (email address)" menu="" required="true" tooltip="The email address of the intended recipient.">&lt;%= @inputs['Error Notification SMTP Addresses'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="subject" label="Subject" menu="" required="false" tooltip="The subject of the email.">&lt;%= @results['Space Retrieve']['Name'] %&gt; Find Completed Notification Records &lt;%= @results['Space Retrieve']['Slug'] %&gt; - Run ID:&lt;%= @run['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="htmlbody" label="HTML Body" menu="" required="false" tooltip="HTML representing the body of a rich email.">&lt;p&gt;An error occured while trying to find completed notification records for &lt;%= @results['Space Retrieve']['Name'] %&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;%=JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0]%&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;&lt;/p&gt;
+
+&lt;p&gt;MIR3 Call: Get Notification Reports:&lt;br/&gt;&lt;textarea style="width: 90%; height: 64px;"&gt;&lt;%=@results['Generate XML Body']['output']%&gt;&lt;/textarea&gt;&lt;/p&gt;
+
+&lt;p&gt;(&lt;%=JSON.parse(@results['All uuids']['output']).size%&gt;) uuids tracked by Kinetic: &lt;%=@results['All uuids']['output']%&gt;&lt;br/&gt;
+&lt;p&gt;(&lt;%=JSON.parse(@results['Found uuids']['output']).size%&gt;) MIR3 uuids found: &lt;%= @results['Found uuids']['output'] %&gt;&lt;br/&gt;
+&lt;p&gt;(&lt;%=JSON.parse(@results['uuids to Close']['output']).size%&gt;) uuids Ready to Close: &lt;%= @results['uuids to Close']['output'] %&gt;&lt;br/&gt;
+&lt;p&gt;(&lt;%=(JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output'])).size%&gt;) uuids in question: &lt;%= JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output']) %&gt;&lt;/p&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="textbody" label="Alternate (text) Body" menu="" required="false" tooltip="A plaintext message that will be displayed if the recipient can't display multipart HTML emails.">An error occured while trying to find completed notification records for &lt;%= @results['Space Retrieve']['Name'] %&gt;
+
+&lt;%=JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0]%&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;
+
+MIR3 Call: Get Notification Reports:
+&lt;%=@results['Generate XML Body']['output']%&gt;
+
+(&lt;%=JSON.parse(@results['All uuids']['output']).size%&gt;) uuids tracked by Kinetic: &lt;%=@results['All uuids']['output']%&gt;
+(&lt;%=JSON.parse(@results['Found uuids']['output']).size%&gt;) MIR3 uuids found: &lt;%= @results['Found uuids']['output'] %&gt;
+(&lt;%=JSON.parse(@results['uuids to Close']['output']).size%&gt;) uuids Ready to Close: &lt;%= @results['uuids to Close']['output'] %&gt;
+(&lt;%=(JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output'])).size%&gt;) uuids in question: &lt;%= JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output']) %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_35" name="Space Retrieve" x="1383.5" y="194">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_45</task>
+                    <task label="Has SMTP Address and In Notification Window" type="Complete" value="!@inputs['Error Notification SMTP Addresses'].to_s.empty? &amp;&amp; &#10;( @inputs['Error Notification Time Window'].to_s.empty? &#10;  || &#10;  JSON.parse(@inputs['Error Notification Time Window']).map(&amp;:to_s).include? (Time.now.hour.to_s)&#10;)">smtp_email_send_v1_34</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_46</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_36" name="All uuids" x="622.5" y="69">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+uuids = []
+open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
+open_records.each{| record |
+  if record['values']['Response Expected'] == "Yes"
+    uuids.push( record['values']['Onsolve Id'] )
+  end
+}
+uuids.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_31</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_37" name="Found uuids" x="1132.5" y="70">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+response = JSON.parse(@results['MIR3 Call: Get Notification Reports']['output'] || "{}")
+
+mir3_notifications=[]
+
+if !response['get_notification_reports_response'].to_s.empty?
+
+  reports = response['get_notification_reports_response']['notification_report']
+
+  if reports.is_a? (Hash)
+    mir3_notifications.push( reports['notification_report_uuid'] )
+  elsif reports.is_a? (Array)
+    reports.each{| report |
+      mir3_notifications.push( report['notification_report_uuid'] )
+    }
+  end
+end
+mir3_notifications.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_38</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_38" name="uuids to Close" x="1386" y="69">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+## Extract deferral token from the already retrieved list of records 
+## rather than looking up each record again based on UUID.
+
+open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
+#closed_notifications = JSON.parse(@results['Get Notification Reports']['Closed Notifications'])
+closed_notifications = JSON.parse(@results['Parse or handle output']['output'])['Closed Notifications']
+
+tokens = []
+
+open_records.each{|record|
+  #if record['values']['Onsolve Id'] == @results['Loop Begin']['Value']
+  if closed_notifications.include?(record['values']['Onsolve Id'])
+    tokens.push(record['values']['Deferral Token'])
+  end
+}
+
+tokens.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_42" name="Determine Oldest Open Ticket Create Date" x="847" y="467">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Determine the create date of the oldest remaining open item.  This is the date we'll use for the starting time reference in the next execution.
+
+# This is necessary to maintain database performance
+
+time = Time.parse(@results['Echo Time']['output'])
+
+# If there were no records, use the current date, minus 60 seconds.
+if @results['Retrieve Submission records']['Count'].to_i == 0
+  oldest_date = (time-60).iso8601
+
+# If MIR3 call was unsuccessful, use the original date.
+elsif JSON.parse(@results['Parse or handle output']['output'])['Success'] != "true"
+  oldest_date = "" # Set a default value in case Search Start Date is blank
+  oldest_date = @inputs['Search Start Date'] if !@inputs['Search Start Date'].to_s.empty?
+
+# MIR3 call was successful, find the open ticket with oldest date
+else
+  open_records = JSON.parse( @results['Retrieve Submission records']['Result'] )
+  closed_notifications = JSON.parse(@results['Parse or handle output']['output'])['Closed Notifications']
+
+  create_dates = []
+
+  open_records.each{|record|
+    if !closed_notifications.include?(record['values']['Onsolve Id'])
+      create_dates.push(record['createdAt'])
+    end
+  }
+  oldest_date = create_dates.sort[0]
+  # If there are no more open records
+  oldest_date = (time-60).iso8601 if oldest_date.to_s.empty?
+end
+
+oldest_date
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not more records" type="Complete" value="@results['Retrieve Submission records']['Next Page Token'].nil?">system_tree_return_v1_24</task>
+                    <task label="" type="Complete" value="">system_junction_v1_43</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_43" name="More Records Junction" x="97" y="473">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="More records" type="Complete" value="!@results['Retrieve Submission records']['Next Page Token'].nil?">system_tree_return_v1_23</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_44" name="Echo Time" x="102" y="83">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=(Time.now.utc).iso8601%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_8</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_45" name="Echo Information in Email" x="1683.5" y="197">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">An error occured while trying to find completed notification records for &lt;%= @results['Space Retrieve']['Name'] %&gt;
+
+&lt;%=JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0]%&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;
+
+MIR3 Call: Get Notification Reports:
+&lt;%=@results['Generate XML Body']['output']%&gt;
+
+(&lt;%=JSON.parse(@results['All uuids']['output']).size%&gt;) uuids tracked by Kinetic: &lt;%=@results['All uuids']['output']%&gt;
+(&lt;%=JSON.parse(@results['Found uuids']['output']).size%&gt;) MIR3 uuids found: &lt;%= @results['Found uuids']['output'] %&gt;
+(&lt;%=JSON.parse(@results['uuids to Close']['output']).size%&gt;) uuids Ready to Close: &lt;%= @results['uuids to Close']['output'] %&gt;
+(&lt;%=(JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output'])).size%&gt;) uuids in question: &lt;%= JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output']) %&gt;
+
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_46" name="Create Error Log Submission" x="1387" y="360">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">error-log</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+fields = {
+  "Error Date Time" =&gt; Time.now.iso8601,
+  "Error Title" =&gt; "#{@results['Space Retrieve']['Name']} Find Completed Notification Records #{@results['Space Retrieve']['Slug']} - Run ID:#{@run['Id']} ",
+  "Error Message" =&gt; "An error occured while trying to find completed notification records for #{@results['Space Retrieve']['Name']} - #{JSON.parse(@results['All uuids']['output']).size} uuids tracked by Kinetic, #{JSON.parse(@results['Found uuids']['output']).size} MIR3 uuids found, #{JSON.parse(@results['uuids to Close']['output']).size} uuids Ready to Close, and #{(JSON.parse(@results['All uuids']['output']) - JSON.parse(@results['Found uuids']['output'])).size} uuids in question.",
+  "Task Activity Monitor Submission Id" =&gt; "NA",
+  "Task Run" =&gt; @run['Id'],
+  "Additional Info" =&gt; "NA"
+}
+fields.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
             </task>
         </request>
     </taskTree>

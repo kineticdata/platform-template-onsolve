@@ -3,8 +3,10 @@
   "description": "Handlers in the system",
   "type": "Stored",
   "handlers": [
-    "kinetic_agent_handler_execute_v1",
+    "kinetic_agent_handler_execute_v3",
     "kinetic_core_api_v1",
+    "kinetic_core_webapi_v1",
+    "kinetic_determine_next_occurrence_v2",
     "kinetic_discussions_api_v1",
     "kinetic_request_ce_cascading_attribute_value_retrieve_v2",
     "kinetic_request_ce_datastore_submission_create_v1",
@@ -24,7 +26,8 @@
     "kinetic_task_api_v1",
     "kinetic_task_api_v2",
     "kinetic_task_run_delete_v1",
-    "kinetic_task_tree_run_v2"
+    "kinetic_task_tree_run_v2",
+    "onsolve_send_closed_triggers_v1"
   ],
   "policyRules": [
     "Admins"

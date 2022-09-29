@@ -1,0 +1,371 @@
+{
+  "anonymous": false,
+  "attributes": [
+
+  ],
+  "bridgedResources": [
+
+  ],
+  "categorizations": [
+
+  ],
+  "customHeadContent": null,
+  "description": "",
+  "indexDefinitions": [
+    {
+      "name": "closedBy",
+      "parts": [
+        "closedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "createdBy",
+      "parts": [
+        "createdBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "handle",
+      "parts": [
+        "handle"
+      ],
+      "unique": false
+    },
+    {
+      "name": "submittedBy",
+      "parts": [
+        "submittedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "updatedBy",
+      "parts": [
+        "updatedBy"
+      ],
+      "unique": false
+    }
+  ],
+  "name": "Task Activity Monitor Submissions",
+  "notes": null,
+  "pages": [
+    {
+      "advanceCondition": null,
+      "displayCondition": null,
+      "displayPage": null,
+      "elements": [
+        {
+          "type": "section",
+          "renderType": null,
+          "name": "Header",
+          "title": null,
+          "visible": true,
+          "omitWhenHidden": null,
+          "renderAttributes": {
+          },
+          "elements": [
+            {
+              "type": "field",
+              "name": "OnSolve Status",
+              "label": "OnSolve Status",
+              "key": "f2",
+              "defaultValue": null,
+              "defaultResourceName": null,
+              "visible": true,
+              "enabled": true,
+              "required": false,
+              "requiredMessage": null,
+              "omitWhenHidden": null,
+              "pattern": null,
+              "constraints": [
+
+              ],
+              "events": [
+
+              ],
+              "renderAttributes": {
+              },
+              "dataType": "json",
+              "renderType": "checkbox",
+              "choicesResourceName": null,
+              "choicesRunIf": null,
+              "choices": [
+                {
+                  "label": "Open",
+                  "value": "Open"
+                },
+                {
+                  "label": "Pending",
+                  "value": "Pending"
+                },
+                {
+                  "label": "HOLD",
+                  "value": "HOLD"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "label": "Load/Refresh Records",
+              "name": "Refresh",
+              "visible": true,
+              "enabled": true,
+              "renderType": "custom",
+              "renderAttributes": {
+              },
+              "events": [
+                {
+                  "name": "Refresh Button",
+                  "type": "Click",
+                  "action": "Custom",
+                  "code": "K('field[Submissions]').value(\"[]\");\nif (K('field[OnSolve Status]').value().length == 0)\n{\n  K('field[Submissions]').value(\"[]\");\n  $('.dataTables_processing', $('#submission-table').closest('.dataTables_wrapper')).hide();\n}\nelse\n{\n  $('.dataTables_processing', $('#submission-table').closest('.dataTables_wrapper')).show();\n  if (K('field[OnSolve Status]').value().length == 1)\n    K('field[Ad Hoc]').value('&q=values[Onsolve Status] = \"'+K('field[OnSolve Status]').value().toString()+'\"');\n  else\n    K('field[Ad Hoc]').value('&q=values[Onsolve Status] IN (\"'+K('field[OnSolve Status]').value().join('\",\"')+'\")');    \n\n  \n$.ajax({url: \"app/api/v1/kapps/task-activity-monitor/forms/task-activity-monitor/submissions?timeline=createdAt&direction=DESC&start=2020-01-01T12%3A00%3A00-07%3A00&limit=1000&include=values\"+K('field[Ad Hoc]').value(), success: function(result){\n  K('field[nextPageToken]').value(result[\"nextPageToken\"])\n  K('field[Submissions]').value(JSON.stringify(result.submissions));\n  if (K('field[Submissions]').value()==\"[]\")\n    $('.dataTables_processing', $('#submission-table').closest('.dataTables_wrapper')).hide();\n}});  \n  \n  \n}\n"
+                }
+              ]
+            },
+            {
+              "type": "field",
+              "name": "Set OnSolve Status To",
+              "label": "Set OnSolve Status To:",
+              "key": "f7",
+              "defaultValue": null,
+              "defaultResourceName": null,
+              "visible": true,
+              "enabled": true,
+              "required": false,
+              "requiredMessage": null,
+              "omitWhenHidden": null,
+              "pattern": null,
+              "constraints": [
+
+              ],
+              "events": [
+
+              ],
+              "renderAttributes": {
+              },
+              "dataType": "string",
+              "renderType": "dropdown",
+              "choicesResourceName": null,
+              "choicesRunIf": null,
+              "choices": [
+                {
+                  "label": "Open",
+                  "value": "Open"
+                },
+                {
+                  "label": "Closed",
+                  "value": "Closed"
+                },
+                {
+                  "label": "HOLD",
+                  "value": "HOLD"
+                }
+              ]
+            },
+            {
+              "type": "field",
+              "name": "Set Core State To",
+              "label": "Set Core State To:",
+              "key": "f6",
+              "defaultValue": null,
+              "defaultResourceName": null,
+              "visible": true,
+              "enabled": true,
+              "required": false,
+              "requiredMessage": null,
+              "omitWhenHidden": null,
+              "pattern": null,
+              "constraints": [
+
+              ],
+              "events": [
+
+              ],
+              "renderAttributes": {
+              },
+              "dataType": "string",
+              "renderType": "dropdown",
+              "choicesResourceName": null,
+              "choicesRunIf": null,
+              "choices": [
+                {
+                  "label": "Closed",
+                  "value": "Closed"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "label": "Select All",
+              "name": "Select All",
+              "visible": true,
+              "enabled": true,
+              "renderType": "custom",
+              "renderAttributes": {
+              },
+              "events": [
+                {
+                  "name": "Select All",
+                  "type": "Click",
+                  "action": "Custom",
+                  "code": " submissionTable.$('input[type=\"checkbox\"]').each(function(){\n    this.checked = true;\n\n      });"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "label": "Modify All Checked Records",
+              "name": "Go",
+              "visible": true,
+              "enabled": true,
+              "renderType": "custom",
+              "renderAttributes": {
+                "style": "margin-left: 24px;margin-bottom: 12px;"
+              },
+              "events": [
+                {
+                  "name": "Go Click",
+                  "type": "Click",
+                  "action": "Custom",
+                  "code": "var numchecked = 0  \nif (K('field[Set OnSolve Status To]').value()==null && K('field[Set Core State To]').value()==null)\n  alert(\"You must select a OnSolve status or a core state.\");\nelse\n{\nsubmissionTable.$('input[type=\"checkbox\"]').each(function(){\n            // If checkbox is checked\n  \n            if(this.checked){\n              numchecked = numchecked + 1;\n               // Create a hidden element\n               //console.log(this.value);\n              \n              \nif (K('field[Set OnSolve Status To]').value()==null && K('field[Set Core State To]').value()!=null)\n{\n var json = JSON.stringify({\"coreState\": K('field[Set Core State To]').value()});\n}\nif (K('field[Set OnSolve Status To]').value()!=null && K('field[Set Core State To]').value()==null)\n{\n  var json = JSON.stringify({\"values\": {\"Onsolve Status\": K('field[Set OnSolve Status To]').value()}});\n}\nif (K('field[Set OnSolve Status To]').value()!=null && K('field[Set Core State To]').value()!=null)\n{\n var json = JSON.stringify({  \"coreState\": K('field[Set Core State To]').value(), \"values\": {    \"Onsolve Status\": K('field[Set OnSolve Status To]').value()  }});\n}  \n  //console.log ( json)\n  // var json = JSON.stringify({  \"coreState\": \"Closed\", \"values\": {    \"Onsolve Status\": \"Closed\"  }});\n\t \nvar requestresults = new XMLHttpRequest();\nrequestresults.open(\"PATCH\", \"app/api/v1/submissions/\"+this.value+\"?include=values\");\t \n                 \nrequestresults.setRequestHeader(\"Content-Type\", \"application/json;charset=UTF-8\");\n              \nrequestresults.onreadystatechange = function() {\n  if(this.readyState === 4 && this.status === 200) {\n    var myObj = JSON.parse(this.responseText); \n\t  //console.log(myObj.submission.id);\n    \n    //console.log(submissionTable.row('#'+myObj.submission.id));\n    //console.log(submissionTable.row('#'+myObj.submission.id).column(\"onsolve-status\"));\n    //console.log(submissionTable.row('#'+myObj.submission.id).column(\"core-state\"));\n    if (K('field[Set OnSolve Status To]').value()!=null)\n      submissionTable.cell(submissionTable.row('#'+myObj.submission.id),submissionTable.column(\"onsolve-status:name\")).data(K('field[Set OnSolve Status To]').value());\n    if (K('field[Set Core State To]').value()!=null)\n      submissionTable.cell(submissionTable.row('#'+myObj.submission.id),submissionTable.column(\"core-state:name\")).data(K('field[Set Core State To]').value());\n    \n    $(\"#cb_\"+myObj.submission.id).prop( \"checked\", false )\n    \n    \n    \n    \n    \n  }\n};              \n              \n              \nrequestresults.send(json);\n        }});\n\n  \n  \nif (numchecked == 0)\n  alert(\"Nothing Checked\");\n}\n\n\n\n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "renderType": "html",
+          "name": "Submission Table",
+          "text": "<table width=\"100%\" style=\"background-color: #6d96d0;\" id=\"submission-table\" class=\"table table-striped table-bordered dataTable\"></table>",
+          "visible": true,
+          "renderAttributes": {
+          }
+        },
+        {
+          "type": "section",
+          "renderType": null,
+          "name": "Hidden System Questions Do Not Delete",
+          "title": null,
+          "visible": false,
+          "omitWhenHidden": false,
+          "renderAttributes": {
+          },
+          "elements": [
+            {
+              "type": "field",
+              "name": "Submissions",
+              "label": "Submissions",
+              "key": "f1",
+              "defaultValue": null,
+              "defaultResourceName": null,
+              "visible": true,
+              "enabled": true,
+              "required": false,
+              "requiredMessage": null,
+              "omitWhenHidden": null,
+              "pattern": null,
+              "constraints": [
+
+              ],
+              "events": [
+                {
+                  "name": "Load Table",
+                  "type": "Change",
+                  "action": "Custom",
+                  "code": "resource = JSON.parse(K('field[Submissions]').value());\n$.fn.dataTable.ext.errMode = 'none';\n\nif ( $.fn.DataTable.isDataTable( '#submission-table' ) ) {\n                $('#submission-table').DataTable().clear().draw()\n  $('#submission-table').DataTable().rows.add(resource).draw()\n  $('.dataTables_processing', $('#submission-table').closest('.dataTables_wrapper')).hide();\n              }\nelse\n{\n  \n  submissionTable = $('#submission-table').DataTable({\n      data: resource,\n      rowId: 'id',\n      processing: true,\n      //pageLength: 25,\n      paging: false,\n      //lengthMenu: [[25, 50, 100, -1], [25, 50, 100, \"All\"]],\n      language: {\n      emptyTable: \"To view submissions please select a request type.\",\n      processing: \"Loading. Please wait...\"\n    },\n      order: [[ 1, \"desc\" ]],\n      dom: '<l><rt><ip>',\n    //dom: '<lf><rt><ip>',\n     oLanguage: {\"sSearch\": \"Filter:\"},\n      columns: [\n        {\n         targets: 0,\n          data:      \"id\",\n         searchable: false,\n         orderable: false,\n         className: 'dt-body-center',\n         defaultContent: \"Not Found\",\n         render: function (data, type, full, meta){\n             return '<input type=\"checkbox\" id=\"cb_' + data + '\" value=\"' + data + '\">';}\n         },{ name: \"submitted-at\",\n          title: \"Submitted\",\n          data:  \"submittedAt\",\n          render: function(data, type, row){\n            if (type === \"display\"){\n            return moment(data).format(\"MM-DD-YYYY, h:mm:ss a\");\n            }\n            return data;\n                 }\n        },\n        { name: \"id\",      \n                title: \"Id\",\n                data:      \"id\",\n                defaultContent: \"Not Found\",\n                render: function ( data, type, row, meta ) {\n                  return '<a target=\"_blank\" href=\"#/kapps/task-activity-monitor/activity/'+data+'\">'+data+'</a>';\n                }\n            },\n        { name: \"label\",      \n                title: \"Label\",\n                data:      \"label\",\n                defaultContent: \"Not Found\"\n            },\n        { name: \"onsolve-status\",      \n                title: \"OnSolve Status\",\n                data:      \"values.Onsolve Status\",\n                defaultContent: \"Not Found\"\n            },\n        { name: \"core-state\",      \n                title: \"coreState\",\n                data:      \"coreState\",\n                defaultContent: \"Not Found\"\n            }\n        \n        \n        \n        \n      ]\n    });\n  \n  \n  \n}\n\n$('#submission-table').on( 'error.dt', function ( e, settings, techNote, message ) {\n    console.log( 'An error has been reported by DataTables: ', message );\n    } ) ;\n"
+                }
+              ],
+              "renderAttributes": {
+              },
+              "dataType": "string",
+              "renderType": "text",
+              "rows": 5
+            },
+            {
+              "type": "field",
+              "name": "Ad Hoc",
+              "label": "Ad Hoc",
+              "key": "f3",
+              "defaultValue": "&q=values[Onsolve Status] =\"Pending",
+              "defaultResourceName": null,
+              "visible": true,
+              "enabled": true,
+              "required": false,
+              "requiredMessage": null,
+              "omitWhenHidden": null,
+              "pattern": null,
+              "constraints": [
+
+              ],
+              "events": [
+                {
+                  "name": "API Get Submissions",
+                  "type": "Change",
+                  "action": "Custom",
+                  "code": ""
+                }
+              ],
+              "renderAttributes": {
+              },
+              "dataType": "string",
+              "renderType": "text",
+              "rows": 1
+            },
+            {
+              "type": "field",
+              "name": "nextPageToken",
+              "label": "nextPageToken",
+              "key": "f4",
+              "defaultValue": null,
+              "defaultResourceName": null,
+              "visible": true,
+              "enabled": true,
+              "required": false,
+              "requiredMessage": null,
+              "omitWhenHidden": null,
+              "pattern": null,
+              "constraints": [
+
+              ],
+              "events": [
+
+              ],
+              "renderAttributes": {
+              },
+              "dataType": "string",
+              "renderType": "text",
+              "rows": 1
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "name": "Block Submission",
+          "type": "Submit",
+          "action": "Custom",
+          "code": "action.stop();"
+        },
+        {
+          "name": "Draw Empty Table",
+          "type": "Load",
+          "action": "Custom",
+          "code": "K('field[Submissions]').value(\"[]\");"
+        }
+      ],
+      "name": "Page 1",
+      "renderType": "submittable",
+      "type": "page"
+    }
+  ],
+  "securityPolicies": [
+
+  ],
+  "slug": "task-activity-monitor-submissions",
+  "status": "Active",
+  "submissionLabelExpression": "",
+  "type": "Console"
+}

@@ -1,0 +1,394 @@
+{
+  "anonymous": false,
+  "attributes": [
+    {
+      "name": "Datastore Configuration",
+      "values": [
+        "{\"columns\":[{\"name\":\"Status\",\"label\":\"Status\",\"type\":\"value\",\"visible\":true},{\"name\":\"number\",\"label\":\"number\",\"type\":\"value\",\"visible\":true},{\"name\":\"sys id\",\"label\":\"sys id\",\"type\":\"value\",\"visible\":true},{\"name\":\"Integration Configuration Submission Id\",\"label\":\"Integration Configuration Submission Id\",\"type\":\"value\",\"visible\":true},{\"name\":\"handle\",\"label\":\"Handle\",\"type\":\"system\",\"visible\":true},{\"name\":\"label\",\"label\":\"Label\",\"type\":\"system\",\"visible\":true},{\"name\":\"createdAt\",\"label\":\"Created At\",\"type\":\"system\",\"visible\":true},{\"name\":\"createdBy\",\"label\":\"Created By\",\"type\":\"system\",\"visible\":false},{\"name\":\"updatedAt\",\"label\":\"Updated At\",\"type\":\"system\",\"visible\":true},{\"name\":\"updatedBy\",\"label\":\"Updated By\",\"type\":\"system\",\"visible\":false},{\"name\":\"id\",\"label\":\"Id\",\"type\":\"system\",\"visible\":false}],\"defaultSearchIndex\":null}"
+      ]
+    }
+  ],
+  "bridgedResources": [
+
+  ],
+  "categorizations": [
+
+  ],
+  "customHeadContent": null,
+  "description": "A listing of \"Tickets\" from source systems that have been processed by Kinetic.  This is typically used in complex polling situations where we need to re-retrieve previously triggered submissions from the source system to check for modifications to stop and restart notifications.\n\nIt can be used to store information for delayed distributions, where information is sent to Kinetic and then Kinetic \"polls itself\" for distribution / notification initiations.  (The use case is for Cardinal Health, who pages a team one time for multiple events within a time window.)",
+  "indexDefinitions": [
+    {
+      "name": "createdBy",
+      "parts": [
+        "createdBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "handle",
+      "parts": [
+        "handle"
+      ],
+      "unique": false
+    },
+    {
+      "name": "submittedBy",
+      "parts": [
+        "submittedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "updatedBy",
+      "parts": [
+        "updatedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Additional Data]",
+      "parts": [
+        "values[Additional Data]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Integration Configuration Submission Id]",
+      "parts": [
+        "values[Integration Configuration Submission Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Integration Name]",
+      "parts": [
+        "values[Integration Name]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source Data]",
+      "parts": [
+        "values[Source Data]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source Id]",
+      "parts": [
+        "values[Source Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source Reference Id]",
+      "parts": [
+        "values[Source Reference Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source System]",
+      "parts": [
+        "values[Source System]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source System],values[Status]",
+      "parts": [
+        "values[Source System]",
+        "values[Status]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source System],values[Status],values[Source Id]",
+      "parts": [
+        "values[Source System]",
+        "values[Status]",
+        "values[Source Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Source System],values[Status],values[Source Id],values[Integration Configuration Submission Id]",
+      "parts": [
+        "values[Source System]",
+        "values[Status]",
+        "values[Source Id]",
+        "values[Integration Configuration Submission Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Status]",
+      "parts": [
+        "values[Status]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Status],values[Source Id]",
+      "parts": [
+        "values[Status]",
+        "values[Source Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Status],values[Source Id],values[Integration Configuration Submission Id]",
+      "parts": [
+        "values[Status]",
+        "values[Source Id]",
+        "values[Integration Configuration Submission Id]"
+      ],
+      "unique": false
+    }
+  ],
+  "name": "Source System Tickets",
+  "notes": null,
+  "pages": [
+    {
+      "advanceCondition": null,
+      "displayCondition": null,
+      "displayPage": null,
+      "elements": [
+        {
+          "type": "field",
+          "name": "Status",
+          "label": null,
+          "key": "f1",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": true,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "radio",
+          "choicesResourceName": null,
+          "choicesRunIf": null,
+          "choices": [
+            {
+              "label": "Active",
+              "value": "Active"
+            },
+            {
+              "label": "Inactive",
+              "value": "Inactive"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "name": "Source System",
+          "label": "Source System",
+          "key": "f6",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Source Reference Id",
+          "label": "Source Reference Id (e.g., number)",
+          "key": "f2",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": true,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Source Id",
+          "label": "Source Id (sys id)",
+          "key": "f3",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": true,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Integration Name",
+          "label": "Integration Name",
+          "key": "f5",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Integration Configuration Submission Id",
+          "label": "Integration Configuration Submission Id",
+          "key": "f4",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Source Data",
+          "label": "Source Data",
+          "key": "f8",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 1
+        },
+        {
+          "type": "field",
+          "name": "Additional Data",
+          "label": "Additional Data (JSON strucutre that stores any additional information)",
+          "key": "f7",
+          "defaultValue": null,
+          "defaultResourceName": null,
+          "visible": true,
+          "enabled": true,
+          "required": false,
+          "requiredMessage": null,
+          "omitWhenHidden": null,
+          "pattern": null,
+          "constraints": [
+
+          ],
+          "events": [
+
+          ],
+          "renderAttributes": {
+          },
+          "dataType": "string",
+          "renderType": "text",
+          "rows": 3
+        },
+        {
+          "type": "button",
+          "label": "Submit",
+          "name": "Submit Button",
+          "visible": true,
+          "enabled": true,
+          "renderType": "submit-page",
+          "renderAttributes": {
+          }
+        }
+      ],
+      "events": [
+
+      ],
+      "name": "Page 1",
+      "renderType": "submittable",
+      "type": "page"
+    }
+  ],
+  "securityPolicies": [
+
+  ],
+  "slug": "source-system-tickets",
+  "status": "Active",
+  "submissionLabelExpression": "${values('Integration Name')}: ${values('Source Id')}: ${values('Status')}",
+  "type": "Datastore"
+}

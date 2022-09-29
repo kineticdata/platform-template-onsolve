@@ -36,11 +36,9 @@
                     <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission">values[Name]="&lt;%=JSON.parse( @source['Data'] )['action']%&gt;"</parameter>
                     <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
-                    <task label="Found" type="Complete" value="!@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_cherwell_data_retrieve_v1_69</task>
+                    <task label="Found" type="Complete" value="!@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_ivanti_data_search_v1_69</task>
                     <task label="Not found" type="Complete" value="@results['Retrieve Integration Config']['ID'].to_s.empty?">routine_onsolve_error_v1_74</task>
                 </dependents>
             </task>
@@ -120,21 +118,24 @@
                     <task label="" type="Complete" value="">system_noop_v1_17</task>
                 </dependents>
             </task>
-            <task definition_id="routine_onsolve_cherwell_data_retrieve_v1" id="routine_onsolve_cherwell_data_retrieve_v1_69" name="Get Cherwell Object" x="841" y="108">
+            <task definition_id="routine_onsolve_ivanti_data_search_v1" id="routine_onsolve_ivanti_data_search_v1_69" name="Get Ivanti Object" x="841" y="108">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['business_object_name']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Object Id" label="Object Id" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['business_object_id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%= JSON.parse( @source['Data'] )['business_object_id']%&gt;
+
+&lt;%= JSON.parse( @source['Data'] )['business_object_name']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields To Return" label="Fields To Return" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Filters" label="Filters" menu="" required="true" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Max Results" label="Max Results" menu="" required="false" tooltip=""></parameter>
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="Has Error" type="Complete" value="!@results['Get Cherwell Object']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_72</task>
-                    <task label="Successful" type="Complete" value="@results['Get Cherwell Object']['Handler Error Message'].to_s.empty?">routine_onsolve_integration_ivanti_process_incoming_data_v1_75</task>
+                    <task label="Has Error" type="Complete" value="!@results['Get Ivanti Object']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_72</task>
+                    <task label="Successful" type="Complete" value="@results['Get Ivanti Object']['Handler Error Message'].to_s.empty?">routine_onsolve_integration_ivanti_process_incoming_data_v1_75</task>
                 </dependents>
             </task>
             <task definition_id="utilities_echo_v1" id="utilities_echo_v1_71" name="Dev Notes" x="168" y="6">
@@ -167,9 +168,7 @@ Received data:
                     <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>
@@ -206,9 +205,7 @@ Received data:
                     <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>
@@ -220,15 +217,11 @@ Received data:
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=@results['Get Cherwell Object']['JSON Results']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%=@results['Get Ivanti Object']['JSON Results']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>

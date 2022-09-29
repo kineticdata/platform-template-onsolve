@@ -1,0 +1,114 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>inbound-integration-custom-bigpanda</name>
+        <author></author>
+        <notes></notes>
+        <lastID>81</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_core_api_v1_78</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_75" name="Retrieve Space Admins" x="458" y="297.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/users?q=spaceAdmin="true"</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_78" name="Retrieve Integration Config" x="460" y="149">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">&lt;%=
+%|/kapps/datastore/forms/kinetic-source-system-tickets-form/submissions?q=#{CGI.escape("values[Name]=\"Big Panda Notifications\"")}|
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not Found" type="Complete" value="JSON.parse(@results['Retrieve Integration Config']['Response Body'])['submissions'].size == 0">kinetic_core_api_v1_75</task>
+                    <task label="" type="Complete" value="">kinetic_core_api_v1_81</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_79" name="Return 200" x="140" y="146.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="content" label="Content" menu="" required="false" tooltip="">&lt;%=
+{
+  "successful" =&gt; true,
+  "message" =&gt; ""
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="content_type" label="Content Type" menu="" required="false" tooltip="">application/json</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="headers_json" label="Headers (JSON)" menu="" required="false" tooltip="">{}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="response_code" label="Response Code" menu="" required="false" tooltip="">200</parameter>
+                </parameters>
+                <messages>
+                    <message type="Complete"></message>
+                </messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_81" name="Create Source System Ticket Submission" x="772" y="148">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">POST</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/kapps/task-activity-monitor/forms/source-system-tickets/submissions?completed=true</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)">&lt;%=
+integration_config = JSON.parse( @results['Retrieve Integration Config']['Response Body'] )['submissions'][0]
+source_data = JSON.parse(@request['Body'])
+
+{
+  "values": {
+    "Status" =&gt; "Active",
+    "Source System" =&gt; "BigPanda",
+    "Source Reference Id" =&gt; source_data['incident']['id'],
+    "Source Id" =&gt; source_data['incident']['id'],
+    "Integration Name" =&gt; "Big Panda Notifications",
+    "Integration Configuration Submission Id" =&gt; integration_config['id'],
+    "Source Data" =&gt; @request['Body'],
+    "Additional Data" =&gt; nil
+  }
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

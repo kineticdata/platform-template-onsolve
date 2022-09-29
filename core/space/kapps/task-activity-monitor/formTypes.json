@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Approval"
+  },
+  {
+    "name": "Console"
+  },
+  {
+    "name": "Content"
+  },
+  {
+    "name": "Datastore"
+  },
+  {
+    "name": "Service"
+  },
+  {
+    "name": "Service Description"
+  },
+  {
+    "name": "Subservice"
+  },
+  {
+    "name": "Summary"
+  },
+  {
+    "name": "Template"
+  },
+  {
+    "name": "Work Order"
+  }
+]

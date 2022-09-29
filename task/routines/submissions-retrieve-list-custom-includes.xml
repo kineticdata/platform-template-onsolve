@@ -4,7 +4,7 @@
     <definitionId>routine_kinetic_submissions_retrieve_list_custom_includes_v1</definitionId>
     <type>Global Routine</type>
     <status>Active</status>
-    <taskTree builder_version="" schema_version="1.0" version="1">
+    <taskTree builder_version="" schema_version="1.0" version="">
         <name>Submissions Retrieve List Custom Includes</name>
         <author></author>
         <notes></notes>
@@ -41,11 +41,7 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters></parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_core_api_v1_1</task>
                 </dependents>
@@ -62,11 +58,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">/kapps/&lt;%=@inputs['Kapp Slug']%&gt;&lt;%=@inputs['Form Slug'].to_s.empty? ? '' : "/forms/#{@inputs['Form Slug']}"%&gt;/submissions?include=&lt;%=@inputs['Include'].to_s.empty? ? 'details,origin,parent,values,children,form,form.kapp' : "#{ERB::Util.url_encode(@inputs['Include'])}"%&gt;&lt;%=@inputs['Core State'].to_s.empty? ? '' : "&amp;coreState=#{ERB::Util.url_encode(@inputs['Core State'])}"%&gt;&lt;%=@inputs['Limit'].to_s.empty? ? '' : "&amp;limit=#{ERB::Util.url_encode(@inputs['Limit'])}"%&gt;&lt;%=@inputs['Form Type'].to_s.empty? ? '' : "&amp;type=#{ERB::Util.url_encode(@inputs['Form Type'])}"%&gt;&lt;%=@inputs['Timeline'].to_s.empty? ? '' : "&amp;timeline=#{ERB::Util.url_encode(@inputs['Timeline'])}"%&gt;&lt;%=@inputs['Direction'].to_s.empty? ? '' : "&amp;direction=#{ERB::Util.url_encode(@inputs['Direction'])}"%&gt;&lt;%=@inputs['Start Date/Time'].to_s.empty? ? '' : "&amp;start=#{ERB::Util.url_encode(@inputs['Start Date/Time'])}"%&gt;&lt;%=@inputs['End Date/Time'].to_s.empty? ? '' : "&amp;end=#{ERB::Util.url_encode(@inputs['End Date/Time'])}"%&gt;&lt;%=@inputs['Next Page Token'].to_s.empty? ? '' : "&amp;pageToken=#{ERB::Util.url_encode(@inputs['Next Page Token'])}"%&gt;&lt;%=@inputs['Query'].to_s.empty? ? '' : "&amp;q=#{ERB::Util.url_encode(@inputs['Query'])}"%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['API']['Handler Error Message'].to_s.empty?">system_tree_return_v1_2</task>
                     <task label="Has Error" type="Complete" value="!@results['API']['Handler Error Message'].to_s.empty?">routine_handler_failure_error_process_v1_3</task>
@@ -79,15 +71,11 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Submissions List JSON" label="Submissions List JSON" required="false" tooltip="JSON representation of the list of Submissions found">&lt;%=JSON.parse(@results['API']['Response Body'])['submissions'].to_json%&gt;</parameter>
-                    <parameter id="Next Page Token" label="Next Page Token" required="false" tooltip="The value to use as the offset for the next page of submissions to return">&lt;%=JSON.parse(@results['API']['Response Body'])['nextPageToken']%&gt;</parameter>
-                    <parameter id="Count" label="Count" required="false" tooltip="Number of submissions Found">&lt;%=JSON.parse(@results['API']['Response Body'])['submissions'].size%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submissions List JSON" label="Submissions List JSON" menu="" required="false" tooltip="JSON representation of the list of Submissions found">&lt;%=JSON.parse(@results['API']['Response Body'])['submissions'].to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the next page of submissions to return">&lt;%=JSON.parse(@results['API']['Response Body'])['nextPageToken']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Count" label="Count" menu="" required="false" tooltip="Number of submissions Found">&lt;%=JSON.parse(@results['API']['Response Body'])['submissions'].size%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="routine_handler_failure_error_process_v1" id="routine_handler_failure_error_process_v1_3" name="Error Process" x="517" y="66">
@@ -102,11 +90,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Run Id" label="Run Id" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Inputs JSON" label="Inputs JSON" menu="" required="false" tooltip="">&lt;%=@inputs.to_json%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_submissions_retrieve_list_v1_4</task>
                 </dependents>
@@ -130,11 +114,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="End Date/Time" label="End Date/Time" menu="" required="false" tooltip="End date/time of the timeline. This value should be used to both refine and limit the search results. Formatshould be yyyy-MM-dd'T'HH:mm:ss'Z'">&lt;%=@results['Error Process']['End Date/Time']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results.">&lt;%=@results['Error Process']['Next Page Token']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_5</task>
                 </dependents>
@@ -146,15 +126,11 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Submissions List JSON" label="Submissions List JSON" required="false" tooltip="JSON representation of the list of Submissions found">&lt;%=@results['Retry']['Submissions List JSON']%&gt;</parameter>
-                    <parameter id="Next Page Token" label="Next Page Token" required="false" tooltip="The value to use as the offset for the next page of submissions to return">&lt;%=@results['Retry']['Next Page Token']%&gt;</parameter>
-                    <parameter id="Count" label="Count" required="false" tooltip="Number of submissions Found">&lt;%=@results['Retry']['Count']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submissions List JSON" label="Submissions List JSON" menu="" required="false" tooltip="JSON representation of the list of Submissions found">&lt;%=@results['Retry']['Submissions List JSON']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Next Page Token" label="Next Page Token" menu="" required="false" tooltip="The value to use as the offset for the next page of submissions to return">&lt;%=@results['Retry']['Next Page Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Count" label="Count" menu="" required="false" tooltip="Number of submissions Found">&lt;%=@results['Retry']['Count']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
         </request>

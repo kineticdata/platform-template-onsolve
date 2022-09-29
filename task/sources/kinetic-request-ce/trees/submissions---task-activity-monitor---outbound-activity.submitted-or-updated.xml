@@ -7,7 +7,7 @@
         <name>Submitted or Updated</name>
         <author></author>
         <notes></notes>
-        <lastID>59</lastID>
+        <lastID>60</lastID>
         <request>
             <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
                 <version>1</version>
@@ -22,7 +22,7 @@
                     <task label="Status is Retry" type="Complete" value="@values['Status'] == &quot;Retry&quot;">system_join_v1_45</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_1" name="Execute Agent Call" x="702" y="40">
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_1" name="Execute Agent Call" x="702" y="40">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -30,9 +30,9 @@
                 <visible>true</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%= @space['Slug']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">&lt;%=@results['Determine Handler Slug']['output']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%= @values['Payload']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">&lt;%=@results['Determine Handler Slug']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%= @values['Payload']%&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents>
@@ -87,7 +87,7 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="" type="Complete" value="">kinetic_agent_handler_execute_v1_1</task>
+                    <task label="" type="Complete" value="">kinetic_agent_handler_execute_v3_1</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_10" name="No Agent" x="251" y="593">
@@ -129,24 +129,7 @@ agent_handler_slugs["#{@values['Source']} - #{@values['Action']}"] || @values['A
                 <parameters></parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">servicenow_object_update_v1_13</task>
-                </dependents>
-            </task>
-            <task definition_id="servicenow_object_update_v1" id="servicenow_object_update_v1_13" name="ServiceNow Update" x="942" y="422">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>false</defers>
-                <deferrable>false</deferrable>
-                <visible>true</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="table" label="Table" menu="" required="true" tooltip="The name of the table to update the object in (ie. change_request,incident,task,etc).">&lt;%= JSON.parse( @values['Payload'] )['table']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="id" label="Id" menu="" required="true" tooltip="The id of the object to update.">&lt;%= JSON.parse( @values['Payload'] )['id']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="json_body" label="JSON Body" menu="" required="true" tooltip="The JSON body containing the fields that should be updated.">&lt;%= JSON.parse( @values['Payload'] )['json_body']%&gt;</parameter>
-                </parameters>
-                <messages></messages>
-                <dependents>
-                    <task label="No Error" type="Complete" value="true || @results['ServiceNow Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
-                    <task label="Error" type="Complete" value="false &amp;&amp; !@results['ServiceNow Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                    <task label="Update" type="Complete" value="@values['Action'].to_s.downcase == &quot;update&quot;">servicenow_api_v1_60</task>
                 </dependents>
             </task>
             <task definition_id="system_noop_v1" id="system_noop_v1_14" name="Cherwell" x="710" y="709">
@@ -762,7 +745,7 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="ivanti_generic_api_v1" id="ivanti_generic_api_v1_58" name="Ivanti Create" x="755" y="518">
+            <task definition_id="ivanti_generic_api_v1" id="ivanti_generic_api_v1_58" name="Ivanti Create" x="753" y="511">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -792,12 +775,28 @@ duration = @kapp_attributes['Polling Artifact Cleanup Days'].to_i
                     <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Path to the businessobject (include filter options if needed) for example: incidents?$filter=Status eq 'Active'">&lt;%=JSON.parse(@values['Payload'])['schema_name']%&gt;('&lt;%=@values['Source Id']%&gt;')</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT)">&lt;%=JSON.parse(@values['Payload'] )['object_json']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="No Error" type="Complete" value="@results['Ivanti Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
                     <task label="Error" type="Complete" value="!@results['Ivanti Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="servicenow_api_v1" id="servicenow_api_v1_60" name="ServiceNow Update" x="965" y="408">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">PUT</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /api/now/table/:tablename/:sys_id?sysparm_display_value=true">/api/now/table/&lt;%= JSON.parse( @values['Payload'] )['table']%&gt;/&lt;%= JSON.parse( @values['Payload'] )['id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)">&lt;%= JSON.parse( @values['Payload'] )['json_body']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error" type="Complete" value="@results['ServiceNow Update']['Handler Error Message'].to_s.empty?">system_join_v1_36</task>
+                    <task label="Error" type="Complete" value="!@results['ServiceNow Update']['Handler Error Message'].to_s.empty?">system_join_v1_37</task>
                 </dependents>
             </task>
         </request>

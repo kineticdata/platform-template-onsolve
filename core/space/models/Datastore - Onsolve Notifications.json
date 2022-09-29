@@ -28,19 +28,19 @@
           "structureField": "${fields('values[Notification Method]')}"
         }
       ],
-      "bridgeSlug": "kinetic-core",
+      "bridgeSlug": "kinetic-platform",
       "name": "Datastore - Onsolve Notifications",
       "qualifications": [
         {
           "name": "All",
-          "query": "formSlug=onsolve-notifications&limit=1000&index=values[Notification Name]"
+          "query": "orderBy=values[Notification Name]&direction=ASC&limit=1000"
         },
         {
           "name": "By Name",
-          "query": "formSlug=onsolve-notifications&limit=1000&index=values[Notification Name]&q=values[Notification Name] = \"${parameters('Notification Name')}\""
+          "query": "q=values[Notification Name] = \"${parameters('Notification Name')}\"&limit=1000"
         }
       ],
-      "structure": "Datastore Submissions"
+      "structure": "Submissions > datastore > onsolve-notifications"
     }
   ],
   "name": "Datastore - Onsolve Notifications",

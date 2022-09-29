@@ -1,0 +1,996 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_onsolve_mir3_one_step_notification__cardinal</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>OnSolve MIR3 One Step Notification - Cardinal</name>
+        <author></author>
+        <notes></notes>
+        <lastID>114</lastID>
+        <taskDefinition id="routine_onsolve_mir3_one_step_notification__cardinal" name="OnSolve MIR3 One Step Notification - Cardinal" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="Notification Detail" label="Notification Detail" required="true" tooltip="The title of the notification to be found and retrieved"></parameter>
+                <parameter id="Placeholder JSON" label="Placeholder JSON" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]"></parameter>
+                <parameter id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">employeeId</parameter>
+                <parameter id="Recipients JSON" label="Recipients JSON" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}"></parameter>
+                <parameter id="OnCall JSON" label="OnCall JSON" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}"></parameter>
+                <parameter id="CSV File Name" label="CSV File Name" required="false" tooltip="The filename of the CSV file to include"></parameter>
+                <parameter id="CSV Content" label="CSV Content" required="false" tooltip="The Base64 encoded content of the CSV file"></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="Success" tooltip="'true' or 'false'"></result>
+                <result name="Notification Report UUID" tooltip="The UUID of the notification from MIR3"></result>
+                <result name="Output" tooltip="The output from the call - either the XML notificationDetail block, or the error message"></result>
+                <result name="Title" tooltip="The notification title"></result>
+                <result name="Additional JSON Output" tooltip="Any additional output that coud be included in the future"></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="32.76364" y="33.43636">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_104</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_9" name="MIR3 Call: One Step Notification - First" x="330" y="123">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">one_step_notification_op</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="success" type="Complete" value="JSON.parse( @results['MIR3 Call: One Step Notification - First']['output'] )['success'] == true">system_join_v1_90</task>
+                    <task label="failure" type="Complete" value="JSON.parse( @results['MIR3 Call: One Step Notification - First']['output'] )['success'] == false">utilities_echo_v1_107</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_12" name="Generate XML Body" x="71.200005" y="536.4">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+oncall = JSON.parse( @inputs['OnCall JSON'] || "{}")
+
+require 'rexml/document'
+																													 
+
+notification_detail = REXML::Document.new(@inputs['Notification Detail'])
+user_uique_id = REXML::Document.new("&lt;userUniqueId&gt;#{@results['Time Stamp']['output']}-#{@run['Id']}&lt;/userUniqueId&gt;")  
+#user_data = REXML::Document.new("&lt;userData&gt;#{@run['Id']}&lt;/userData&gt;")  
+
+
+  if !notification_detail.elements["//sendToSubscribers"].nil?
+    notification_detail.root.insert_after( '//sendToSubscribers', user_uique_id.root )
+ #   notification_detail.root.insert_after( '//sendToSubscribers', user_data.root )
+  else
+    notification_detail.root.push( user_uique_id.root )
+ #   notification_detail.root.push( user_data.root )
+  end
+
+str_xml = "&lt;oneStepNotification&gt;&lt;apiVersion&gt;4.14&lt;/apiVersion&gt;#{notification_detail}&lt;/oneStepNotification&gt;"
+
+doc = REXML::Document.new(str_xml)
+
+mir3_unique_identifier = "username"
+mir3_unique_identifier = @inputs['MIR3 Individual Recipient Field'] if !(!@inputs['MIR3 Individual Recipient Field'] || @inputs['MIR3 Individual Recipient Field'].empty? || @inputs['MIR3 Individual Recipient Field'].strip.empty?)
+
+recipients_obj = JSON.parse(@results['Recipients JSON Modifications']['output'])
+
+## Find any placeholder that includes an 'additionalRecipients' placeholder tag and remove it from the call
+#  these are either a bug in the 4.14 API, or not fully supported by the API.  
+#  If the placeholder is sent in the call it is rejected by MIR3.
+doc.elements.delete("//placeholders/placeholder[additionalRecipients]")
+
+## add placeholders
+# Create a "placeholderValues" element in the notification detail
+placeholders = doc.root.insert_after( "//notificationDetail", REXML::Element.new("placeholderValues") ) 
+placeholder_values = doc.elements['//placeholderValues']
+
+# Loop over all placeholder values and insert a "placeholder" element within placeholders
+#   with a "name" and "value" child element
+JSON.parse(@inputs['Placeholder JSON'] || "[]").each {|ph|
+  if (!ph['name'].nil? &amp;&amp; !ph['name'].empty? &amp;&amp; !ph['value'].nil? &amp;&amp; !ph['value'].empty?)
+    ph_el = placeholder_values.add_element 'placeholder'
+    ph_name = ph_el.add_element 'name'
+    ph_name.text = "#{ph['name']}"
+    ph_value = ph_el.add_element 'value'
+    ph_value.text = "#{ph['value'][0..49999]}"
+  end
+}
+
+## add recipients detail within one of the following (we need to determine which one by parsing the notification detail)
+# if broadcastInfo
+#    broadcastInfo/recipients/[recipient || recipientGroup || recipientSchedule] -- if recipient, also need unique identifier, such as employeeId
+# if bulletinBoardInfo
+#    &lt;same as for broadcastInfo&gt;
+# if firstResponseInfo
+#    escalations/escalation [there may be more than one]/[recipient || recipientGroup || recipientSchedule] -- if recipient, also need unique identifier, such as employeeId
+
+notification_method = "broadcastInfo" if !doc.elements['//broadcastInfo'].nil?
+notification_method = "bulletinBoardInfo" if !doc.elements['//bulletinBoardInfo'].nil?
+notification_method = "firstResponseInfo" if !doc.elements['//firstResponseInfo'].nil?
+notification_method = "calloutInfo" if !doc.elements['//calloutInfo'].nil?
+
+case notification_method
+when "broadcastInfo", "bulletinBoardInfo"
+  # delete recipient element, and all other types
+  #####  Not removing any existing entries at this time
+  #doc.elements.delete("/#{notification_method}/recipients/recipient")
+  #doc.elements.delete("/#{notification_method}/recipients/recipientGroup")
+  #doc.elements.delete("/#{notification_method}/recipients/recipientSchedule")
+
+  # add new recipient elements for each recipient
+  recipients = doc.elements["//#{notification_method}/recipients"]
+
+  # if recipients weren't included in the notification, add the 'recipients' element
+  if recipients.nil?
+    notification_method_el = doc.elements["//#{notification_method}"]
+    recipients = notification_method_el.add_element 'recipients'
+  end
+  
+
+  # Are there individual recipients
+  individuals = []
+  individuals = recipients_obj['individuals'].strip.split(",") if !(!recipients_obj['individuals'] || recipients_obj['individuals'].empty? || recipients_obj['individuals'].strip.empty?)
+  # Add any oncall individuals from level 1.  We are only including level 1 
+  # users by default in broadcast and bulletinBoardInfo method
+  individuals + (oncall["1"] || [])
+
+  # add new recipient child element(s) for individuals
+  individuals.compact.each{|ind|
+	  
+	if !recipients.elements["//recipient"].nil?  #recipient exists so insert recipient before recipient
+	  recipient = doc.root.insert_before( "//recipient", REXML::Element.new("recipient") ) 
+      recipient_values = doc.elements['//recipient']  # if an insert_after is done this will find the first instance and it will be added to the wrong tag
+	  recipient_identifier = recipient_values.add_element "#{mir3_unique_identifier}"
+      recipient_identifier.text = ind.strip
+	else
+	  if !recipients.elements["//recipientGroup"].nil? 
+	    recipient = recipients.insert_before( '//recipientGroup', REXML::Element.new("recipient") ) 
+		recipient_values = doc.elements['//recipient']
+	    recipient_identifier = recipient_values.add_element "#{mir3_unique_identifier}"
+        recipient_identifier.text = ind.strip
+	  else
+	    if !recipients.elements["//recipientSchedule"].nil? 
+	      recipient = recipients.insert_before( '//recipientSchedule', REXML::Element.new("recipient") ) 
+		  recipient_values = doc.elements['//recipient']
+	      recipient_identifier = recipient_values.add_element "#{mir3_unique_identifier}"
+          recipient_identifier.text = ind.strip
+		else
+	      recipient = recipients.add_element "recipient"
+		  recipient_identifier = recipient.add_element "#{mir3_unique_identifier}"
+          recipient_identifier.text = ind.strip
+		end  
+	  end
+	end
+	
+    #recipient = recipients.add_element "recipient"
+    #recipient_identifier = recipient.add_element "#{mir3_unique_identifier}"
+    #recipient_identifier.text = ind.strip
+  }
+
+  # Are there groups recipients
+  groups = []
+  groups = recipients_obj['groups'].strip.split(",") if !(!recipients_obj['groups'] || recipients_obj['groups'].empty? || recipients_obj['groups'].strip.empty?)
+  # add new recipient child element(s) for groups
+  groups.compact.each{|grp|
+	group_data = REXML::Document.new("&lt;recipientGroup&gt;#{grp.strip}&lt;/recipientGroup&gt;") 
+    if !recipients.elements["//recipientSchedule"].nil? 
+	  recipient = recipients.insert_before( '//recipientSchedule', group_data.root )
+	  #recipient.text = grp.strip
+	else
+	  recipient = recipients.add_element "recipientGroup"
+      recipient.text = grp.strip
+	end
+  }
+
+  # Are there schedule recipients - they alway go at the end so nothing special to do here
+  schedules = []
+  schedules = recipients_obj['schedules'].strip.split(",") if !(!recipients_obj['schedules'] || recipients_obj['schedules'].empty? || recipients_obj['schedules'].strip.empty?)
+  # add new recipient child element(s) for schedules
+  schedules.compact.each{|schedule|
+    recipient = recipients.add_element "recipientSchedule"
+    recipient.text = schedule.strip
+  }
+
+when "firstResponseInfo", "calloutInfo"
+  ## Need help understanding if we replace existing values, or have to add various elements...
+  #  Loop over the existing Recipient JSON escalation, [right now that's stored as an object].... For each level:
+  #  If there are populated values
+  #    See if the "escalation" elements exist for that level (and all previous levels exist.  If not, create them.
+  #      How to deal with max Response Time -- both for levels that exist, and that don't?
+  #    Append any recipients for that level -- individuals, groups, schedules
+  #
+  escalation_container = doc.elements["//#{notification_method}/escalations"]
+  #existing_escalation_levels = doc.elements["//#{notification_method}/escalations/escalation"]
+  #XPath.match( doc, "//name" ) 
+  existing_escalation_levels = REXML::XPath.match( doc, "//#{notification_method}/escalations/escalation")
+  
+  # Find highest Escalation Level in Recipients JSON and OnCall list
+  input_esc_levels = recipients_obj.keys.map{|key|
+    Integer(key.gsub('Escalation Level ','')) rescue nil
+  }
+  input_esc_levels += ( oncall.keys.map{|key|
+    Integer(key) rescue nil
+  } )
+  highest_esc_level = input_esc_levels.compact.max_by {|item|
+    item
+  }
+
+  if !highest_esc_level.nil?
+    highest_esc_level.times {|iterator|
+      # Extract escalation level details for this iterator
+      esc_level = recipients_obj["Escalation Level #{iterator + 1}"] || {}
+
+      # set maxResponseTime using "3600" as default value.
+      maxResponseTime = "3600"
+      maxResponseTime = esc_level['maxResponse'] if !esc_level['maxResponse'].to_s.empty?
+
+      if !existing_escalation_levels[iterator]
+        #add escalation element
+        escalation_element = escalation_container.add_element 'escalation'
+        escalation_element_response_time_el = escalation_element.add_element 'maxResponseTime'
+        escalation_element_response_time_el.text = maxResponseTime
+      else
+        #set escalation
+        escalation_element = existing_escalation_levels[iterator]
+      end
+
+      # Are there any individual recipients
+      individuals = []
+      individuals = esc_level['individuals'].strip.split(",") if !(!esc_level || !esc_level['individuals'] || esc_level['individuals'].empty? || esc_level['individuals'].strip.empty?)
+      # Add any oncall individuals for current level -- which is iterator + 1
+      individuals += (oncall["#{iterator + 1}"] || [])
+      # add new recipient child element(s) for individuals
+      individuals.compact.each{|ind|
+	    
+		
+		#individual_data = REXML::Document.new("&lt;recipient&gt;#{ind.strip}&lt;/recipient&gt;") 
+        if !escalation_element.elements["//recipient"].nil?  #recipient exists so insert recipient before recipient
+		  recipient = escalation_element.insert_before( "//recipient", REXML::Element.new("recipient") ) 
+          recipient_values = escalation_element.elements['//recipient']  # if an insert_after is done this will find the first instance and it will be added to the wrong tag
+	      recipient_identifier = recipient_values.add_element "#{mir3_unique_identifier}"
+          recipient_identifier.text = ind.strip
+        else
+          if !escalation_element.elements["//recipientGroup"].nil? 
+            recipient = escalation_element.insert_before( '//recipientGroup', REXML::Element.new("recipient") ) 
+            recipient_values = escalation_element.elements['//recipient']  # if an insert_after is done this will find the first instance and it will be added to the wrong tag
+	        recipient_identifier = recipient_values.add_element "#{mir3_unique_identifier}"
+            recipient_identifier.text = ind.strip
+          else
+            if !escalation_element.elements["//recipientSchedule"].nil? 
+			  recipient = escalation_element.insert_before( '//recipientSchedule', REXML::Element.new("recipient") ) 
+              recipient_values = escalation_element.elements['//recipient']  # if an insert_after is done this will find the first instance and it will be added to the wrong tag
+	          recipient_identifier = recipient_values.add_element "#{mir3_unique_identifier}"
+              recipient_identifier.text = ind.strip
+    	    else
+              recipient = escalation_element.add_element "recipient"
+              recipient_identifier = recipient.add_element "#{mir3_unique_identifier}"
+              recipient_identifier.text = ind.strip
+    	    end  
+          end
+        end
+      }
+
+      # Are there groups recipients
+      groups = []
+      esc_level = recipients_obj["Escalation Level #{iterator + 1}"]
+      groups = esc_level['groups'].strip.split(",") if !(!esc_level || !esc_level['groups'] || esc_level['groups'].empty? || esc_level['groups'].strip.empty?)
+      # add new recipient child element(s) for groups
+      groups.compact.each{|grp|
+     	group_data = REXML::Document.new("&lt;recipientGroup&gt;#{grp.strip}&lt;/recipientGroup&gt;") 
+        if !escalation_element.elements["//recipientSchedule"].nil? 
+     	  recipient = escalation_element.insert_before( '//recipientSchedule', group_data.root )
+		  #recipient.text = grp.strip
+     	else
+     	  recipient = escalation_element.add_element "recipientGroup"
+          recipient.text = grp.strip
+     	end
+      }
+
+      # Are there schedule recipients
+      schedules = []
+      esc_level = recipients_obj["Escalation Level #{iterator + 1}"]
+      schedules = esc_level['schedules'].strip.split(",") if !(!esc_level || !esc_level['schedules'] || esc_level['schedules'].empty? || esc_level['schedules'].strip.empty?)
+      # add new recipient child element(s) for schedules, schedules are always last
+      schedules.compact.each{|schedule|
+        recipient = escalation_element.add_element "recipientSchedule"
+        recipient.text = schedule.strip
+      }
+    }
+  end
+
+else
+  raise "Cannot determine notification method (expected 'broadcast', 'bulletinBoardInfo', 'firstResponseInfo', or 'calloutInfo'"
+end
+
+## add file attachment if it exists
+if !@inputs['CSV File Name'].nil? &amp;&amp; !@inputs['CSV Content'].nil?
+  attachment_container = doc.root.insert_after( "//notificationDetail", REXML::Element.new("oneStepAttachment") ) 
+  osa = doc.elements['//oneStepAttachment']
+  osad = osa.add_element 'oneStepAttachmentDetail'
+  attachment = osad.add_element 'attachment'
+  filename = attachment.add_element 'filename'
+  filename.text = @inputs['CSV File Name']
+  content = attachment.add_element 'content'
+  content.text = @inputs['CSV Content']
+end
+
+output = "" 
+doc.write(output)
+#To pretty print, do this:
+#doc.write(output, 2)
+
+output
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_21</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_21" name="Generate Title" x="72.6" y="662.2">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+require 'rexml/document'
+placeholder_json = JSON.parse(@inputs['Placeholder JSON'])
+str_xml = @inputs['Notification Detail']
+doc = REXML::Document.new(str_xml)
+placeholder_title = doc.elements['//title'].text
+new_title =  ""
+new_title &lt;&lt; doc.elements['//title'].text
+placeholder_title.gsub!(/\[\[(?:(?!\[\[).)*?\]\]/) do |match|
+    # remove placeholder:, opening and closing brackets from match
+    key = match[14..-3]
+    new_title.gsub!(match, placeholder_json.find {|h1| h1['name']==key}['value'])
+end
+if new_title.length &gt; 100
+new_title[0..96] + "..."
+else
+new_title
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_9</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_22" name="Time Stamp" x="73.83636" y="233.94547">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+time = Time.new - 1
+time.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_81</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_36" name="Wait 30 Seconds" x="884" y="270.05264">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">30</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_42</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_37" name="MIR3 Call: One Step Notification - Retry 2" x="1787.8" y="131.9">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">one_step_notification_op</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="success" type="Complete" value="JSON.parse( @results['MIR3 Call: One Step Notification - Retry 2']['output'] )['success'] == true">system_join_v1_97</task>
+                    <task label="failure" type="Complete" value="JSON.parse( @results['MIR3 Call: One Step Notification - Retry 2']['output'] )['success'] == false">utilities_echo_v1_109</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_40" name="Wait 2 Minutes" x="1623.2" y="268">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">2</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Minute</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">mir3_generic_call_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="mir3_generic_call_v1" id="mir3_generic_call_v1_42" name="MIR3 Call: One Step Notification - Retry 1" x="1068.6" y="116.05">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="output_type" label="Output Type" menu="JSON,XML" required="false" tooltip="The output type to return from a successful call.">JSON</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="xml" label="XML structure" menu="" required="true" tooltip="XML body to make the request.  Must be wrapped in a root element.">&lt;%=@results['Generate XML Body']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="action" label="Action" menu="" required="true" tooltip="The action to call in snake case. ex: get_notification_reports_op - Check wsdl for options.">one_step_notification_op</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="success" type="Complete" value="JSON.parse( @results['MIR3 Call: One Step Notification - Retry 1']['output'] )['success'] == true">system_join_v1_93</task>
+                    <task label="failure" type="Complete" value="JSON.parse( @results['MIR3 Call: One Step Notification - Retry 1']['output'] )['success'] == false">utilities_echo_v1_108</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_get_initiated_uuid" id="routine_onsolve_mir3_get_initiated_uuid_75" name="Get UUID from UniqueID - First" x="310.9" y="606.1">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="userUniqueID" label="userUniqueID" menu="" required="true" tooltip="The value used for uniqueUserID in the initiation attempt">&lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="found UUID" type="Complete" value="@results['Get UUID from UniqueID - First']['Success'] == &quot;true&quot;&#10;">system_tree_return_v1_76</task>
+                    <task label="no UUID found" type="Complete" value="@results['Get UUID from UniqueID - First']['Success'] == &quot;false&quot;&#10;">system_join_v1_91</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_76" name="Return UUID - First" x="308.7" y="789.1">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%= true %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%= @results['Get UUID from UniqueID - First']['Notification Report UUID'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%= @results['MIR3 Call: One Step Notification - First']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%= @results['Generate Title']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_77" name="Return Failure - First" x="691.1909" y="43.7">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%= false %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%= @results['MIR3 Call: One Step Notification - First']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%= @results['Generate Title']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_79" name="Return Failure - Retry 1" x="1434.8" y="51.85">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%= false %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%= @results['MIR3 Call: One Step Notification - Retry 1']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%= @results['Generate Title']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_get_initiated_uuid" id="routine_onsolve_mir3_get_initiated_uuid_80" name="Get UUID from UniqueID - Retry 1" x="1044.6" y="609.85">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="userUniqueID" label="userUniqueID" menu="" required="true" tooltip="The value used for uniqueUserID in the initiation attempt">&lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="found UUID" type="Complete" value="@results['Get UUID from UniqueID - Retry 1']['Success'] == &quot;true&quot;">system_tree_return_v1_82</task>
+                    <task label="no UUID found" type="Complete" value="@results['Get UUID from UniqueID - Retry 1']['Success'] == &quot;false&quot;">system_join_v1_96</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_81" name="Generate userUniqueID" x="72.4" y="331.8">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= @results['Time Stamp']['output'] %&gt;-&lt;%= @run['Id'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_114</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_82" name="Return UUID - Retry 1" x="1047.2" y="791.05">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%= true %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%= @results['Get UUID from UniqueID - Retry 1']['Notification Report UUID'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%= @results['MIR3 Call: One Step Notification - Retry 1']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%= @results['Generate Title']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_84" name="Return Failure - Retry 2" x="2183.291" y="794.13635">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%= false %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%= @results['MIR3 Call: One Step Notification - Retry 2']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%= @results['Generate Title']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_get_initiated_uuid" id="routine_onsolve_mir3_get_initiated_uuid_85" name="Get UUID from UniqueID - Retry 2" x="1805.5637" y="607.3182">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="userUniqueID" label="userUniqueID" menu="" required="true" tooltip="The value used for uniqueUserID in the initiation attempt">&lt;%= @results['Generate userUniqueID']['output'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="found UUID" type="Complete" value="@results['Get UUID from UniqueID - Retry 2']['Success'] == &quot;true&quot;">system_tree_return_v1_86</task>
+                    <task label="no UUID found" type="Complete" value="@results['Get UUID from UniqueID - Retry 2']['Success'] == &quot;false&quot;">system_join_v1_100</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_86" name="Return UUID - Retry 2" x="1808.8362" y="793.40906">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Success" label="Success" menu="" required="false" tooltip="'true' or 'false'">&lt;%= true %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Report UUID" label="Notification Report UUID" menu="" required="false" tooltip="The UUID of the notification from MIR3">&lt;%= @results['Get UUID from UniqueID - Retry 2']['Notification Report UUID'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Output" label="Output" menu="" required="false" tooltip="The output from the call - either the XML notificationDetail block, or the error message">&lt;%= @results['MIR3 Call: One Step Notification - Retry 2']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Title" label="Title" menu="" required="false" tooltip="The notification title">&lt;%= @results['Generate Title']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional JSON Output" label="Additional JSON Output" menu="" required="false" tooltip="Any additional output that coud be included in the future"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_89" name="Failure - First" x="695.09546" y="341.87634">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="!65561/71430/9/1001" type="Complete" value="![&quot;65561&quot;, &quot;71430&quot;, &quot;1001&quot;, &quot;9&quot;].include?(@results['First Error Code']['output'])">system_tree_return_v1_77</task>
+                    <task label="65561/71430" type="Complete" value="[&quot;65561&quot;, &quot;71430&quot;].include?(@results['First Error Code']['output'])">system_join_v1_90</task>
+                    <task label="9/1001" type="Complete" value="[&quot;1001&quot;, &quot;9&quot;].include?(@results['First Error Code']['output'])">system_join_v1_91</task>
+                    <task label="65561/71430/9/1001" type="Complete" value="[&quot;65561&quot;, &quot;71430&quot;, &quot;1001&quot;, &quot;9&quot;].include?(@results['First Error Code']['output'])">smtp_email_send_v1_101</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_90" name="Attempt to Get UUID - First" x="316.05002" y="346.9763">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_92</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_91" name="Go To Retry - First" x="695.65" y="622.17633">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_36</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_92" name="Wait 5 Seconds - First" x="310.9" y="499.3">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">5</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_get_initiated_uuid_75</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_93" name="Attempt to Get UUID - Retry 1" x="1042.9" y="348.425">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_94</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_94" name="Wait 5 Seconds - Retry 1" x="1041.9" y="492.425">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">5</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_get_initiated_uuid_80</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_95" name="Failure - Retry 1" x="1436.55" y="335.7125">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="65561/71430" type="Complete" value="[&quot;65561&quot;, &quot;71430&quot;].include?(@results['Second Error Code']['output'])">system_join_v1_93</task>
+                    <task label="!65561/71430/9/1001" type="Complete" value="![&quot;65561&quot;, &quot;71430&quot;, &quot;1001&quot;, &quot;9&quot;].include?(@results['Second Error Code']['output'])">system_tree_return_v1_79</task>
+                    <task label="9/1001" type="Complete" value="[&quot;1001&quot;, &quot;9&quot;].include?(@results['Second Error Code']['output'])">system_join_v1_96</task>
+                    <task label="65561/71430/9/1001" type="Complete" value="[&quot;65561&quot;, &quot;71430&quot;, &quot;1001&quot;, &quot;9&quot;].include?(@results['Second Error Code']['output'])">smtp_email_send_v1_105</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_96" name="Go To Retry - Retry 1" x="1438.8" y="625.85">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_40</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_97" name="Attempt to Get UUID - Retry 2" x="1801.291" y="347.13635">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_98</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_98" name="Wait 5 Seconds - Retry 2" x="1803.291" y="483.13635">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">5</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_get_initiated_uuid_85</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_99" name="Failure - Retry 2" x="2173.291" y="336.13635">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="65561/71430/9/1001" type="Complete" value="[&quot;65561&quot;, &quot;71430&quot;, &quot;1001&quot;, &quot;9&quot;].include?(@results['Second Error Code']['output'])">smtp_email_send_v1_110</task>
+                    <task label="!66561/71430" type="Complete" value="![&quot;65561&quot;, &quot;71430&quot;].include?(@results['Third Error Code']['output'])">system_join_v1_100</task>
+                    <task label="66561/71430" type="Complete" value="[&quot;65561&quot;, &quot;71430&quot;].include?(@results['Third Error Code']['output'])">system_join_v1_97</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_100" name="Go To Failure - Retry 2" x="2179.291" y="626.13635">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_84</task>
+                </dependents>
+            </task>
+            <task definition_id="smtp_email_send_v1" id="smtp_email_send_v1_101" name="Send First Internal Error Email" x="507" y="482.0526">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="from" label="From (email address)" menu="" required="true" tooltip="The email address of the simulated sender.">wally@kinops.io</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="to" label="To (email address)" menu="" required="true" tooltip="The email address of the intended recipient.">supportservices@onsolve.com,Janice.Hight@onsolve.com,matthew.howe@kineticdata.com</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="subject" label="Subject" menu="" required="false" tooltip="The subject of the email.">&lt;%= @results['Space Retrieve']['Name'] %&gt; - &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - First']['output'])['error']['error_code'] %&gt; Initiation Error - Run ID:&lt;%= @run['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="htmlbody" label="HTML Body" menu="" required="false" tooltip="HTML representing the body of a rich email.">&lt;p&gt;Error on first attempt to initiate notification titled: &lt;%= @results['Generate Title']['output'] %&gt;&lt;/p&gt;
+
+&lt;p&gt;Identifier assigned as userUniqueId: &lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;&lt;/p&gt;
+
+&lt;p&gt;Error Code: &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - First']['output'])['error']['error_code'] %&gt;&lt;/p&gt;
+&lt;textarea style="width: 90%; height: 64px;"&gt;&lt;%=JSON.parse( @results['MIR3 Call: One Step Notification - First']['output'] )%&gt;&lt;/textarea&gt;&lt;/p&gt;
+
+&lt;p&gt;Run reference link:&lt;br/&gt;
+&lt;%= JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0] %&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;&lt;/p&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="textbody" label="Alternate (text) Body" menu="" required="false" tooltip="A plaintext message that will be displayed if the recipient can't display multipart HTML emails.">Error on first attempt to initiate notification titled: &lt;%= @results['Generate Title']['output'] %&gt;
+
+Identifier assigned as userUniqueId: &lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;
+
+Error Code: &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - First']['output'])['error']['error_code'] %&gt;
+&lt;%=JSON.parse( @results['MIR3 Call: One Step Notification - First']['output'] )%&gt;
+
+Run refernce link:
+&lt;%= JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0] %&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_104" name="Space Retrieve" x="75" y="139.05264">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_22</task>
+                </dependents>
+            </task>
+            <task definition_id="smtp_email_send_v1" id="smtp_email_send_v1_105" name="Send Second Internal Error Email" x="1263" y="461">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="from" label="From (email address)" menu="" required="true" tooltip="The email address of the simulated sender.">wally@kinops.io</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="to" label="To (email address)" menu="" required="true" tooltip="The email address of the intended recipient.">Janice.Hight@onsolve.com,matthew.howe@kineticdata.com</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="subject" label="Subject" menu="" required="false" tooltip="The subject of the email.">&lt;%= @results['Space Retrieve']['Name'] %&gt; - &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - Retry 1']['output'])['error']['error_code'] %&gt; Initiation Error - Run ID:&lt;%= @run['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="htmlbody" label="HTML Body" menu="" required="false" tooltip="HTML representing the body of a rich email.">&lt;p&gt;Error on second attempt to initiate notification titled: &lt;%= @results['Generate Title']['output'] %&gt;&lt;/p&gt;
+
+&lt;p&gt;Identifier assigned as userUniqueId: &lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;&lt;/p&gt;
+
+&lt;p&gt;Error Code: &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - Retry 1']['output'])['error']['error_code'] %&gt;&lt;/p&gt;
+&lt;textarea style="width: 90%; height: 64px;"&gt;&lt;%=JSON.parse( @results['MIR3 Call: One Step Notification - Retry 1']['output'] )%&gt;&lt;/textarea&gt;&lt;/p&gt;
+
+&lt;p&gt;Run reference link:&lt;br/&gt;
+&lt;%= JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0] %&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;&lt;/p&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="textbody" label="Alternate (text) Body" menu="" required="false" tooltip="A plaintext message that will be displayed if the recipient can't display multipart HTML emails.">Error on second attempt to initiate notification titled: &lt;%= @results['Generate Title']['output'] %&gt;
+
+Identifier assigned as userUniqueId: &lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;
+
+Error Code: &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - Retry 1']['output'])['error']['error_code'] %&gt;
+&lt;%=JSON.parse( @results['MIR3 Call: One Step Notification - Retry 1']['output'] )%&gt;
+
+Run refernce link:
+&lt;%= JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0] %&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_107" name="First Error Code" x="553.57275" y="253.92632">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+if JSON.parse(@results['MIR3 Call: One Step Notification - First']['output'])['error'].kind_of?(Array)
+  JSON.parse(@results['MIR3 Call: One Step Notification - First']['output'])['error'][0]['error_code']
+else
+  JSON.parse(@results['MIR3 Call: One Step Notification - First']['output'])['error']['error_code']
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_89</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_108" name="Second Error Code" x="1247" y="254">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+if JSON.parse(@results['MIR3 Call: One Step Notification - Retry 1']['output'])['error'].kind_of?(Array)
+  JSON.parse(@results['MIR3 Call: One Step Notification - Retry 1']['output'])['error'][0]['error_code']
+else
+  JSON.parse(@results['MIR3 Call: One Step Notification - Retry 1']['output'])['error']['error_code']
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_95</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_109" name="Third Error Code" x="1991" y="254">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+if JSON.parse(@results['MIR3 Call: One Step Notification - Retry 2']['output'])['error'].kind_of?(Array)
+  JSON.parse(@results['MIR3 Call: One Step Notification - Retry 2']['output'])['error'][0]['error_code']
+else
+  JSON.parse(@results['MIR3 Call: One Step Notification - Retry 2']['output'])['error']['error_code']
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_99</task>
+                </dependents>
+            </task>
+            <task definition_id="smtp_email_send_v1" id="smtp_email_send_v1_110" name="Send Third Internal Error Email" x="2019" y="451">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="from" label="From (email address)" menu="" required="true" tooltip="The email address of the simulated sender.">wally@kinops.io</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="to" label="To (email address)" menu="" required="true" tooltip="The email address of the intended recipient.">Janice.Hight@onsolve.com,matthew.howe@kineticdata.com</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="subject" label="Subject" menu="" required="false" tooltip="The subject of the email.">&lt;%= @results['Space Retrieve']['Name'] %&gt; - &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - Retry 2']['output'])['error']['error_code'] %&gt; Initiation Error - Run ID:&lt;%= @run['Id'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="htmlbody" label="HTML Body" menu="" required="false" tooltip="HTML representing the body of a rich email.">&lt;p&gt;Error on third attempt to initiate notification titled: &lt;%= @results['Generate Title']['output'] %&gt;&lt;/p&gt;
+
+&lt;p&gt;Identifier assigned as userUniqueId: &lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;&lt;/p&gt;
+
+&lt;p&gt;Error Code: &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - Retry 2']['output'])['error']['error_code'] %&gt;&lt;/p&gt;
+&lt;textarea style="width: 90%; height: 64px;"&gt;&lt;%=JSON.parse( @results['MIR3 Call: One Step Notification - Retry 2']['output'] )%&gt;&lt;/textarea&gt;&lt;/p&gt;
+
+&lt;p&gt;Run reference link:&lt;br/&gt;
+&lt;%= JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0] %&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;&lt;/p&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="textbody" label="Alternate (text) Body" menu="" required="false" tooltip="A plaintext message that will be displayed if the recipient can't display multipart HTML emails.">Error on third attempt to initiate notification titled: &lt;%= @results['Generate Title']['output'] %&gt;
+
+Identifier assigned as userUniqueId: &lt;%=@results['Time Stamp']['output']%&gt;-&lt;%=@run['Id']%&gt;
+
+Error Code: &lt;%= JSON.parse(@results['MIR3 Call: One Step Notification - Retry 2']['output'])['error']['error_code'] %&gt;
+&lt;%=JSON.parse( @results['MIR3 Call: One Step Notification - Retry 2']['output'] )%&gt;
+
+Run refernce link:
+&lt;%= JSON.parse(@results['Space Retrieve']['Attributes Map JSON'])['Web Server Url'][0] %&gt;/app/console/#/workflow/runs/tasks/&lt;%= @run['Id'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_114" name="Recipients JSON Modifications" x="71.4" y="428.8">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# this is for aetna 
+#recipientsJson = @inputs['Recipients JSON']
+#recipientsJson.gsub!(" USER GROUP", "")
+#if recipientsJson.nil?
+#  recipientsJson = @inputs['Recipients JSON']
+#end
+#recipientsJson
+
+#other clients that do not need to do any replacements can just do this
+@inputs['Recipients JSON']
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_12</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

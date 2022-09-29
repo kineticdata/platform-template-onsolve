@@ -1,0 +1,11 @@
+{
+  "method": "POST",
+  "securityPolicies": [
+    {
+      "endpoint": "Execution",
+      "name": "Authenticated Users"
+    }
+  ],
+  "slug": "inbound-integration-custom-bigpanda",
+  "attributes": null
+}

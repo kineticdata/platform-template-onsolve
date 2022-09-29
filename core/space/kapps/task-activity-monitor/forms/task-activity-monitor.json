@@ -16,6 +16,111 @@
   ],
   "customHeadContent": null,
   "description": "Stores data for task throughput messages.",
+  "indexDefinitions": [
+    {
+      "name": "closedBy",
+      "parts": [
+        "closedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "coreState,values[Integration Id],values[Source Id]",
+      "parts": [
+        "coreState",
+        "values[Integration Id]",
+        "values[Source Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "coreState,values[Integration Id],values[Source Id],values[Onsolve Status]",
+      "parts": [
+        "coreState",
+        "values[Integration Id]",
+        "values[Source Id]",
+        "values[Onsolve Status]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "coreState,values[Integration Id],values[Source Reference Id]",
+      "parts": [
+        "coreState",
+        "values[Integration Id]",
+        "values[Source Reference Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "coreState,values[Integration Id],values[Source Reference Id],values[Onsolve Status]",
+      "parts": [
+        "coreState",
+        "values[Integration Id]",
+        "values[Source Reference Id]",
+        "values[Onsolve Status]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "coreState,values[Onsolve Status]",
+      "parts": [
+        "coreState",
+        "values[Onsolve Status]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "createdBy",
+      "parts": [
+        "createdBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "handle",
+      "parts": [
+        "handle"
+      ],
+      "unique": false
+    },
+    {
+      "name": "submittedBy",
+      "parts": [
+        "submittedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "updatedBy",
+      "parts": [
+        "updatedBy"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Integration Id],values[Source Id]",
+      "parts": [
+        "values[Integration Id]",
+        "values[Source Id]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Integration Name]",
+      "parts": [
+        "values[Integration Name]"
+      ],
+      "unique": false
+    },
+    {
+      "name": "values[Onsolve Status]",
+      "parts": [
+        "values[Onsolve Status]"
+      ],
+      "unique": false
+    }
+  ],
   "name": "Task Activity Monitor",
   "notes": null,
   "pages": [
@@ -414,5 +519,5 @@
   "slug": "task-activity-monitor",
   "status": "Active",
   "submissionLabelExpression": "${values('Integration Name')} - ${values('Source Reference Id')} - ${values('Onsolve Id')}",
-  "type": "Console"
+  "type": "Datastore"
 }

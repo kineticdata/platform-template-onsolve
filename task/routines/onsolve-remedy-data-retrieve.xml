@@ -35,133 +35,109 @@
                     <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_9</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_1" name="Agent" x="177" y="22">
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_1" name="Agent" x="365" y="27">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%=@results['Retrieve Space']['Slug']%&gt;</parameter>
-                    <parameter id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">remedy_generic_retrieve_v2</parameter>
-                    <parameter id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">remedy_generic_retrieve_v2</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%=
 {
-  "error_handling" =&gt; "Error Message",
+  "error_handling" =&gt; "Raise Error",
   "form" =&gt; @inputs['Remedy Form'],
   "request_id" =&gt; @inputs['Query']
 }.to_json
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_13</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_8" name="Uses Agent" x="177" y="121">
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_8" name="Uses Agent" x="365" y="180">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
-                    <parameter id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
-                    <parameter id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
-                    <parameter id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Uses Kinetic Agent</parameter>
-                    <parameter id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value">False</parameter>
-                    <parameter id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."></parameter>
-                    <parameter id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
-                    <parameter id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."></parameter>
-                    <parameter id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="start_context" label="Start Context" menu="" required="true" tooltip="The lowest level to search. If Submission, only a Submission Id is needed. Should be one of Submission,Form,Kapp,Space">Kapp</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="end_context" label="End Context" menu="" required="true" tooltip="The highest level to search. If Submission, only a Submission Id is needed. Should be one of Space,Kapp,Form,Submission">Kapp</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="prop_to_find" label="Property To Find" menu="" required="true" tooltip="The Name of the Field/Attribute to search for a match.">Uses Kinetic Agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="backup_if_none" label="Backup Value" menu="" required="false" tooltip="If no Field/Attribute value is returned, use this value">False</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Slug of the space to find attribute values in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="false" tooltip="The Slug of the kapp to find attribute values in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The Slug of the form to find attribute values in."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="false" tooltip="The id of the submission to find values in"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
-                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v1_1</task>
+                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v3_1</task>
                     <task label="No Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase != &quot;true&quot;">remedy_generic_retrieve_v2_10</task>
                 </dependents>
             </task>
-            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_9" name="Retrieve Space" x="12" y="110">
+            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_9" name="Retrieve Space" x="105" y="180">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters></parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_8</task>
                 </dependents>
             </task>
-            <task definition_id="remedy_generic_retrieve_v2" id="remedy_generic_retrieve_v2_10" name="Remedy Retrieve" x="173" y="220">
+            <task definition_id="remedy_generic_retrieve_v2" id="remedy_generic_retrieve_v2_10" name="Remedy Retrieve" x="365" y="324">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>true</visible>
                 <parameters>
-                    <parameter id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%=@inputs['Remedy Form']%&gt;</parameter>
-                    <parameter id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to retrieve">&lt;%=@inputs['Request Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form" label="Remedy Form:" menu="" required="true" tooltip="Remedy Form Name (not display name), eg. People is CTM:People">&lt;%=@inputs['Remedy Form']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="request_id" label="Request ID:" menu="" required="true" tooltip="Request ID (Field 1) of record to retrieve">&lt;%=@inputs['Request Id']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_14</task>
                 </dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_13" name="Return - Agent" x="340" y="11">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_13" name="Return - Agent" x="663" y="29">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
-                    <parameter id="field_list" label="field_list" menu="" required="false" tooltip="">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%= @results['Agent']['Handler Error Message'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="field_list" label="field_list" menu="" required="false" tooltip="">&lt;%=
 begin
-  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['field_list']
+  @results['Agent']['field_list']
 rescue
 end
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_14" name="Return - Direct" x="341" y="220">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_14" name="Return - Direct" x="662" y="327">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Remedy Retrieve']['Handler Error Message']%&gt;</parameter>
-                    <parameter id="field_list" label="field_list" menu="" required="false" tooltip="">&lt;%=@results['Remedy Retrieve']['field_list']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Handler Error Message" label="Handler Error Message" menu="" required="false" tooltip="">&lt;%=@results['Remedy Retrieve']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="field_list" label="field_list" menu="" required="false" tooltip="">&lt;%=@results['Remedy Retrieve']['field_list']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
         </request>

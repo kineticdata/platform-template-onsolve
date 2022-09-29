@@ -1,0 +1,11 @@
+{
+  "method": "POST",
+  "securityPolicies": [
+    {
+      "endpoint": "Execution",
+      "name": "Admins"
+    }
+  ],
+  "slug": "robot-find-and-handle-completed-notification-records",
+  "attributes": null
+}

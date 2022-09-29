@@ -1,0 +1,268 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_servicenow_ticket_scan_routine_step_3</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>ServiceNow Ticket Scan Routine Step 3</name>
+        <author></author>
+        <notes></notes>
+        <lastID>47</lastID>
+        <taskDefinition id="routine_servicenow_ticket_scan_routine_step_3" name="ServiceNow Ticket Scan Routine Step 3" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="ServiceNow Ticket Details" label="ServiceNow Ticket Details" required="true" tooltip=""></parameter>
+                <parameter id="Include Information From Related ServiceNow Form" label="Include Information From Related ServiceNow Form" required="true" tooltip=""></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml">
+                <result name="ServiceNow Ticket Details" tooltip=""></result>
+            </results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_46</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="notes" x="880" y="248.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">need to refech any external data and add it back to the new source</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_33" name="Loop Head External Data" x="410" y="143">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%= @inputs['Include Information From Related ServiceNow Form'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">info_related_serviceNow</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_34</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_34" name="Loop Tail External Data" x="408" y="534">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_tree_return_v1_47</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_35" name="Validate Qualification" x="737" y="144">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = JSON.parse(@results['Loop Head External Data']['Value'])['Qualification']
+#source_data = JSON.parse(@results['Loop Begin']['Value'])
+source_data = JSON.parse(@inputs['ServiceNow Ticket Details'])
+#  Do replacements
+all_data_found = "True"
+qualification.scan(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+  
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    if source_data[field][field_qualifier].to_s.empty?
+      all_data_found = "False"
+      break
+    end
+  else
+    all_data_found = "False"
+    break
+  end
+end
+all_data_found
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="True" type="Complete" value="@results['Validate Qualification']['output']==&quot;True&quot;">utilities_echo_v1_36</task>
+                    <task label="False" type="Complete" value="@results['Validate Qualification']['output']==&quot;False&quot;">system_join_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_36" name="Process Qualification" x="1066" y="142">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = JSON.parse(@results['Loop Head External Data']['Value'])['Qualification']
+#source_data = JSON.parse(@results['Loop Begin']['Value'])
+source_data = JSON.parse(@results['ServiceNow Ticket Details']['output'])
+#  Do replacements
+qualification.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+  
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    source_data[field][field_qualifier] || source_data[field]
+  else
+    match
+  end
+end
+qualification
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_servicenow_data_retrieve_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_37" name="Service Now External Data" x="1070" y="345">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Table" label="Table" menu="" required="true" tooltip="">&lt;%=JSON.parse(@results['Loop Head External Data']['Value'])['Form'].downcase%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= @results['Process Qualification']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Display Value" label="Display Value" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields" label="Fields" menu="" required="false" tooltip="">&lt;%=JSON.parse(@results['Loop Head External Data']['Value'])['Return']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="">1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query Category" label="Query Category" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Found Data" type="Complete" value="@results['Service Now External Data']['object_json']!=&quot;[]&quot;">utilities_echo_v1_38</task>
+                    <task label="Not Found" type="Complete" value="@results['Service Now External Data']['object_json']==&quot;[]&quot;">system_join_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_38" name="New Source Data" x="1074" y="524">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= 
+single_hash = JSON.parse(@results['Service Now External Data']['object_json'])[0] 
+new_hash = {}
+
+single_hash.each { |k, v| 
+  new_hash[JSON.parse(@results['Loop Head External Data']['Value'])['Mapping']] = v 
+} 
+
+new_hash.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_39" name="Join External Data" x="733" y="538">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_34</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_46" name="Echo Include Information From Related ServiceNow Form" x="89" y="142">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= @inputs['Include Information From Related ServiceNow Form'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_33</task>
+                </dependents>
+            </task>
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_47" name="Return" x="407" y="692">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="ServiceNow Ticket Details" label="ServiceNow Ticket Details" menu="" required="false" tooltip="">&lt;%=
+new_source_data = JSON.parse(@inputs['ServiceNow Ticket Details'])
+
+if @results.has_key?("New Source Data")
+  @results['New Source Data'].collect{|key,values|
+    new_source_data.merge!(JSON.parse(values['output']))
+  }
+end
+
+new_source_data.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

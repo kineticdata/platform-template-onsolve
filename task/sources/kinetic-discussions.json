@@ -9,5 +9,10 @@
       "message": "The request signature is invalid",
       "type": "API Access"
     }
-  ]
+  ],
+  "properties": {
+    "Proxy Username": "space-integration-user",
+    "Web Server": "https://onsolve-master.kinops.io",
+    "Space Slug": ""
+  }
 }

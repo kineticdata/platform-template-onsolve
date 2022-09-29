@@ -37,9 +37,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_join_v1_74</task>
                 </dependents>
@@ -383,7 +381,6 @@ output.to_json
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="jdbc_database" menu="" required="true" tooltip="">&lt;%=
 JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Type']
 %&gt;</parameter>

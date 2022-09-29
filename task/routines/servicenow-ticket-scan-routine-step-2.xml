@@ -1,0 +1,447 @@
+<tree schema_version="1.0">
+    <sourceName>-</sourceName>
+    <sourceGroup>-</sourceGroup>
+    <definitionId>routine_servicenow_ticket_scan_routine_step_2</definitionId>
+    <type>Global Routine</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>ServiceNow Ticket Scan Routine Step 2</name>
+        <author></author>
+        <notes></notes>
+        <lastID>46</lastID>
+        <taskDefinition id="routine_servicenow_ticket_scan_routine_step_2" name="ServiceNow Ticket Scan Routine Step 2" schema_version="1.0" version="1">
+            <visible>false</visible>
+            <deferrable>true</deferrable>
+            <parameters>
+                <parameter id="ServiceNow Schema Name" label="ServiceNow Schema Name" required="true" tooltip=""></parameter>
+                <parameter id="ServiceNow Fields" label="ServiceNow Fields" required="false" tooltip=""></parameter>
+                <parameter id="ServiceNow Query" label="ServiceNow Query" required="true" tooltip=""></parameter>
+                <parameter id="Kinetic Source System Form" label="Kinetic Source System Form" required="true" tooltip=""></parameter>
+                <parameter id="Kinetic Source System Query" label="Kinetic Source System Query" required="true" tooltip=""></parameter>
+            </parameters>
+            <handler name="system_tree_call" version="1"></handler>
+            <results format="xml"></results>
+        </taskDefinition>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_search_v2_45</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_15" name="ServiceNow Search" x="101" y="276">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Table" label="Table" menu="" required="true" tooltip="">&lt;%=@inputs['ServiceNow Schema Name'].downcase%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= @inputs['ServiceNow Query'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Display Value" label="Display Value" menu="" required="false" tooltip="">all</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields" label="Fields" menu="" required="false" tooltip="">&lt;%= @inputs['ServiceNow Fields'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query Category" label="Query Category" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_16</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_16" name="Loop Head ServiceNow Tickets" x="340" y="273">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%= @results['ServiceNow Search']['object_json'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">servicenow_ticket</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_17</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_18</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_17" name="Loop Tail ServiceNow Tickets" x="343" y="689">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_18" name="ServiceNow Ticket Details" x="615" y="272">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= @results['Loop Head ServiceNow Tickets']['Value'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_20</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_20" name="Integration ID for Datastore Ticket" x="616" y="443">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+tickets = JSON.parse(@results['Kinetic Submission Search']['Result'])
+begin
+  tickets.find {|a| a['values']['Source Id']==JSON.parse(@results['ServiceNow Ticket Details']['output'])['sys_id']['value']}['values']['Integration Configuration Submission Id']
+rescue
+  ""
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Found" type="Complete" value="!@results['Integration ID for Datastore Ticket']['output'].to_s.empty?">kinetic_request_ce_datastore_submission_retrieve_v1_21</task>
+                    <task label="Not found" type="Complete" value="@results['Integration ID for Datastore Ticket']['output'].to_s.empty?">system_join_v1_23</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_21" name="Datastore Integration Config" x="919" y="442">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%= @results['Integration ID for Datastore Ticket']['output'] %&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Stop or Restart" type="Complete" value="!JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Restart Notification Criteria'].nil? || !JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Stop Notification Criteria'].nil?">system_noop_v1_43</task>
+                    <task label="No Stop or Restart Qualification" type="Complete" value="(JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Restart Notification Criteria'].nil? &amp;&amp; JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Stop Notification Criteria'].nil?)">system_join_v1_23</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_23" name="Join after Evaluastion" x="616" y="700">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_task_api_v2" id="kinetic_task_api_v2_30" name="Run Routine v2" x="615" y="904">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">POST</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">&lt;%="/runs?sourceName=-&amp;sourceGroup=-&amp;name=#{ERB::Util.url_encode(JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Tree Name'])}"%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)">&lt;%=
+new_source_data = JSON.parse(@results['ServiceNow Ticket Details']['output'])
+if @results.has_key?("ServiceNow Get Additional Data Routine")
+  new_source_data = @results['ServiceNow Get Additional Data Routine']['ServiceNow Ticket Details']
+end
+
+{
+  "inputs" =&gt; {
+    "Source Data" =&gt; new_source_data.to_json,
+    #"Source Data" =&gt; JSON.parse(@results['Add Email to Source Data']['output']).to_json,
+    "Integration Config Id" =&gt; @results['Integration ID for Datastore Ticket']['output'],
+    "Integration Config Values" =&gt; @results['Datastore Integration Config']['Values JSON']
+  }
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_23</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_31" name="notes" x="2060" y="605.5">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">need to refech any external data and add it back to the new source</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_33" name="Loop Head External Data" x="1598" y="439">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Include Information From Related ServiceNow Form']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">info_related_serviceNow</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_34</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_34" name="Loop Tail External Data" x="1604" y="903">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_35" name="Validate Qualification" x="1858" y="439">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = JSON.parse(@results['Loop Head External Data']['Value'])['Qualification']
+#source_data = JSON.parse(@results['Loop Begin']['Value'])
+source_data = JSON.parse(@results['ServiceNow Ticket Details']['output'])
+#  Do replacements
+all_data_found = "True"
+qualification.scan(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+  
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    if source_data[field][field_qualifier].to_s.empty?
+      all_data_found = "False"
+      break
+    end
+  else
+    all_data_found = "False"
+    break
+  end
+end
+all_data_found
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="True" type="Complete" value="@results['Validate Qualification']['output']==&quot;True&quot;">utilities_echo_v1_36</task>
+                    <task label="False" type="Complete" value="@results['Validate Qualification']['output']==&quot;False&quot;">system_join_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_36" name="Process Qualification" x="2199" y="443">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = JSON.parse(@results['Loop Head External Data']['Value'])['Qualification']
+#source_data = JSON.parse(@results['Loop Begin']['Value'])
+source_data = JSON.parse(@results['ServiceNow Ticket Details']['output'])
+#  Do replacements
+qualification.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+  
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    source_data[field][field_qualifier] || source_data[field]
+  else
+    match
+  end
+end
+qualification
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_servicenow_data_retrieve_v1_37</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_37" name="Service Now External Data" x="2202" y="737">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Table" label="Table" menu="" required="true" tooltip="">&lt;%=JSON.parse(@results['Loop Head External Data']['Value'])['Form'].downcase%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= @results['Process Qualification']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Display Value" label="Display Value" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields" label="Fields" menu="" required="false" tooltip="">&lt;%=JSON.parse(@results['Loop Head External Data']['Value'])['Return']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="">1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query Category" label="Query Category" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Found Data" type="Complete" value="@results['Service Now External Data']['object_json']!=&quot;[]&quot;">utilities_echo_v1_38</task>
+                    <task label="Not Found" type="Complete" value="@results['Service Now External Data']['object_json']==&quot;[]&quot;">system_join_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_38" name="New Source Data" x="2204" y="907">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= single_hash = JSON.parse(@results['Service Now External Data']['object_json'])[0] 
+new_hash = {}
+single_hash.each { |k, v| new_hash[JSON.parse(@results['Loop Head External Data']['Value'])['Mapping']] = v } 
+new_hash.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_39</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_39" name="Join External Data" x="1863" y="919">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_34</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_42" name="External Data Join" x="1254" y="917">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_task_api_v2_30</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_43" name="Lookup External Data" x="1249" y="444">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Related ServiceNow Info" type="Complete" value="JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Include Information From Related ServiceNow Form'].to_s.empty?">system_join_v1_42</task>
+                    <task label="Include Information From Related ServiceNow Form" type="Complete" value="!JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Include Information From Related ServiceNow Form'].to_s.empty?">routine_servicenow_ticket_scan_routine_step_3_46</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_search_v2" id="kinetic_request_ce_submission_search_v2_45" name="Kinetic Submission Search" x="98" y="141">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="kapp_slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to search for submissions in.">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Form Slug" menu="" required="false" tooltip="The slug of the Form to search for submissions in.">&lt;%= @inputs['Kinetic Source System Form'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used.">ASC</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">&lt;%= @inputs['Kinetic Source System Query'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_servicenow_data_retrieve_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_servicenow_ticket_scan_routine_step_3" id="routine_servicenow_ticket_scan_routine_step_3_46" name="ServiceNow Get Additional Data Routine" x="1431" y="682">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="ServiceNow Ticket Details" label="ServiceNow Ticket Details" menu="" required="true" tooltip="">&lt;%= @results['ServiceNow Ticket Details']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Include Information From Related ServiceNow Form" label="Include Information From Related ServiceNow Form" menu="" required="true" tooltip="">&lt;%=JSON.parse(@results['Datastore Integration Config']['Values JSON'])['Include Information From Related ServiceNow Form']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_42</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

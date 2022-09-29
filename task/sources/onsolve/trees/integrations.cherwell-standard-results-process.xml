@@ -339,9 +339,7 @@ end
 work_note_text
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_36</task>
                 </dependents>
@@ -610,7 +608,6 @@ journal_type_id = parameters['Journal Object Type Id']
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Login Id" label="Login Id" menu="" required="true" tooltip="">&lt;%= 
 responderType = JSON.parse( @results['Assignment Logic']['output'] )['responderType']
 responderValue = JSON.parse( @results['Assignment Logic']['output'] )['responderValue']
@@ -660,7 +657,6 @@ integration_config['User Field Containing Match to OnSolve Users Modifier'] || "
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Object Name" label="Object Name" menu="" required="true" tooltip="Readable name of the Object to be update (e.g., Incident)">&lt;%=
 integration_config = JSON.parse( @source['Data'] )['Integration Configuration']
 integration_config['Schema Name']

@@ -1,0 +1,11 @@
+{
+  "method": "POST",
+  "securityPolicies": [
+    {
+      "endpoint": "Execution",
+      "name": "Admins"
+    }
+  ],
+  "slug": "robot-agent-connectivity-test",
+  "attributes": null
+}

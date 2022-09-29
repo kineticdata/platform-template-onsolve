@@ -13,7 +13,6 @@
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Error Handling" label="Error Handling" required="false" tooltip=""></parameter>
                 <parameter id="Full Name" label="Full Name" required="true" tooltip=""></parameter>
             </parameters>
             <handler name="system_tree_call" version="1"></handler>
@@ -35,7 +34,7 @@
                     <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_9</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_1" name="Agent" x="312" y="14">
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_1" name="Agent" x="312" y="14">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -43,11 +42,11 @@
                 <visible>true</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%=@results['Retrieve Space']['Slug']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">cherwell_generic_api_v1</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">cherwell_generic_api_v1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%=
 {
-  "error_handling" =&gt; @inputs['Error Handling'],
+  "error_handling" =&gt; 'Raise Error',
   "method" =&gt; "GET",
   "path" =&gt; "/api/V2/getuserbypublicid/publicid/#{ ERB::Util.url_encode(@inputs['Full Name'])}"
 }.to_json
@@ -77,7 +76,7 @@
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v1_1</task>
+                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v3_1</task>
                     <task label="No Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase != &quot;true&quot;">cherwell_generic_api_v1_20</task>
                 </dependents>
             </task>
@@ -105,9 +104,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /api/V1/getuserbypublicid/publicid/:publicid">/api/V2/getuserbypublicid/publicid/&lt;%= ERB::Util.url_encode(@inputs['Full Name'])%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT)"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_tree_return_v1_21</task>
                 </dependents>
@@ -122,9 +119,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%= @results['Get Cherwell Users']['Handler Error Message'] %&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%= @results['Get Cherwell Users']['Response Body'] %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="system_tree_return_v1" id="system_tree_return_v1_22" name="Return Agent" x="575" y="13">
@@ -134,13 +129,8 @@
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%=
-begin
-  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['Response Body']
-rescue
-end
-%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%= @results['Agent']['Handler Error Message'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%= @results['Agent']['Response Body'] %&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>

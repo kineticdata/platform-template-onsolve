@@ -642,7 +642,7 @@ work_note_text
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_53" name="Outbound Activity - Add Event Annotation - Error" x="2221.3" y="70.41667000000001">
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_53" name="Outbound Activity - Add Event Annotation - Error" x="2221.3" y="70.41667">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -725,7 +725,6 @@ parameters = JSON.parse(integration_config['Interim Standard Action Parameters']
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Event Id" label="Event Id" menu="" required="true" tooltip="">&lt;%=@results['Get Task Activity Monitoring Values']['Source Id']%&gt;</parameter>
                 </parameters>
                 <messages></messages>

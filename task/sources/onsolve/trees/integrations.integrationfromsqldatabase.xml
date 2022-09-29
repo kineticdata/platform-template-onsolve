@@ -125,7 +125,6 @@
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="jdbc_database" label="jdbc_database" menu="" required="true" tooltip="">&lt;%= JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Type']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="dbname" label="dbname" menu="" required="true" tooltip="">&lt;%= JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Database Name']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="action" label="action" menu="" required="true" tooltip="">fetch</parameter>
@@ -178,11 +177,7 @@ end
 query
 %&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="Successful" type="Complete" value="@results['Get SQL Data']['Handler Error Message'].to_s.empty?">routine_onsolve_integration__sql_database__process_incoming_data_70</task>
                     <task label="Has Error" type="Complete" value="!@results['Get SQL Data']['Handler Error Message'].to_s.empty?">routine_onsolve_error_v1_72</task>
@@ -199,11 +194,7 @@ query
                     <parameter dependsOnId="" dependsOnValue="" id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
                 </parameters>
-                <messages>
-                    <message type="Create"></message>
-                    <message type="Update"></message>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>
@@ -238,9 +229,7 @@ Received data:
                     <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>
@@ -277,9 +266,7 @@ Received data:
                     <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_junction_v1_73</task>
                 </dependents>
@@ -316,9 +303,7 @@ Received data:
   }
 }</parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
         </request>

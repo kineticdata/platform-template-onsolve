@@ -1,0 +1,46 @@
+{
+  "activeMappingName": "Kapps",
+  "attributes": [
+    {
+      "name": "Name"
+    },
+    {
+      "name": "Slug"
+    }
+  ],
+  "mappings": [
+    {
+      "agentSlug": "system",
+      "attributes": [
+        {
+          "name": "Name",
+          "structureField": "${fields(\"name\")}"
+        },
+        {
+          "name": "Slug",
+          "structureField": "${fields(\"slug\")}"
+        }
+      ],
+      "bridgeSlug": "kinetic-platform",
+      "name": "Kapps",
+      "qualifications": [
+        {
+          "name": "All Kapps",
+          "query": "limit=1000&orderBy=name&direction=ASC"
+        }
+      ],
+      "structure": "Kapps"
+    }
+  ],
+  "name": "Kapps",
+  "qualifications": [
+    {
+      "name": "All Kapps",
+      "parameters": [
+
+      ],
+      "resultType": "Multiple"
+    }
+  ],
+  "status": "Active"
+}

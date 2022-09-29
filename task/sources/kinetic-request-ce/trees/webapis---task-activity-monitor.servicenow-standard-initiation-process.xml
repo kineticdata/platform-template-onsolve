@@ -1,0 +1,977 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>servicenow-standard-initiation-process</name>
+        <author></author>
+        <notes></notes>
+        <lastID>136</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_create_v1_96</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_14" name="Junction" x="1857.4592" y="425.69022">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_create_trigger_v1_94</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="2393.0532" y="408.03278">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_35" name="Process Placeholders" x="65.97733" y="301.0302">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+#placeholder_entries = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+placeholders = JSON.parse( integration_config['Placeholder Data'] || "[]" )
+
+## Review each placeholder and handle any replacements in the values field.
+#  Set up source data
+source_data = JSON.parse( @request['Body'] )['Source Data']
+
+############
+#if source_data['u_mir3_notification']['value'].to_s.empty?
+#  source_data['u_mir3_notification']['value'] = "N/A"
+#  source_data['u_mir3_notification']['display_value'] = "N/A"
+#end
+
+#if source_data['u_mir3_notification']['value'].to_s.empty? || source_data['u_mir3_notification']['value']=="N/A"
+#  source_data.merge!({'u_mir3_message'=&gt; {'display_value'=&gt; 'N/A', 'value'=&gt; 'N/A'}})
+#else
+#  source_data.merge!({'u_mir3_message'=&gt; {'display_value'=&gt; 'MESSAGE', 'value'=&gt; 'MESSAGE'}})
+#end
+###########
+
+#  Do replacements
+placeholders.each_index{|i|
+  ph = placeholders[i]['value']
+  if !ph.nil?
+    ph.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+      # remove opening and closing brackets from match
+      key = match[2..-3]
+
+      # determine which part of the field to retrieve - the 'display_value' or the 'value'
+      field_qualifier = 'value'
+      field = key
+      field_array = key.split(".")
+      if field_array.length &gt; 0
+        if ["display_value","value"].include? field_array[1]
+          field_qualifier = field_array[1]
+        end
+        field = field_array[0]
+      end
+
+      if source_data.keys.include?(field)
+        source_data[field][field_qualifier] || source_data[field]
+      else
+        match
+      end
+    end
+    placeholders[i]['value'] = ph
+  end
+}
+
+placeholders.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_120</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_41" name="Retrieve Notification XML" x="66" y="197">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Query</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query">onsolve-notifications</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval">values[Notification Name]</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission">values[Notification Name] = "&lt;%= JSON.parse( @request['Body'] )['Integration Configuration']['Notification Message Template']%&gt;"</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_35</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_53" name="Update Submission with UUID" x="1256.0182" y="430.577">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= JSON.parse( @request['Body'] )['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+if @results['MIR3 One Step Notification']['Title'].to_s.empty?
+  notification_title = integration_config['Notification Message Template']
+else
+  notification_title = @results['MIR3 One Step Notification']['Title']
+end
+
+{
+ "Onsolve Id" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+ "Onsolve Status" =&gt; "Open",
+ "OnSolve Notification Title" =&gt; notification_title
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_113</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_88" name="Do Recipient Replacements" x="719.95465" y="301.3199">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+recipients = JSON.parse( @request['Body'] )['Integration Configuration']['Recipients JSON']
+if @results.has_key?('Json Replace')
+@results['Json Replace'].collect{|key,values|
+  
+  JSON.parse(values['output']).each do |reckey, recvalue|
+    recipients.gsub!(reckey,recvalue)
+  end
+}
+end
+source_data = JSON.parse( @request['Body'] )['Source Data']
+
+#  Do replacements
+if !recipients.nil?
+  recipients.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+    # remove opening and closing brackets from match
+    key = match[2..-3]
+
+    # determine which part of the field to retrieve - the 'display_value' or the 'value'
+    field_qualifier = 'value'
+    field = key
+    field_array = field.split(".")
+    if field_array.length &gt; 0
+      if ["display_value","value"].include? field_array[1]
+        field_qualifier = field_array[1]
+      end
+      field = field_array[0]
+    end
+
+    if source_data.keys.include?(field)
+      source_data[field][field_qualifier] || source_data[field]
+    else
+      match
+    end
+  end
+end
+
+recipients
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_106</task>
+                    <task label="Uses ServiceNow OnCall" type="Complete" value="JSON.parse( @request['Body'] )['Integration Configuration']['Use ServiceNow Oncall'].to_s == &quot;Yes&quot; &amp;&amp; !JSON.parse( @request['Body'] )['Integration Configuration']['OnCall Support Group Id'].to_s.empty?">routine_onsolve_servicenow_oncall_retrieve_v1_119</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_94" name="Return Trigger" x="2172.561" y="410.3174">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%= JSON.parse( @request['Body'] )['Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;results&gt;
+  &lt;result name="Onsolve Notification UUID"&gt;&lt;%=@results['MIR3 One Step Notification']['Notification Report UUID']%&gt;&lt;/result&gt;
+  &lt;result name="Success"&gt;&lt;%=@results['MIR3 One Step Notification']['Success']%&gt;&lt;/result&gt;
+&lt;/results&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_activity_create_v1" id="kinetic_request_ce_submission_activity_create_v1_96" name="Add Activity Record" x="65" y="99">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=
+JSON.parse(@request['Body'])['Task Activity Monitor Submission']
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "In Process"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_41</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_97" name="Update Activity Record" x="1861.531" y="538.2595">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Activity Record']['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Completed",
+  "Comments" =&gt; @results['Work Note Content']['output'],
+  "WebAPI Name" =&gt; JSON.parse( @request['Body'] )['WebAPI Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_14</task>
+                    <task label="If updates configured" type="Complete" value="JSON.parse( @request['Body'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_117</task>
+                </dependents>
+            </task>
+            <task definition_id="servicenow_api_v1" id="servicenow_api_v1_103" name="Get Oncall Users" x="721.8707" y="554.3368">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">GET</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /api/now/table/:tablename/:sys_id?sysparm_display_value=true">&lt;%=
+table = "sys_user"
+
+oncall_output = JSON.parse( @results['Retrieve OnCall']['object_json'] )
+user_ids = oncall_output.map{ |x|
+  "sys_id=#{x['userId']}"
+}
+query = user_ids.join("^OR")
+
+service_now_identifier_field = JSON.parse( @request['Body'] )['Integration Configuration']['User Field Containing Match to OnSolve Users']
+
+fields = "sys_id,#{service_now_identifier_field}"
+
+params = []
+params.push("sysparm_query=#{URI.escape(query)}")
+params.push("sysparm_fields=#{URI.escape(fields)}")
+
+"/api/now/table/#{table}?#{params.join('&amp;')}"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_104</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_104" name="Simplify OnCall" x="954.9491" y="549.22504">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# identify the field that we're pulling back from ServiceNow
+field = JSON.parse( @request['Body'] )['Integration Configuration']['User Field Containing Match to OnSolve Users']
+
+# put oncall users into a hash for easy lookup
+oncall_users = {}
+JSON.parse( @results['Get Oncall Users']['Response Body'] )['result'].each{|user|
+  oncall_users[user['sys_id']] = user[field]
+}
+
+oncall_results = JSON.parse( @results['Retrieve OnCall']['object_json'] ) 
+
+simplified_oncall = {}
+
+oncall_results.each{ |entry|
+  order = entry['order'].to_i
+  if !simplified_oncall.has_key? (order)
+    simplified_oncall[order] = []
+  end
+  user = oncall_users[entry['userId']]
+  simplified_oncall[order].push(user)
+}
+
+simplified_oncall.to_json
+%&gt;
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_106</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_106" name="Junction: SNow OnCall" x="954.03394" y="307.42993">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_mir3_one_step_notification_v1_115</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_108" name="Update Submission with UUID - Error" x="1593.4243" y="288.45255">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%= JSON.parse( @request['Body'] )['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">&lt;%=
+{
+ "Onsolve Status" =&gt; "Initiation Error"
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="origin_id" label="Origin ID" menu="" required="false" tooltip="Set the origin ID."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="parent_id" label="Parent ID" menu="" required="false" tooltip="Set the parent ID."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_109</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_submission_activity_update_v1" id="kinetic_request_ce_submission_activity_update_v1_109" name="Update Activity Record - Error" x="1851.5204" y="289.48648">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission exists in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Submission Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_activity_id" label="Submission Activity Id" menu="" required="true" tooltip="The id of the submission for which the activity is being created for.">&lt;%=@results['Add Activity Record']['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="label" label="Label" menu="" required="false" tooltip="The label for the submission activity.">MIR3 Notification Initiation - Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="description" label="Description" menu="" required="false" tooltip="The description of the submission activity."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type" menu="" required="false" tooltip="Specifies the a submission activity 'Type', which should indicate what type of data is included.">Notification Initiated Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="data" label="Data" menu="" required="false" tooltip="Additional data that can be used by resources consuming the submission activity record (for example a Request bundle may render submission details based upon JSON content in the activity data).">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+comments = "MIR3 Initiation Error:"
+results['error'].each{|key,value|
+  comments &lt;&lt; "\n#{key}: #{value}"
+}
+
+{
+  "Task Run Id" =&gt; @run['Id'],
+  "Status" =&gt; "Errored",
+  "Comments" =&gt; comments,
+  "WebAPI Name" =&gt; JSON.parse( @request['Body'] )['WebAPI Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_14</task>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_116</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_111" name="OnSolve Error Notification" x="1255.0182" y="140.11314">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+source_data = JSON.parse( @request['Body'] )['Source Data']
+client_reference = source_data[integration_config['External Unique Key Field Name']]['display_value']
+
+"Unable to initiate notification in MIR3 for #{client_reference} (integration: #{integration_config['Name']})"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+comments = ""
+results['error'].each{|key,value|
+  comments &lt;&lt; "\n#{key}: #{value}"
+}
+comments
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification">&lt;%=JSON.parse( @request['Body'] )['Integration Configuration']['Error Notification Email']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; JSON.parse( @request['Body'] )['WebAPI Name']
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_112" name="Dev Notes - 01" x="1971.8027" y="187.18973">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">Decision was made to *always* update the ticket if there was an error in initiating the notification.  For successful, we follow the configuration meaning we only post an update to the ticket if the configuration so indicates.</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_113" name="Work Note Content" x="1255.0012" y="543.66187">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+# Build note
+work_notes = ["#{notification_method} Notification"]
+if @results['MIR3 One Step Notification']['Title'].to_s.empty?
+  work_notes.push( "\"#{integration_config['Notification Message Template']}\"" )
+else
+  work_notes.push( "\"#{@results['MIR3 One Step Notification']['Title']}\"" )
+end
+work_notes.push( "(UUID #{@results['MIR3 One Step Notification']['Notification Report UUID']})" )
+work_notes.push( "was successfully initiated" )
+
+recipients = JSON.parse(@results['Do Recipient Replacements']['output'])
+if notification_method == "Callout" || notification_method == "First Response"
+  if recipients.has_key?("Escalation Level 1") &amp;&amp; !recipients['Escalation Level 1']['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['Escalation Level 1']['groups']}" )
+  end
+end
+if notification_method == "Broadcast" || notification_method == "Bulletin Board"
+  if recipients.has_key?("groups") &amp;&amp; !recipients['groups'].to_s.empty?
+    work_notes.push( "to #{recipients['groups']}" )
+  end
+end
+
+work_notes.join(" ")+"."
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_submission_activity_update_v1_97</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_mir3_one_step_notification_v1" id="routine_onsolve_mir3_one_step_notification_v1_115" name="MIR3 One Step Notification" x="1256.8812" y="294.42993">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Detail" label="Notification Detail" menu="" required="true" tooltip="The title of the notification to be found and retrieved">&lt;%=
+if JSON.parse( @request['Body'] )['Integration Configuration']['userData'].nil?
+  JSON.parse(@results['Retrieve Notification XML']['Values JSON'])['Notification XML']
+else
+ @results['Notification XML with userData']['output']
+end
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Placeholder JSON" label="Placeholder JSON" menu="" required="false" tooltip="An object that contains the placeholder names and values: [{&quot;name&quot;:&quot;placeholder name&quot;, &quot;value&quot;:&quot;placeholder value&quot;},{&quot;name&quot;:&quot;placeholder name 2&quot;, &quot;value&quot;:&quot;placeholder value 2&quot;}...]">&lt;%=@results['Process Placeholders']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="MIR3 Individual Recipient Field" label="MIR3 Individual Recipient Field" menu="" required="true" tooltip="The MIR3 field that contains the value(s) provided in the Individual Recipients List.  Required field, even if individual receipients is not populated.  Common values are 'employeeId' and 'username'">&lt;%= 
+default = "username"
+unique_field = JSON.parse( @request['Body'] )['MIR3 Unique User Match Field']
+
+if unique_field.to_s.empty?
+  default
+else
+  unique_field
+end
+%&gt;
+
+</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipients JSON" label="Recipients JSON" menu="" required="true" tooltip="JSON object of recipients in one of two formats {&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;} or {&quot;Escalation Level 1&quot;:{&quot;individuals&quot;:&quot;...&quot;,&quot;groups&quot;:&quot;...&quot;,&quot;schedules&quot;:&quot;...&quot;},&quot;Escalation Level 2&quot;:{...}}}">&lt;%=@results['Do Recipient Replacements']['output']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="OnCall JSON" label="OnCall JSON" menu="" required="false" tooltip="JSON object corresponding to Oncall, arranged as follows:  {&quot;1&quot;:[&quot;user1&quot;,&quot;user2&quot;],&quot;2&quot;:[&quot;user3&quot;],...}">&lt;%=
+if @results.has_key? ('Simplify OnCall')
+  @results['Simplify OnCall']['output']
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">routine_onsolve_error_v1_111</task>
+                    <task label="Unsuccessful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] != &quot;true&quot;">kinetic_request_ce_submission_update_v1_108</task>
+                    <task label="Successful" type="Complete" value="@results['MIR3 One Step Notification']['Success'] == &quot;true&quot;">kinetic_request_ce_submission_update_v1_53</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_116" name="Outbound Activity - Update ServiceNow - Alerting Initiated - Error" x="2171.7283" y="287.77316">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+source_data = JSON.parse( @request['Body'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+work_notes = ["Kinetic was unable to initiate the #{notification_method} \"#{integration_config['Notification Message Template']}\". Error message (if applicable):"]
+results = JSON.parse(@results['MIR3 One Step Notification']['Output'])
+results['error'].each{|key,value|
+  work_notes.push( "#{key}: #{value}" )
+}
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; JSON.parse( @request['Body'] )['Source Id'],
+  "Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@request['Body'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; JSON.parse( @request['Body'] )['Source Id'],
+    "json_body" =&gt; {
+      integration_config['Field For Post Updates'] =&gt; work_notes.join("\n"),
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_117" name="Outbound Activity - Update ServiceNow - Alerting Initiated" x="2177.3872" y="534.06647">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+source_data = JSON.parse( @request['Body'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; JSON.parse( @request['Body'] )['Source Id'],
+  "Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@request['Body'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; JSON.parse( @request['Body'] )['Source Id'],
+    "json_body" =&gt; {
+      integration_config['Field For Post Updates'] =&gt; @results['Work Note Content']['output']
+    }.to_json
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Update Source Record?" type="Complete" value="!JSON.parse( @request['Body'] )['Integration Configuration']['Fields to Update Upon Notification'].to_s.empty?">routine_kinetic_submission_create_v1_118</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_118" name="Outbound Activity - Update ServiceNow Record" x="2178.9585" y="652.21954">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">outbound-activity</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+integration_config = JSON.parse( @request['Body'] )['Integration Configuration']
+parameters = JSON.parse(integration_config['Initiation Standard Action Parameters'])
+source_data = JSON.parse( @request['Body'] )['Source Data']
+notification_method_options = {"calloutInfo" =&gt; "Callout", "broadcastInfo" =&gt; "Broadcast", "bulletinBoardInfo" =&gt; "Bulletin Board", "firstResponseInfo" =&gt; "First Response"}
+notification_method = notification_method_options[integration_config['Notification Method']]
+
+{
+  "Status" =&gt; "New",
+  "Source" =&gt; "ServiceNow",
+  "Source Id" =&gt; JSON.parse( @request['Body'] )['Source Id'],
+  "Source Reference Id" =&gt; source_data[integration_config['External Unique Key Field Name']],
+  "UUID" =&gt; @results['MIR3 One Step Notification']['Notification Report UUID'],
+  "Task Activity Monitor Record" =&gt; JSON.parse(@request['Body'])['Task Activity Monitor Submission'],
+  "Related Activity Record" =&gt; @results['Add Activity Record']['Id'],
+  "Action" =&gt; "Update",
+  "Payload" =&gt; {
+    "table" =&gt; integration_config['Schema Name'],
+    "id" =&gt; JSON.parse( @request['Body'] )['Source Id'],
+    "json_body" =&gt; integration_config['Fields to Update Upon Notification']
+  }.to_json
+}.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission">&lt;%=JSON.parse(@request['Body'])['Task Activity Monitor Submission']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_oncall_retrieve_v1" id="routine_onsolve_servicenow_oncall_retrieve_v1_119" name="Retrieve OnCall" x="719.91125" y="439.23096">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="API Route" label="API Route" menu="" required="true" tooltip="">whoisoncall</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="api_parameters" label="api_parameters" menu="" required="true" tooltip="">&lt;%=
+oncall = JSON.parse( @request['Body'] )['Integration Configuration']['OnCall Support Group Id']
+source_data = JSON.parse( @request['Body'] )['Source Data']
+
+#  Do replacements
+if !oncall.nil?
+  oncall.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+    # remove opening and closing brackets from match
+    key = match[2..-3]
+
+    # determine which part of the field to retrieve - the 'display_value' or the 'value'
+    field_qualifier = 'value'
+    field = key
+    field_array = field.split(".")
+    if field_array.length &gt; 0
+      if ["display_value","value"].include? field_array[1]
+        field_qualifier = field_array[1]
+      end
+      field = field_array[0]
+    end
+
+    if source_data.keys.include?(field)
+      source_data[field][field_qualifier] || source_data[field]
+    else
+      match
+    end
+  end
+end
+
+"group_ids=#{oncall}"
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">servicenow_api_v1_103</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_120" name="Notification XML with userData" x="65.96222" y="404.13602">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+userData = JSON.parse( @request['Body'] )['Integration Configuration']['userData']
+source_data = JSON.parse( @request['Body'] )['Source Data']
+message_xlm = REXML::Document.new(JSON.parse(@results['Retrieve Notification XML']['Values JSON'])['Notification XML'])
+
+
+if !userData.nil?
+  userData.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+    # remove opening and closing brackets from match
+    key = match[2..-3]
+
+    # determine which part of the field to retrieve - the 'display_value' or the 'value'
+    field_qualifier = 'value'
+    field = key
+    field_array = field.split(".")
+    if field_array.length &gt; 0
+      if ["display_value","value"].include? field_array[1]
+        field_qualifier = field_array[1]
+      end
+      field = field_array[0]
+    end
+
+    if source_data.keys.include?(field)
+      source_data[field][field_qualifier] || source_data[field]
+    else
+      match
+    end
+  end
+
+  user_data = REXML::Document.new("&lt;userData&gt;#{userData}&lt;/userData&gt;")  
+  
+  if !message_xlm.elements["//notificationDetail/sendToSubscribers"].nil?
+    message_xlm.root.insert_after( '//sendToSubscribers', user_data.root )
+  else
+    message_xlm.root.push( user_data.root )
+  end
+  
+end
+message_xlm
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_123</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_123" name="MIR3 Match Recipients" x="68.95466" y="501.09824">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+recipients = JSON.parse( @request['Body'] )['Integration Configuration']['Recipients JSON']
+mir3match = JSON.parse( @request['Body'] )['Integration Configuration']['User Field Containing Match to OnSolve Users']
+
+if !recipients.nil?
+  recipients.scan(/\{\{(?:(?!\{\{).)*?.#{mir3match}\}\}/)
+end
+  
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_head_v1_124</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_124" name="sys_user Loop Head" x="70.95466" y="600.0907">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%= @results['MIR3 Match Recipients']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">placeholder</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_125</task>
+                    <task label="Not nil" type="Complete" value="!JSON.parse( @request['Body'] )['Source Data'][@results['sys_user Loop Head']['Value'][2..-3].split('.')[0]].nil?">routine_onsolve_servicenow_data_retrieve_v1_127</task>
+                    <task label="Source nil" type="Complete" value="JSON.parse( @request['Body'] )['Source Data'][@results['sys_user Loop Head']['Value'][2..-3].split('.')[0]].nil?">system_junction_v1_129</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_125" name="sys_user Loop Tail" x="421.9849" y="602.83374">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_133</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_127" name="Get ServiceNow User" x="68.92075" y="842.7897">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Table" label="Table" menu="" required="true" tooltip="">sys_user</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= 
+source_data = JSON.parse( @request['Body'] )['Source Data']
+query = "sys_id=#{source_data[@results['sys_user Loop Head']['Value'][2..-3].split('.')[0]]['value']}"
+query
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Display Value" label="Display Value" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields" label="Fields" menu="" required="false" tooltip="">&lt;%=JSON.parse( @request['Body'] )['Integration Configuration']['User Field Containing Match to OnSolve Users']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="">1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query Category" label="Query Category" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Error Message and not empty" type="Complete" value="@results['Get ServiceNow User']['Handler Error Message'].nil? &amp;&amp; !JSON.parse( @results['Get ServiceNow User']['object_json'] ).empty?">utilities_echo_v1_131</task>
+                    <task label="Error Message or no user" type="Complete" value="!@results['Get ServiceNow User']['Handler Error Message'].nil? || JSON.parse( @results['Get ServiceNow User']['object_json'] ).empty?">system_junction_v1_129</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_129" name="Loop Checking" x="418.9849" y="724.1486">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_125</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_131" name="Json Replace" x="417.97733" y="831.67255">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%={
+ @results['sys_user Loop Head']['Value'] =&gt; JSON.parse(@results['Get ServiceNow User']['object_json'])[0][JSON.parse( @request['Body'] )['Integration Configuration']['User Field Containing Match to OnSolve Users']],
+}.to_json%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_129</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_133" name="ServiceNow User Replaced Values" x="418.7179" y="299.53653">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+recipients = JSON.parse( @request['Body'] )['Integration Configuration']['Recipients JSON']
+if @results.has_key?('Json Replace')
+@results['Json Replace'].collect{|key,values|
+  JSON.parse(values['output']).each do |reckey, recvalue|
+    recipients.gsub!(reckey,recvalue)
+  end
+}
+end
+recipients
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_88</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_134" name="Dev Notes - 02" x="-104.04534" y="406.09824">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">'Notification XML with userData' node is used for customers who will be providing specified names to be notified. These users/groups are in MIR3, but dynamic users can't be included as part of notification templates. Therefore this node dynamically adds them to the XML.
+
+On the Integration Form, the "userData" field will reference a field from the source data (e.g., {{userData}} ) that contains the user info, separated by semi-colons: "0123abc;some-group-name;etc;".  As a ServiceNow field, it will appear in the datasource with the display_value and value fields, so in the data source it would look like:
+
+"userData":{
+    "display_value":"0123abc;some-group-name;etc;",
+    "value":"0123abc;some-group-name;etc;"
+}</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_135" name="Dev Notes - 03" x="-101" y="501">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">'MIR3 Match Recipients' identifies any references to fields in the 'Recipients JSON' field that are meant to identify individal users.  The references in the ServiceNow fild will likley be a SysId of the user records, but need to be converted to the MIR3 ID.
+
+If any matches are found, the sys_user loop head will execute to look up those user's in the ServiceNow Sys User table, and replace it with the matching MIR3 ID.
+</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

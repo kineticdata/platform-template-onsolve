@@ -1,0 +1,50 @@
+{
+  "activeMappingName": "Tems",
+  "attributes": [
+    {
+      "name": "Name"
+    }
+  ],
+  "mappings": [
+    {
+      "agentSlug": "system",
+      "attributes": [
+        {
+          "name": "Name",
+          "structureField": "${fields('name')}"
+        }
+      ],
+      "bridgeSlug": "kinetic-platform",
+      "name": "Tems",
+      "qualifications": [
+        {
+          "name": "All Roles",
+          "query": "q=name=*\"Role::\""
+        },
+        {
+          "name": "All Teams",
+          "query": "q=name <= \"Role::\" OR name >= \"Role::zzz\"&orderBy=name&direction=ASC"
+        }
+      ],
+      "structure": "Teams"
+    }
+  ],
+  "name": "Tems",
+  "qualifications": [
+    {
+      "name": "All Roles",
+      "parameters": [
+
+      ],
+      "resultType": "Multiple"
+    },
+    {
+      "name": "All Teams",
+      "parameters": [
+
+      ],
+      "resultType": "Multiple"
+    }
+  ],
+  "status": "Active"
+}

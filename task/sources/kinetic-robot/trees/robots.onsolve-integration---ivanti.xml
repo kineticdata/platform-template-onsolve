@@ -37,9 +37,7 @@
                     <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">system_join_v1_74</task>
                 </dependents>
@@ -389,42 +387,6 @@ output.to_json
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="routine_onsolve_cherwell_data_search_v1" id="routine_onsolve_cherwell_data_search_v1_85" name="OnSolve Cherwell Data Search" x="1094" y="-21">
-                <version>1</version>
-                <configured>true</configured>
-                <defers>true</defers>
-                <deferrable>true</deferrable>
-                <visible>false</visible>
-                <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Fields To Return" label="Fields To Return" menu="" required="false" tooltip=""></parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Filters" label="Filters" menu="" required="true" tooltip="">&lt;%=
-# Without replacement:
-# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
-
-# With replacement:
-# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
-
-extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
-query_start_time = Time.parse( extracted_times['query_start_time'] )
-query_end_time = Time.parse( extracted_times['query_end_time'] )
-formatted_start_date = query_start_time.iso8601
-formatted_end_date = query_end_time.iso8601
-
-query = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
-
-query.gsub!( "{{Start Date}}", formatted_start_date )
-query.gsub!( "{{End Date}}", formatted_end_date )
-
-query
-
-%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="Max Results" label="Max Results" menu="" required="false" tooltip=""></parameter>
-                </parameters>
-                <messages></messages>
-                <dependents></dependents>
-            </task>
             <task definition_id="routine_onsolve_ivanti_data_search_v1" id="routine_onsolve_ivanti_data_search_v1_86" name="Ivanti Search" x="1128" y="76">
                 <version>1</version>
                 <configured>true</configured>
@@ -432,7 +394,6 @@ query
                 <deferrable>true</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Fields To Return" label="Fields To Return" menu="" required="false" tooltip=""></parameter>
                     <parameter dependsOnId="" dependsOnValue="" id="Filters" label="Filters" menu="" required="true" tooltip="">&lt;%=

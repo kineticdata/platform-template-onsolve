@@ -9,6 +9,7 @@
 
   ],
   "trees": [
+    "routine_kinetic_submissions_retrieve_list_custom_includes_v1",
     "routine_kinetic_workflow_clone_v1",
     "routine_kinetic_workflow_create_v1",
     "routine_kinetic_workflow_delete_v1",
@@ -17,6 +18,9 @@
     "routine_kinetic_workflow_retrieve_v1",
     "routine_kinetic_workflow_run_create_v1",
     "routine_kinetic_workflow_run_delete_v1",
-    "routine_kinetic_workflow_update_v1"
+    "routine_kinetic_workflow_update_v1",
+    "routine_robot_execution_routine_v3",
+    "routine_robot_execution_routine_v4",
+    "routine_webapi_execute"
   ]
 }

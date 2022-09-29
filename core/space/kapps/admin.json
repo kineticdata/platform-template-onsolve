@@ -58,77 +58,36 @@
   "displayValue": null,
   "fields": [
     {
-      "dataType": "string",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k3",
-      "name": "Assigned Individual"
+      "name": "Assigned Individual",
+      "renderType": "text"
     },
     {
-      "dataType": "string",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k1",
-      "name": "Assigned Team"
+      "name": "Assigned Team",
+      "renderType": "text"
     },
     {
-      "dataType": "string",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k6",
-      "name": "Deferral Token"
+      "name": "Deferral Token",
+      "renderType": "text"
     },
     {
-      "dataType": "date",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k5",
-      "name": "Due Date"
+      "name": "Due Date",
+      "renderType": "datetime"
     },
     {
-      "dataType": "string",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k7",
-      "name": "Requested By"
+      "name": "Requested By",
+      "renderType": "text"
     },
     {
-      "dataType": "string",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k9",
-      "name": "Requested For"
+      "name": "Requested For",
+      "renderType": "text"
     },
     {
-      "dataType": "string",
-      "defaultResourceName": null,
-      "defaultValue": null,
-      "key": "k11",
-      "name": "Status"
+      "name": "Status",
+      "renderType": "text"
     }
   ],
-  "formTypes": [
-    {
-      "name": "Console"
-    },
-    {
-      "name": "Content"
-    },
-    {
-      "name": "Datastore"
-    },
-    {
-      "name": "Service"
-    },
-    {
-      "name": "Subconsole"
-    },
-    {
-      "name": "Template"
-    },
-    {
-      "name": "Utility"
-    }
+  "indexDefinitions": [
+
   ],
   "loginPage": null,
   "name": "System Forms",
@@ -167,8 +126,5 @@
       "name": "Submission Support"
     }
   ],
-  "slug": "admin",
-  "webApis": [
-
-  ]
+  "slug": "admin"
 }

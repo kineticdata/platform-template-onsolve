@@ -1,0 +1,1237 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>robot-integration-servicenow-parent-poller</name>
+        <author></author>
+        <notes></notes>
+        <lastID>133</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_131</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="345.17526" y="157.0783">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running"}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="51.39791" y="277.0267">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_32</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="1395" y="277">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['ServiceNow Search']['object_json']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">servicenow_id</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                    <task label="" type="Complete" value="">routine_onsolve_integration__servicenow_parent_poller__search_result_processing_133</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="1396.1968" y="873.3701">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_90</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="823.8037" y="875.82324">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+# Normal output
+if @results.has_key?("ServiceNow Search") &amp;&amp; @results['ServiceNow Search'].has_key?('Handler Error Message') &amp;&amp; @results['ServiceNow Search']['Handler Error Message'].to_s.empty?
+  outcome = "Successful"
+  output = {
+    "message" =&gt; "#{JSON.parse(@results['ServiceNow Search']['object_json']).length} results returned",
+    "start_query_time" =&gt; JSON.parse(@results['Determine Start and End Times']['output'])['query_start_time'],
+    "end_query_time" =&gt; JSON.parse(@results['Determine Start and End Times']['output'])['query_end_time']
+  }.to_json
+end
+
+# If no parent or timeout
+if @results['Search for Child Integrations']['Count']=="0" || !@results.has_key?("ServiceNow Search") || !@results['ServiceNow Search'].has_key?('Handler Error Message')
+  previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+  outcome = "Unsuccessful"
+  message = "Timeout during attempted data retrieve"
+  message = "No children were found for the parent poller '#{@results['Retrieve Integration Config']['Label']}" if @results['Search for Child Integrations']['Count']=="0"
+  output = {
+    "message" =&gt; message,
+    "start_query_time" =&gt; previous_run_data['start_query_time'],
+    "end_query_time" =&gt; previous_run_data['end_query_time']
+  }.to_json
+end
+
+# Handler errored
+if @results.has_key?("ServiceNow Search") &amp;&amp; @results['ServiceNow Search'].has_key?('Handler Error Message') &amp;&amp; !@results['ServiceNow Search']['Handler Error Message'].to_s.empty?
+  previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Retrieve error: #{@results['ServiceNow Search']['Handler Error Message']}",
+    "start_query_time" =&gt; previous_run_data['start_query_time'],
+    "end_query_time" =&gt; previous_run_data['end_query_time']
+  }.to_json
+end
+
+results = %|&lt;results&gt;&lt;result name="outcome"&gt;#{outcome}&lt;/result&gt;&lt;result name="output"&gt;#{output}&lt;/result&gt;&lt;/results&gt;|
+results
+#raise "#{results}"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1150.4479" y="1042.8574">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Determine Start and End Times" x="347.14893" y="273.85638">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Determine start and end time to use in query. Store them as output for use in the Robot output trigger.
+# Probably using the output from the last execution run, with additional logic to use a the last x minutes if the last execution time is beyond some threshold.
+# An idea is below:
+
+# Evaluate previous run time.  If none, or if &gt; threshold between last run time and now, use current time (meaning the first run will probably find no records). 
+current_time = Time.now
+previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+previous_run_query_end_time = 
+begin
+  Time.parse(previous_run_data['end_query_time'] || current_time.to_s)
+rescue
+  current_time
+end
+
+# If (current_time - previous_run_query_end_time) &gt; 1 hour (60 min * 60 sec), use current time.
+if (current_time - previous_run_query_end_time).to_i &gt; (60*60)
+  previous_run_query_end_time = current_time
+end 
+
+# Set up new query start and end times, ignoring seconds / milliseconds
+query_start_time = Time.new(previous_run_query_end_time.year, previous_run_query_end_time.month, previous_run_query_end_time.day, previous_run_query_end_time.hour, previous_run_query_end_time.min)
+query_end_time = Time.new(current_time.year, current_time.month, current_time.day, current_time.hour, current_time.min)
+
+output = {}
+output['query_start_time'] = query_start_time.iso8601
+output['query_end_time'] = query_end_time.iso8601
+output.to_json
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_77</task>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_search_v2_95</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_45" name="Junction: Robot" x="1147.0249" y="887.84247">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_47" name="ServiceNow Search to XML" x="1197.3514" y="213.91956">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="json" label="JSON" menu="" required="true" tooltip="The JSON String to be converted to XML">&lt;%=@results['ServiceNow Search']['object_json']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="54.686317" y="166.24167">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_76" name="Join 2" x="1007.95636" y="727.8837">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_45</task>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">utilities_create_trigger_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="344.0498" y="710.2023">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">60</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="No ServiceNow Search result" type="Complete" value="!@results['ServiceNow Search'].has_key?('Handler Error Message')">routine_onsolve_error_v1_79</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_79" name="Error Notification: ServiceNow Timeout" x="343.2488" y="866.87494">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">ServiceNow Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">ServiceNow Search query did not respond</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: ServiceNow Search Error" x="999.7662" y="175.44922">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">ServiceNow Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['ServiceNow Search']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_81" name="ServiceNow Search" x="1004.2145" y="280.0207">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip="">Error Message</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Table" label="Table" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+query_start_time = Time.parse( extracted_times['query_start_time'] )
+query_end_time = Time.parse( extracted_times['query_end_time'] )
+formatted_start_date = "javascript:gs.dateGenerate('#{query_start_time.strftime("%Y-%m-%d")}','#{query_start_time.strftime("%H:%M:%S")}')"
+formatted_end_date = "javascript:gs.dateGenerate('#{query_end_time.strftime("%Y-%m-%d")}','#{query_end_time.strftime("%H:%M:%S")}')"
+
+query = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+query.gsub!( "{{Start Date}}", formatted_start_date )
+query.gsub!( "{{End Date}}", formatted_end_date )
+
+query
+
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Display Value" label="Display Value" menu="" required="false" tooltip="">all</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields" label="Fields" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="">20</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query Category" label="Query Category" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="!@results['ServiceNow Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: ServiceNow Timeout')">routine_onsolve_error_v1_80</task>
+                    <task label="No error and No Timeout" type="Complete" value="@results['ServiceNow Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Wait 60 seconds')">system_loop_head_v1_5</task>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_112</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_90" name="Finish Integration " x="1400.2848" y="1046.0094">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_search_v2" id="kinetic_request_ce_datastore_submission_search_v2_95" name="Search for Child Integrations" x="667.6328" y="278.4325">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="The slug of the Datastore Form to search for submissions in.">&lt;%=@results['Retrieve Integration Config']['Form Slug']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="direction" label="Direction" menu="" required="false" tooltip="The index direction to use for the search, either ASC or DESC. ASC is the default if left blank or invalid option used.">ASC</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search.">values[Status],values[Parent Polling Integration]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="query" label="Query" menu="" required="false" tooltip="The query that will be used to search the submissions. Ex: values[company]=Kinetic">values[Status]="Active" AND values[Parent Polling Integration]="&lt;%=@results['Retrieve Integration Config']['Label']%&gt;"</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="limit" label="Limit" menu="" required="false" tooltip="An integer representing the max results that the search can return."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="page_token" label="Page Token" menu="" required="false" tooltip="The value to use as the offset for the page of submissions to return. The submission that matches this value will not be included in the results."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="includes" label="Includes" menu="" required="false" tooltip="Comma separated list of items to be returned by the API call.  If left blank, 'details,form,values' will be used."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="return_type" label="Return Type" menu="JSON,XML,ID List" required="true" tooltip="The format that the results should be returned in.">JSON</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Children" type="Complete" value="@results['Search for Child Integrations']['Count']==&quot;0&quot;">system_noop_v1_132</task>
+                    <task label="Has Children" type="Complete" value="@results['Search for Child Integrations']['Count'].to_i &gt; 0">routine_onsolve_servicenow_data_retrieve_v1_81</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_96" name="Loop Head Child Integrations" x="1609.0005" y="277.3544">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=@results['Search for Child Integrations']['Result']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">child_integrations</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_97</task>
+                    <task label="Include Information From Related ServiceNow Form" type="Complete" value="!JSON.parse(@results['Loop Head Child Integrations']['Value'])['values']['Include Information From Related ServiceNow Form'].to_s.empty?">system_loop_head_v1_118</task>
+                    <task label="No External Information" type="Complete" value="JSON.parse(@results['Loop Head Child Integrations']['Value'])['values']['Include Information From Related ServiceNow Form'].to_s.empty?">utilities_echo_v1_128</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_97" name="Loop Tail Child Integrations" x="1622.3936" y="870.30634">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Had Children" type="Complete" value="@results['Search for Child Integrations']['Count']!=&quot;0&quot;">utilities_echo_v1_115</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_99" name="Evaluate Start Condition" x="2007.3431" y="684.11694">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+def organize(operator, obj)
+  wrapper_array = []
+  clause_array = []
+  operator_value = "||" if operator == "OR"
+  operator_value = "&amp;&amp;" if operator == "AND"
+  obj.each{ |k, v|
+    if v.is_a? Hash
+      clause_array.push( organize(k, v) )
+    else
+      clause_array.push( evaluate(k, v ) )
+    end
+  }
+  wrapper_array.push( "(" )
+  # Intersperse clause array with operator and add to wrapper_array
+  wrapper_array.push( clause_array.flat_map { |x| [x, operator_value] }[0...-1] )
+  wrapper_array.push( ")" )
+
+  return wrapper_array.flatten
+end
+
+def evaluate(field_input, check)
+check = check.to_s
+  # determine which part of the field to retrieve - the display_value or the field_value
+  field_qualifier = 'value'
+  field = field_input
+  field_array = field_input.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  #new_data = JSON.parse(@results['Loop Begin']['Value'])
+  new_data = JSON.parse(@results['Loop Begin']['Value'])
+  if @results.has_key?("New Source Data")
+    @results['New Source Data'].collect{|key,values|
+      new_data.merge!(JSON.parse(values['output']))
+    }
+  end
+
+  # Be able to handle if the data uses field qualifiers or not
+  
+  if new_data.keys.include?(field)
+    new_field_value = new_data[field][field_qualifier] || new_data[field]
+  else
+    new_field_value = nil
+  end
+  
+  evaluation_result = false
+  
+  case check
+  when "{{Empty}}"
+    evaluation_result = true if new_field_value.to_s.empty?
+  when "{{Not Empty}}"
+    evaluation_result = true if !new_field_value.to_s.empty?
+  else
+    if check =~ /{{TIME}}/
+      #The first array element has to be the conditions
+      #The second (optional) array element is the time offset
+      check_array = check.split('{{TIME}}')
+      sntimeobject = Time.parse(new_field_value)
+      if !check_array[1] 
+        check_array[1]="0"
+      end
+      case check_array[0]
+        when "&gt;"
+          evaluation_result = sntimeobject &gt; Time.now + eval(check_array[1])
+        when "&lt;"
+          evaluation_result = sntimeobject &lt; Time.now + eval(check_array[1])
+        when "="
+          evaluation_result = sntimeobject = Time.now + eval(check_array[1])   
+        when "&gt;="
+          evaluation_result = sntimeobject &lt;= Time.now + eval(check_array[1])   
+        when "&lt;="
+          evaluation_result = sntimeobject &gt;= Time.now + eval(check_array[1])   
+      end
+	  
+    #elsif check =~ /&lt;|&gt;|!|=/
+	elsif check[0..5] == "{{==}}"
+		evaluation_result = true if check[6..-1].split("||").include?(new_field_value)
+    elsif check[0..5] == "{{!=}}"
+		evaluation_result = true if !(check[6..-1].split("||").include?(new_field_value))
+        #evaluation_result = true if new_field_value != check[6..-1]		
+    elsif check[0..4] == "{{&lt;}}"
+	    #first check for a decimal if eaither have a decimal then convert both to float
+		# perhaps Float(self) != nil rescue false
+		if check[5..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &lt; check[5..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &lt; check[5..-1].to_i
+		end
+    elsif check[0..4] == "{{&gt;}}"
+	    if check[5..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &gt; check[5..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &gt; check[5..-1].to_i
+		end
+    elsif check[0..5] == "{{&lt;=}}"
+	    if check[6..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &lt;= check[6..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &lt;= check[6..-1].to_i
+		end
+    elsif check[0..5] == "{{&gt;=}}"
+	    if check[6..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &gt;= check[6..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &gt;= check[6..-1].to_i
+		end
+    else 
+        #evaluation_result = true if new_field_value == check
+        evaluation_result = true if check.split("||").include?(new_field_value)
+
+		
+		
+    end
+  end
+
+  return evaluation_result
+end
+
+def determine(criteria)
+
+  array=[]
+  a = JSON.parse(criteria)
+  a.each{ |k, v|
+    if v.is_a? Hash
+      array.push( organize(k, v) )
+    else
+      array.push( evaluate(k, v) )
+    end
+  }
+  result = eval(array.join)
+  return result
+end
+
+start_criteria = JSON.parse(@results['Loop Head Child Integrations']['Value'])['values']['Qualification']
+
+start_result = determine(start_criteria)
+
+start_result%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="False" type="Complete" value="@results['Evaluate Start Condition']['output'].strip != &quot;true&quot;">system_junction_v1_104</task>
+                    <task label="True" type="Complete" value="@results['Evaluate Start Condition']['output'].strip == &quot;true&quot;">system_noop_v1_125</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_104" name="After Start or Not" x="2008.7173" y="883.24115">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_97</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_108" name="Get Child Integration Config" x="2590.8699" y="858.9188">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query">servicenow</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval">values[id]</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission">values[id]="&lt;%=JSON.parse(@results['Loop Head Child Integrations']['Value'])['id']%&gt;"</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@results['Loop Head Child Integrations']['Value'])['id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_110</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_task_api_v2" id="kinetic_task_api_v2_109" name="Run Routine v2" x="2010.8176000000003" y="1037.0425">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="method" label="Method" menu="GET,POST,PUT,PATCH,DELETE" required="true" tooltip="GET,POST,PUT,PATCH,DELETE (Defaults to GET)">POST</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="path" label="Path" menu="" required="true" tooltip="Example: /kapps/:kappSlug/forms/:formSlug">&lt;%="/runs?sourceName=-&amp;sourceGroup=-&amp;name=#{ERB::Util.url_encode(JSON.parse(@results['Get Child Integration Config']['Values JSON'])['Routine Name'])}"%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="body" label="Body" menu="" required="false" tooltip="JSON body if applicable (POST,PUT,PATCH)">&lt;%=
+new_source_data = JSON.parse(@results['Loop Begin']['Value'])
+if @results.has_key?("New Source Data")
+  @results['New Source Data'].collect{|key,values|
+    new_source_data.merge!(JSON.parse(values['output']))
+  }
+end
+{"inputs":{
+"Source Data" =&gt; new_source_data.to_json,
+#"Source Data" =&gt; JSON.parse(@results['Add Email to Source Data']['output']).to_json,
+"Integration Config Id" =&gt; JSON.parse(@results['Loop Head Child Integrations']['Value'])['id'],
+"Integration Config Values" =&gt; JSON.parse(@results['Loop Head Child Integrations']['Value'])['values'].to_json
+}}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_104</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_110" name="inputs" x="2596.9612" y="1034.8208">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%={"inputs":{
+#"Source Data" =&gt; JSON.parse(@results['Add Email to Source Data']['output']).to_json,
+"Source Data" =&gt; JSON.parse(@results['Loop Begin']['Value']).to_json,
+"Integration Config Id" =&gt; JSON.parse(@results['Loop Head Child Integrations']['Value'])['id'],
+"Integration Config Values" =&gt; JSON.parse(@results['Loop Head Child Integrations']['Value'])['values'].to_json
+}}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_task_api_v2_109</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_112" name="Echo Query" x="692" y="155">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+query_start_time = Time.parse( extracted_times['query_start_time'] )
+query_end_time = Time.parse( extracted_times['query_end_time'] )
+formatted_start_date = "javascript:gs.dateGenerate('#{query_start_time.strftime("%Y-%m-%d")}','#{query_start_time.strftime("%H:%M:%S")}')"
+formatted_end_date = "javascript:gs.dateGenerate('#{query_end_time.strftime("%Y-%m-%d")}','#{query_end_time.strftime("%H:%M:%S")}')"
+
+query = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+query.gsub!( "{{Start Date}}", formatted_start_date )
+query.gsub!( "{{End Date}}", formatted_end_date )
+
+query
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_email_template_notification_send_v1" id="routine_kinetic_email_template_notification_send_v1_113" name="Send Notice - No children found" x="671.70984" y="516.37213">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="true" tooltip="Comma separated list of recipients (Usernames, SMTP Addresses, and/or Team Names)">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Template Name" label="Notification Template Name" menu="" required="true" tooltip="Name of the notification template to use when sending this email">OnSolve Error Notification</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="JSON Variables" label="JSON Variables" menu="" required="false" tooltip="JSON input of miscellaneous values.  These values are used to replace placeholder content in notification messages.">&lt;%=
+{
+  "Error Message" =&gt; "No children were found for the parrent poller '#{@results['Retrieve Integration Config']['Label']}'.  Run ID #{@run['Id']}",
+  "Error Title" =&gt; "OnSolve Integration - ServiceNow - Parent Poller - No children found."
+}.to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug Initiating Notification" label="Kapp Slug Initiating Notification" menu="" required="true" tooltip="The slug of the Kapp sending the notification (ex: services, queue, etc.)">OnSolve Home</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Related Submission Id" label="Related Submission Id" menu="" required="false" tooltip="Id of the submission to get values for, required if using those or attachments in the message"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" menu="" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Is Datastore" label="Is Datastore" menu="" required="false" tooltip="If the Related Submission Id, or Form Slug is a datastore form.">false</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_116</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_email_template_notification_send_v1" id="routine_kinetic_email_template_notification_send_v1_114" name="Send notice that no children ran" x="1624.8993" y="1193.1626">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="true" tooltip="Comma separated list of recipients (Usernames, SMTP Addresses, and/or Team Names)">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Notification Template Name" label="Notification Template Name" menu="" required="true" tooltip="Name of the notification template to use when sending this email">OnSolve Error Notification</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="JSON Variables" label="JSON Variables" menu="" required="false" tooltip="JSON input of miscellaneous values.  These values are used to replace placeholder content in notification messages.">&lt;%=
+child_names = []
+child_results = JSON.parse(@results['Search for Child Integrations']['Result'])
+child_results.each do |cdata|
+#child_names.push("#{cdata['values']['Name']}:  #{rvalue['values']['Qualification']}")
+child_names.push("#{cdata['values']['Name']} - #{cdata['values']['Qualification']}")
+end
+{
+  "Error Message" =&gt; "#{@results['Search for Child Integrations']['Count']} child integration(s) found for the parent integration '#{@results['Retrieve Integration Config']['Label']}' but none of them qualified to run.  Run ID #{@run['Id']}.&lt;br&gt;&lt;br&gt;Child Configurations:&lt;br&gt;#{child_names.join("&lt;br&gt;&lt;br&gt;")}&lt;br&gt;&lt;br&gt;#{JSON.parse(@results['Loop Begin']['Value'])}",
+  "Error Title" =&gt; "OnSolve Integration - ServiceNow - Parent Poller - No children ran for #{JSON.parse(@results['Loop Begin']['Value'])['number']['display_value']}."
+}.to_json%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug Initiating Notification" label="Kapp Slug Initiating Notification" menu="" required="true" tooltip="The slug of the Kapp sending the notification (ex: services, queue, etc.)">OnSolve Home</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Related Submission Id" label="Related Submission Id" menu="" required="false" tooltip="Id of the submission to get values for, required if using those or attachments in the message"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug Initiating Notification" label="Form Slug Initiating Notification" menu="" required="false" tooltip="The slug of the Form sending the notification (ex: work-order, cleaning, etc.)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Is Datastore" label="Is Datastore" menu="" required="false" tooltip="If the Related Submission Id, or Form Slug is a datastore form.">false</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_117</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_115" name="Count Get Child Integration Config" x="1622.7378" y="1051.7784">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+returnCount = 0
+if @results.has_key?('Get Child Integration Config')
+  returnCount = @results['Get Child Integration Config'].collect{|key,values|
+    values['ID']
+  }.compact.length
+end
+returnCount
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="No Children Executed" type="Complete" value="@results['Count Get Child Integration Config']['output']==&quot;0&quot;">routine_kinetic_email_template_notification_send_v1_114</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_116" name="Create No Children Found Error Log" x="674.4374" y="627.9491">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">error-log</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+fields = {
+  "Error Date Time" =&gt; Time.now.iso8601,
+  "Error Message" =&gt; "No children were found for the parrent poller '#{@results['Retrieve Integration Config']['Label']}'.  Run ID #{@run['Id']}",
+  "Error Title" =&gt; "OnSolve Integration - ServiceNow - Parent Poller - No children found.",
+#  "Additional Info" =&gt; @inputs['Additional Info'],
+  "Integration Name" =&gt; @results['Retrieve Integration Config']['Label'],
+#  "Reference Number" = JSON.parse(@results['Loop Begin']['Value'])['number']['display_value'],
+  "Task Run" =&gt; @run['Id']
+}
+fields.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_kinetic_submission_create_v1" id="routine_kinetic_submission_create_v1_117" name="Create No Children Executed Error Log" x="1624.9387" y="1309.8728">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Kapp Slug" label="Kapp Slug" menu="" required="true" tooltip="The slug of the Kapp to create the submission in">task-activity-monitor</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Form Slug" label="Form Slug" menu="" required="true" tooltip="The slug of the Form to create the submission in">error-log</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Name" label="Current Page Name" menu="" required="false" tooltip="The page to set the submission to"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Current Page Navigation" label="Current Page Navigation" menu="" required="false" tooltip="The direction of the next page (next or previous)"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Values JSON" label="Values JSON" menu="" required="false" tooltip="A JSON Map of values to set into the submissions fields">&lt;%=
+
+child_names = []
+child_results = JSON.parse(@results['Search for Child Integrations']['Result'])
+child_results.each do |cdata|
+#child_names.push("#{cdata['values']['Name']}:  #{rvalue['values']['Qualification']}")
+child_names.push("#{cdata['values']['Name']} - #{cdata['values']['Qualification']}")
+end
+
+fields = {
+  "Error Date Time" =&gt; Time.now.iso8601,
+  "Error Message" =&gt; "#{@results['Search for Child Integrations']['Count']} child integration(s) found for the parent integration '#{@results['Retrieve Integration Config']['Label']}' but none of them qualified to run.  Run ID #{@run['Id']}.\r\n\r\nChild Configurations:\r\n#{child_names.join("\r\n\r\n")}\r\n\r\n#{JSON.parse(@results['Loop Begin']['Value'])}",
+  "Error Title" =&gt; "OnSolve Integration - ServiceNow - Parent Poller - No children ran for #{JSON.parse(@results['Loop Begin']['Value'])['number']['display_value']}.",
+#  "Additional Info" =&gt; @inputs['Additional Info'],
+#  "Integration Name" =&gt; @results['Retrieve Integration Config']['Label']
+#  "Reference Number" =&gt; JSON.parse(@results['Loop Begin']['Value'])['number']['display_value'],
+  "Task Run" =&gt; @run['Id']
+}
+fields.to_json
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Origin Id" label="Origin Id" menu="" required="false" tooltip="Sets the submissions origin to another Kinetic Submission"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Id" label="Parent Id" menu="" required="false" tooltip="Sets the submissions parent to another Kinetic Submission"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submit Submission" label="Submit Submission" menu="" required="false" tooltip="True or False, if Submission should be Submitted when created">True</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_118" name="Loop Head External Data" x="2005.3593" y="278.47833">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=JSON.parse(@results['Loop Head Child Integrations']['Value'])['values']['Include Information From Related ServiceNow Form']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath or JSONPath statement to indicate what data records to process.">$</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks.">info_related_serviceNow</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_119</task>
+                    <task label="" type="Complete" value="">utilities_echo_v1_126</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_119" name="Loop Tail External Data" x="2003.7357" y="521.0017">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_128</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_120" name="Process Qualification" x="2572.965" y="285.85565">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = JSON.parse(@results['Loop Head External Data']['Value'])['Qualification']
+source_data = JSON.parse(@results['Loop Begin']['Value'])
+#  Do replacements
+qualification.gsub!(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+  
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    source_data[field][field_qualifier] || source_data[field]
+  else
+    match
+  end
+end
+qualification
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">routine_onsolve_servicenow_data_retrieve_v1_121</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_servicenow_data_retrieve_v1" id="routine_onsolve_servicenow_data_retrieve_v1_121" name="Service Now External Data" x="2575.8071" y="399.42078">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Handling" label="Error Handling" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Table" label="Table" menu="" required="true" tooltip="">&lt;%=JSON.parse(@results['Loop Head External Data']['Value'])['Form'].downcase%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query" label="Query" menu="" required="true" tooltip="">&lt;%= @results['Process Qualification']['output'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Display Value" label="Display Value" menu="" required="false" tooltip="">all</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Exclude Reference Link" label="Exclude Reference Link" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Suppress Pagination Header" label="Suppress Pagination Header" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields" label="Fields" menu="" required="false" tooltip="">&lt;%=JSON.parse(@results['Loop Head External Data']['Value'])['Return']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Limit" label="Limit" menu="" required="false" tooltip="">1</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Query Category" label="Query Category" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Found Data" type="Complete" value="@results['Service Now External Data']['object_json']!=&quot;[]&quot;">utilities_echo_v1_122</task>
+                    <task label="Not Found" type="Complete" value="@results['Service Now External Data']['object_json']==&quot;[]&quot;">system_join_v1_123</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_122" name="New Source Data" x="2577.9587" y="518.78625">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%= single_hash = JSON.parse(@results['Service Now External Data']['object_json'])[0] 
+new_hash = {}
+single_hash.each { |k, v| new_hash[JSON.parse(@results['Loop Head External Data']['Value'])['Mapping']] = v } 
+new_hash.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_123</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_123" name="Join External Data" x="2237.2961" y="534.15173">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_119</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_125" name="Eval ServiceNow Additions " x="2589.8171" y="681.005">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_108</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_126" name="Validate Qualification" x="2237.1443" y="283.85565">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+qualification = JSON.parse(@results['Loop Head External Data']['Value'])['Qualification']
+source_data = JSON.parse(@results['Loop Begin']['Value'])
+#  Do replacements
+all_data_found = "True"
+qualification.scan(/\{\{(?:(?!\{\{).)*?\}\}/) do |match|
+  # remove opening and closing brackets from match
+  key = match[2..-3]
+  
+  # determine which part of the field to retrieve - the 'display_value' or the 'value'
+  field_qualifier = 'value'
+  field = key
+  field_array = key.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  if source_data.keys.include?(field)
+    if source_data[field][field_qualifier].to_s.empty?
+      all_data_found = "False"
+      break
+    end
+  else
+    all_data_found = "False"
+    break
+  end
+end
+all_data_found
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="True" type="Complete" value="@results['Validate Qualification']['output']==&quot;True&quot;">utilities_echo_v1_120</task>
+                    <task label="False" type="Complete" value="@results['Validate Qualification']['output']==&quot;False&quot;">system_join_v1_123</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_128" name="Echo Start Evaluation" x="1779.1852" y="519.708">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+$determine_result = ""
+def organize(operator, obj)
+  wrapper_array = []
+  clause_array = []
+  operator_value = "||" if operator == "OR"
+  operator_value = "&amp;&amp;" if operator == "AND"
+  obj.each{ |k, v|
+    if v.is_a? Hash
+      clause_array.push( organize(k, v) )
+    else
+      clause_array.push( evaluate(k, v ) )
+    end
+  }
+  wrapper_array.push( "(" )
+  # Intersperse clause array with operator and add to wrapper_array
+  wrapper_array.push( clause_array.flat_map { |x| [x, operator_value] }[0...-1] )
+  wrapper_array.push( ")" )
+
+  return wrapper_array.flatten
+end
+
+def evaluate(field_input, check)
+check = check.to_s
+  # determine which part of the field to retrieve - the display_value or the field_value
+  field_qualifier = 'value'
+  field = field_input
+  field_array = field_input.split(".")
+  if field_array.length &gt; 0
+    if ["display_value","value"].include? field_array[1]
+      field_qualifier = field_array[1]
+    end
+    field = field_array[0]
+  end
+
+  #new_data = JSON.parse(@results['Loop Begin']['Value'])
+  new_data = JSON.parse(@results['Loop Begin']['Value'])
+  if @results.has_key?("New Source Data")
+    @results['New Source Data'].collect{|key,values|
+      new_data.merge!(JSON.parse(values['output']))
+    }
+  end
+
+  # Be able to handle if the data uses field qualifiers or not
+  
+  if new_data.keys.include?(field)
+    new_field_value = new_data[field][field_qualifier] || new_data[field]
+  else
+    new_field_value = nil
+  end
+  
+  evaluation_result = false
+  
+  case check
+  when "{{Empty}}"
+    evaluation_result = true if new_field_value.to_s.empty?
+  when "{{Not Empty}}"
+    evaluation_result = true if !new_field_value.to_s.empty?
+  else
+    if check =~ /{{TIME}}/
+      #The first array element has to be the conditions
+      #The second (optional) array element is the time offset
+      check_array = check.split('{{TIME}}')
+      sntimeobject = Time.parse(new_field_value)
+      if !check_array[1] 
+        check_array[1]="0"
+      end
+      case check_array[0]
+        when "&gt;"
+          evaluation_result = sntimeobject &gt; Time.now + eval(check_array[1])
+        when "&lt;"
+          evaluation_result = sntimeobject &lt; Time.now + eval(check_array[1])
+        when "="
+          evaluation_result = sntimeobject = Time.now + eval(check_array[1])   
+        when "&gt;="
+          evaluation_result = sntimeobject &lt;= Time.now + eval(check_array[1])   
+        when "&lt;="
+          evaluation_result = sntimeobject &gt;= Time.now + eval(check_array[1])   
+      end
+	  
+    #elsif check =~ /&lt;|&gt;|!|=/
+	elsif check[0..5] == "{{==}}"
+		evaluation_result = true if check[6..-1].split("||").include?(new_field_value)
+    elsif check[0..5] == "{{!=}}"
+		evaluation_result = true if !(check[6..-1].split("||").include?(new_field_value))
+        #evaluation_result = true if new_field_value != check[6..-1]		
+    elsif check[0..4] == "{{&lt;}}"
+	    #first check for a decimal if eaither have a decimal then convert both to float
+		# perhaps Float(self) != nil rescue false
+		if check[5..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &lt; check[5..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &lt; check[5..-1].to_i
+		end
+    elsif check[0..4] == "{{&gt;}}"
+	    if check[5..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &gt; check[5..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &gt; check[5..-1].to_i
+		end
+    elsif check[0..5] == "{{&lt;=}}"
+	    if check[6..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &lt;= check[6..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &lt;= check[6..-1].to_i
+		end
+    elsif check[0..5] == "{{&gt;=}}"
+	    if check[6..-1].include?(".") || new_field_value.include?(".")
+          evaluation_result = true if new_field_value.to_f &gt;= check[6..-1].to_f
+        else
+		  evaluation_result = true if new_field_value.to_i &gt;= check[6..-1].to_i
+		end
+    else 
+        #evaluation_result = true if new_field_value == check
+        evaluation_result = true if check.split("||").include?(new_field_value)
+
+		
+		
+    end
+  end
+
+  return evaluation_result
+end
+
+def determine(criteria)
+
+  array=[]
+  a = JSON.parse(criteria)
+  a.each{ |k, v|
+    if v.is_a? Hash
+      array.push( organize(k, v) )
+    else
+      array.push( evaluate(k, v) )
+    end
+  }
+  result = eval(array.join)
+  $determine_result = array.join
+  return result
+  
+end
+
+start_criteria = JSON.parse(@results['Loop Head Child Integrations']['Value'])['values']['Qualification']
+
+start_result = determine(start_criteria)
+
+"Echo Eval: #{$determine_result}"%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_99</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_131" name="Was Robot Initiated" x="198.66649" y="10.982802">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+begin 
+  JSON.parse(@request['Body']).has_key? ('Kinetic Robot Execution Record Id')
+rescue
+  false
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_132" name="Parent Poller Has No Children" x="671.5589" y="401.56158">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="" type="Complete" value="">routine_kinetic_email_template_notification_send_v1_113</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration__servicenow_parent_poller__search_result_processing" id="routine_onsolve_integration__servicenow_parent_poller__search_result_processing_133" name="Search Result Processing" x="1510.003" y="573.35187">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="ServiceNow Record" label="ServiceNow Record" menu="" required="true" tooltip="">&lt;%= @results['Loop Begin']['Value'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Parent Poller Integration Config Label" label="Parent Poller Integration Config Label" menu="" required="true" tooltip="">&lt;%= @results['Retrieve Integration Config']['Label']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Poller Child Integrations" label="Poller Child Integrations" menu="" required="true" tooltip="">&lt;%= @results['Search for Child Integrations']['Result']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Notification Email" label="Error Notification Email" menu="" required="true" tooltip="">&lt;%=JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Error Notification Email']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

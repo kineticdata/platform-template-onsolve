@@ -1,0 +1,401 @@
+<tree schema_version="1.0">
+    <sourceName>Kinetic Request CE</sourceName>
+    <sourceGroup>WebApis > task-activity-monitor</sourceGroup>
+    <type>Tree</type>
+    <status>Active</status>
+    <taskTree builder_version="" schema_version="1.0" version="">
+        <name>robot-integration-cherwell</name>
+        <author></author>
+        <notes></notes>
+        <lastID>86</lastID>
+        <request>
+            <task definition_id="system_start_v1" id="start" name="Start" x="10" y="10">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_86</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_update_v1" id="kinetic_request_ce_datastore_submission_update_v1_1" name="Update Robot Execution Status" x="369" y="157">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being updated in (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="submission_id" label="Datastore Submission Id" menu="" required="true" tooltip="The id of the submission being updated.">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Execution Record Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="state" label="State" menu="" required="false" tooltip="The value used to set the submission state."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="values" label="Values" menu="" required="false" tooltip="A JSON map of field names to values that should be set.">{"Status":"Running", "Run Id":&lt;%= @run['Id'] %&gt;}</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_name" label="Current Page Name" menu="" required="false" tooltip="Set the current page name."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="current_page_navigation" label="Current Page Navigation" menu="" required="false" tooltip="Set the current page navigation."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_74</task>
+                </dependents>
+            </task>
+            <task definition_id="kinetic_request_ce_datastore_submission_retrieve_v1" id="kinetic_request_ce_datastore_submission_retrieve_v1_2" name="Retrieve Integration Config" x="67" y="315">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Raise Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="space_slug" label="Space Slug" menu="" required="false" tooltip="The Space the submission is being retrieved from (defaults to info value if not provided)."></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="retrieve_by" label="Retrieve By" menu="Id,Query" required="true" tooltip="How to retrieve the submission. Id or Query.">Id</parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="form_slug" label="Datastore Form Slug" menu="" required="false" tooltip="Slug of the form to query"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="index" label="Index" menu="" required="false" tooltip="The index to use for the search/retrieval"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Query" id="query" label="Query" menu="" required="false" tooltip="A query that will retrieve a single submission"></parameter>
+                    <parameter dependsOnId="retrieve_by" dependsOnValue="Id" id="submission_id" label="Datastore Submission Id" menu="" required="false" tooltip="The id of the submission being retrieved.">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">utilities_echo_v1_32</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_head_v1" id="system_loop_head_v1_5" name="Loop Begin" x="1409" y="314">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="data_source" label="Data Source:" menu="" required="true" tooltip="The source that contains the data to use to create each task in the loop.">&lt;%=
+#@results['Cherwell Search to XML']['XML']
+@results['Cherwell Search']['JSON Results']
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="loop_path" label="Loop Path:" menu="" required="true" tooltip="The XPath statement to indicate what data records to process.">$.[*]</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="var_name" label="Variable Name:" menu="" required="false" tooltip="The local variable name used to represent the data used in loop tasks."></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                    <task label="" type="Complete" value="">routine_onsolve_integration_cherwell_process_incoming_data_v1_82</task>
+                </dependents>
+            </task>
+            <task definition_id="system_loop_tail_v1" id="system_loop_tail_v1_6" name="Loop End" x="1413" y="464">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_15" name="Robot return trigger" x="876" y="662">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="action_type" label="Action Type" menu="Update,Complete" required="true" tooltip="">Complete</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferral_token" label="Deferral Token" menu="" required="true" tooltip="">&lt;%=JSON.parse(@request['Body'])['Kinetic Robot Deferral Token']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="deferred_variables" label="Deferred Results" menu="" required="false" tooltip="">&lt;%=
+# Normal output
+if @results.has_key?("Cherwell Search") &amp;&amp; @results['Cherwell Search'].has_key?('Handler Error Message') &amp;&amp; @results['Cherwell Search']['Handler Error Message'].to_s.empty?
+  outcome = "Successful"
+  output = {
+    "message" =&gt; "#{JSON.parse(@results['Cherwell Search']['JSON Results']).length} results returned",
+    "start_query_time" =&gt; JSON.parse(@results['Determine Start and End Times']['output'])['query_start_time'],
+    "end_query_time" =&gt; JSON.parse(@results['Determine Start and End Times']['output'])['query_end_time']
+  }.to_json
+end
+
+# If timeout
+if !@results.has_key?("Cherwell Search") || !@results['Cherwell Search'].has_key?('Handler Error Message')
+  previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Timeout during attempted data retrieve",
+    "start_query_time" =&gt; previous_run_data['start_query_time'],
+    "end_query_time" =&gt; previous_run_data['end_query_time']
+  }.to_json
+end
+
+# Handler errored
+if @results.has_key?("Cherwell Search") &amp;&amp; @results['Cherwell Search'].has_key?('Handler Error Message') &amp;&amp; !@results['Cherwell Search']['Handler Error Message'].to_s.empty?
+  previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+  outcome = "Unsuccessful"
+  output = {
+    "message" =&gt; "Retrieve error: #{@results['Cherwell Search']['Handler Error Message']}",
+    "start_query_time" =&gt; previous_run_data['start_query_time'],
+    "end_query_time" =&gt; previous_run_data['end_query_time']
+  }.to_json
+end
+
+results = %|&lt;results&gt;&lt;result name="outcome"&gt;#{outcome}&lt;/result&gt;&lt;result name="output"&gt;#{output}&lt;/result&gt;&lt;/results&gt;|
+results
+#raise "#{results}"
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="message" label="Message" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_junction_v1_45</task>
+                </dependents>
+            </task>
+            <task definition_id="system_noop_v1" id="system_noop_v1_17" name="End" x="1178" y="819">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_32" name="Determine Start and End Times" x="651" y="310">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+# Determine start and end time to use in query. Store them as output for use in the Robot output trigger.
+# Probably using the output from the last execution run, with additional logic to use a the last x minutes if the last execution time is beyond some threshold.
+# An idea is below:
+
+# Evaluate previous run time.  If none, or if &gt; threshold between last run time and now, use current time (meaning the first run will probably find no records). 
+current_time = Time.now
+previous_run_data = JSON.parse(@request['Body'])['Kinetic Robot Previous Execution Output'] || {}
+previous_run_query_end_time = 
+begin
+  Time.parse(previous_run_data['end_query_time'] || current_time.to_s)
+rescue
+  current_time
+end
+
+# If (current_time - previous_run_query_end_time) &gt; 1 hour (60 min * 60 sec), use current time.
+if (current_time - previous_run_query_end_time).to_i &gt; (60*60)
+  previous_run_query_end_time = current_time
+end 
+
+# Set up new query start and end times, ignoring seconds / milliseconds
+query_start_time = Time.new(previous_run_query_end_time.year, previous_run_query_end_time.month, previous_run_query_end_time.day, previous_run_query_end_time.hour, previous_run_query_end_time.min)
+query_end_time = Time.new(current_time.year, current_time.month, current_time.day, current_time.hour, current_time.min)
+
+# 
+# Format like this  2017-08-29T22:00:00Z to store last action time....
+
+
+output = {}
+output['query_start_time'] = query_start_time.iso8601
+output['query_end_time'] = query_end_time.iso8601
+output.to_json
+
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_wait_v1_77</task>
+                    <task label="" type="Complete" value="">routine_onsolve_cherwell_data_search_v1_85</task>
+                </dependents>
+            </task>
+            <task definition_id="system_junction_v1" id="system_junction_v1_45" name="Junction: Robot" x="1177" y="674">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters></parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_noop_v1_17</task>
+                </dependents>
+            </task>
+            <task definition_id="utility_json_to_xml_v1" id="utility_json_to_xml_v1_47" name="Cherwell Search to XML" x="1210" y="265">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="json" label="JSON" menu="" required="true" tooltip="The JSON String to be converted to XML">&lt;%=@results['Cherwell Search']['JSON Results']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_74" name="Join" x="67" y="168">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">kinetic_request_ce_datastore_submission_retrieve_v1_2</task>
+                </dependents>
+            </task>
+            <task definition_id="system_join_v1" id="system_join_v1_76" name="Join 2" x="1015" y="490">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Any,Some" required="true" tooltip="How many dependents must be completed before continuing?">Any</parameter>
+                    <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_junction_v1_45</task>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">utilities_create_trigger_v1_15</task>
+                </dependents>
+            </task>
+            <task definition_id="system_wait_v1" id="system_wait_v1_77" name="Wait 60 seconds" x="655" y="482">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time to wait" label="Wait time:" menu="" required="true" tooltip="Time you want to wait for deferred task">60</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Time unit" label="Time unit:" menu="Second,Minute,Hour,Day,Week" required="true" tooltip="Unit of measurement for time (Seconds, Minutes, Hours, Days, Weeks)">Second</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                    <task label="No Cherwell Search result" type="Complete" value="!@results['Cherwell Search'].has_key?('Handler Error Message')">routine_onsolve_error_v1_79</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_79" name="Error Notification: Cherwell Timeout" x="660" y="662">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Cherwell Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">Cherwell Search query did not respond</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; "robot-integration-cherwell"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_error_v1" id="routine_onsolve_error_v1_80" name="Error Notification: Cherwell Search Error" x="1008" y="159">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Title" label="Error Message Title" menu="" required="true" tooltip="The title of the error message to be send with the error notification">Cherwell Retrieve Error</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Error Message Details" label="Error Message Details" menu="" required="true" tooltip="The error message details to be sent with the error notification">&lt;%=@results['Cherwell Search']['Handler Error Message']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Id" label="Integration Id" menu="" required="false" tooltip="The Submission Id of the integration configuration record">&lt;%=JSON.parse(@request['Body'])['Runtime Inputs']['Integration Configuration Submission Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Submission Id" label="Submission Id" menu="" required="false" tooltip="The Submission Id of the Task Activity Monitor record"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Recipient List" label="Recipient List" menu="" required="false" tooltip="The receipient list to receive the notification"></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Task Run" label="Task Run" menu="" required="false" tooltip="">&lt;%=@run['Id']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Additional Info" label="Additional Info" menu="" required="false" tooltip="">&lt;%=
+{
+  "WebAPI Name" =&gt; "robot-integration-cherwell"
+}.to_json
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents></dependents>
+            </task>
+            <task definition_id="routine_onsolve_integration_cherwell_process_incoming_data_v1" id="routine_onsolve_integration_cherwell_process_incoming_data_v1_82" name="Process Data" x="1688" y="380">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Source Data" label="Source Data" menu="" required="true" tooltip="A JSON object of the ServiceNow ticket details">&lt;%= ( JSON.parse( @results['Cherwell Search']['JSON Results'] )[@results['Loop Begin']['Index']] ).to_json %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Id" label="Integration Config Id" menu="" required="true" tooltip="The Submission Id of the Integration Config datastore submission">&lt;%=@results['Retrieve Integration Config']['ID']%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Integration Config Values" label="Integration Config Values" menu="" required="true" tooltip="A JSON object of the integration configuration values">&lt;%=@results['Retrieve Integration Config']['Values JSON']%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="" type="Complete" value="">system_loop_tail_v1_6</task>
+                </dependents>
+            </task>
+            <task definition_id="routine_onsolve_cherwell_data_search_v1" id="routine_onsolve_cherwell_data_search_v1_85" name="Cherwell Search" x="1011" y="312">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>true</defers>
+                <deferrable>true</deferrable>
+                <visible>false</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="Object Name" label="Object Name" menu="" required="true" tooltip="">&lt;%=( JSON.parse( @results['Retrieve Integration Config']['Values JSON'] )['Schema Name'] ).downcase%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Fields To Return" label="Fields To Return" menu="" required="false" tooltip=""></parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Filters" label="Filters" menu="" required="true" tooltip="">&lt;%=
+# Without replacement:
+# JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+# With replacement:
+# Parse query variable for {{Start Date}} and {{End Date}} and replace with calculated values.
+
+extracted_times = JSON.parse(@results['Determine Start and End Times']['output'])
+query_start_time = Time.parse( extracted_times['query_start_time'] )
+query_end_time = Time.parse( extracted_times['query_end_time'] )
+formatted_start_date = query_start_time.iso8601
+formatted_end_date = query_end_time.iso8601
+
+query = JSON.parse(@results['Retrieve Integration Config']['Values JSON'])['Qualification']
+
+query.gsub!( "{{Start Date}}", formatted_start_date )
+query.gsub!( "{{End Date}}", formatted_end_date )
+
+query
+
+%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Max Results" label="Max Results" menu="" required="false" tooltip=""></parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Has Error" type="Complete" value="!@results['Cherwell Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Error Notification: Cherwell Timeout')">routine_onsolve_error_v1_80</task>
+                    <task label="No error and No Timeout" type="Complete" value="@results['Cherwell Search']['Handler Error Message'].to_s.empty? &amp;&amp; !@results.has_key?('Wait 60 seconds')">system_loop_head_v1_5</task>
+                    <task label="" type="Complete" value="">system_join_v1_76</task>
+                </dependents>
+            </task>
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_86" name="Was Robot Initiated" x="210" y="12">
+                <version>1</version>
+                <configured>true</configured>
+                <defers>false</defers>
+                <deferrable>false</deferrable>
+                <visible>true</visible>
+                <parameters>
+                    <parameter dependsOnId="" dependsOnValue="" id="input" label="Input" menu="" required="true" tooltip="">&lt;%=
+begin 
+  JSON.parse(@request['Body']).has_key? ('Kinetic Robot Execution Record Id')
+rescue
+  false
+end
+%&gt;</parameter>
+                </parameters>
+                <messages></messages>
+                <dependents>
+                    <task label="Robot Initiated" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;true&quot;">kinetic_request_ce_datastore_submission_update_v1_1</task>
+                    <task label="Not from Robot" type="Complete" value="@results['Was Robot Initiated']['output'] == &quot;false&quot;">system_join_v1_74</task>
+                </dependents>
+            </task>
+        </request>
+    </taskTree>
+</tree>

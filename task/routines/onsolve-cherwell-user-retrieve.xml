@@ -13,7 +13,6 @@
             <visible>false</visible>
             <deferrable>true</deferrable>
             <parameters>
-                <parameter id="Error Handling" label="Error Handling" required="false" tooltip=""></parameter>
                 <parameter id="Login Id" label="Login Id" required="true" tooltip=""></parameter>
                 <parameter id="Login Id Type" label="Login Id Type" required="true" tooltip=""></parameter>
             </parameters>
@@ -36,7 +35,7 @@
                     <task label="" type="Complete" value="">routine_kinetic_space_retrieve_v1_9</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_agent_handler_execute_v1" id="kinetic_agent_handler_execute_v1_1" name="Agent" x="177" y="22">
+            <task definition_id="kinetic_agent_handler_execute_v3" id="kinetic_agent_handler_execute_v3_1" name="Agent" x="242" y="22">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -44,10 +43,11 @@
                 <visible>true</visible>
                 <parameters>
                     <parameter dependsOnId="" dependsOnValue="" id="error_handling" label="Error Handling" menu="Error Message,Raise Error" required="true" tooltip="Determine what to return if an error is encountered.">Error Message</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_space" label="Handler Space" menu="" required="true" tooltip="The name of the space that the handler is defined in">&lt;%=@results['Retrieve Space']['Slug']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The name of the handler slug to execute. ex foo_bar">cherwell_user_retrieve_v2</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The payload to send to the Agent's handler. This should match the parameters of the handler adapter and be in JSON format.  Ex: {&quot;handler_param_name_1&quot;:&quot;handler_param_value_1&quot;, &quot;handler_param_name_2&quot;:&quot;handler_param_value_2&quot;}">&lt;%=
+                    <parameter dependsOnId="" dependsOnValue="" id="agent_slug" label="Agent Slug" menu="" required="true" tooltip="The slug of the agent that contains the handler to execute. (Configured in Space &gt; Platform Components &gt; Agents)">client-agent</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="handler_slug" label="Handler Slug" menu="" required="true" tooltip="The slug of the handler to execute. ex on-prem-incident-create">cherwell_user_retrieve_v2</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="payload" label="Payload" menu="" required="false" tooltip="The parameter-to-value mappings of the handler that is being executed in JSON format.             ie {&quot;baz&quot;: &quot;buz&quot;}">&lt;%=
 {
+  "error_handling" =&gt; "Raise Error",
   "login_id" =&gt; @inputs['Login Id'],
   "login_id_type" =&gt; @inputs['Login Id Type']
 }.to_json
@@ -58,7 +58,7 @@
                     <task label="" type="Complete" value="">system_tree_return_v1_22</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_8" name="Uses Agent" x="177" y="121">
+            <task definition_id="kinetic_request_ce_cascading_attribute_value_retrieve_v2" id="kinetic_request_ce_cascading_attribute_value_retrieve_v2_8" name="Uses Agent" x="245" y="157">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -77,11 +77,11 @@
                 </parameters>
                 <messages></messages>
                 <dependents>
-                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v1_1</task>
+                    <task label="Uses Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase == &quot;true&quot;">kinetic_agent_handler_execute_v3_1</task>
                     <task label="No Agent" type="Complete" value="@results['Uses Agent']['Value'].to_s.downcase != &quot;true&quot;">cherwell_user_retrieve_v2_20</task>
                 </dependents>
             </task>
-            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_9" name="Retrieve Space" x="12" y="110">
+            <task definition_id="routine_kinetic_space_retrieve_v1" id="routine_kinetic_space_retrieve_v1_9" name="Retrieve Space" x="28" y="156">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>true</defers>
@@ -93,7 +93,7 @@
                     <task label="" type="Complete" value="">kinetic_request_ce_cascading_attribute_value_retrieve_v2_8</task>
                 </dependents>
             </task>
-            <task definition_id="cherwell_user_retrieve_v2" id="cherwell_user_retrieve_v2_20" name="Get Cherwell User" x="172" y="197">
+            <task definition_id="cherwell_user_retrieve_v2" id="cherwell_user_retrieve_v2_20" name="Get Cherwell User" x="245" y="317">
                 <version>2</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -109,7 +109,7 @@
                     <task label="" type="Complete" value="">system_tree_return_v1_21</task>
                 </dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_21" name="Return Direct" x="341" y="208">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_21" name="Return Direct" x="502" y="322">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -122,20 +122,15 @@
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_22" name="Return Agent" x="342" y="6">
+            <task definition_id="system_tree_return_v1" id="system_tree_return_v1_22" name="Return Agent" x="497" y="21">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters>
-                    <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%=@results['Agent']['Handler Error Message'] || JSON.parse( @results['Agent']['output'] )['results']['Handler Error Message']%&gt;</parameter>
-                    <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%=
-begin
-  JSON.parse( @results['Agent']['output'] || "{\"results\":{}}" )['results']['User JSON']
-rescue
-end
-%&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="Message" label="Message" menu="" required="false" tooltip="">&lt;%= @results['Agent']['Handler Error Message'] %&gt;</parameter>
+                    <parameter dependsOnId="" dependsOnValue="" id="User JSON" label="User JSON" menu="" required="false" tooltip="">&lt;%= @results['Agent']['User JSON'] %&gt;</parameter>
                 </parameters>
                 <messages></messages>
                 <dependents></dependents>

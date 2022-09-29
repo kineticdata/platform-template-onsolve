@@ -14,15 +14,15 @@
           "structureField": "${fields('values[Next Execution]')}"
         }
       ],
-      "bridgeSlug": "kinetic-core",
+      "bridgeSlug": "kinetic-platform",
       "name": "Datastore - Robot Next Execution",
       "qualifications": [
         {
           "name": "By Id",
-          "query": "formSlug=robot-next-execution&direction=DESC&limit=1&index=values[Robot ID]&q=values[Robot ID]=\"${parameters('Id')}\""
+          "query": "q=values[Robot ID]=\"${parameters('Id')}\"&direction=DESC&limit=1"
         }
       ],
-      "structure": "Datastore Submissions"
+      "structure": "Submissions > datastore > robot-next-execution"
     }
   ],
   "name": "Datastore - Robot Next Execution",
