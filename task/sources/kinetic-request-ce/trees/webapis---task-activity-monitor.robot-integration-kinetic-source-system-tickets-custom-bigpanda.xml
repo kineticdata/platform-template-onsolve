@@ -394,7 +394,8 @@ allData.each { |record|
   recipient_group = ""
   tags = JSON.parse( record['values']['Source Data'] )['incident']['alerts'][0]['tags']
   tags.each{ |tag|
-    if tag['name'] == "bp_mir3recipient"
+    #if tag['name'] == "bp_mir3recipient"
+    if tag['name'] == "bp_mir3schedulename"
       recipient_group = tag['value']
     end
   }
@@ -404,7 +405,7 @@ allData.each { |record|
   end
 }
 
-distinct_recipient_groups.to_json
+distinct_recipient_groups.reject { |group| group.empty? }.to_json
 %&gt;</parameter>
                 </parameters>
                 <messages></messages>
@@ -427,7 +428,8 @@ all_submissions.each{ |submission|
   recipient_group = ""
   tags = JSON.parse( submission['values']['Source Data'] )['incident']['alerts'][0]['tags']
   tags.each{ |tag|
-    if tag['name'] == "bp_mir3recipient"
+    #if tag['name'] == "bp_mir3recipient"
+    if tag['name'] == "bp_mir3schedulename"
       recipient_group = tag['value']
     end
   }

@@ -88,8 +88,8 @@ variables = {
 }
 
 if !run_id.to_s.empty? &amp;&amp; !webapi_name.to_s.empty?
-  full_tree_path = "Kinetic Request CE :: WebAPIs &gt; task-activity-monitor :: #{webapi_name}"
-  task_link = %|&lt;a href="https://#{space_slug}.kinops.io/app/console/#/workflow/runs/builder/tree/#{CGI.escape(full_tree_path)}/runs/#{run_id}"&gt;#{run_id}&lt;/a&gt;|
+  full_tree_path = "Kinetic%20Request%20CE%20::%20WebApis%20&gt;%20task-activity-monitor%20::%20#{webapi_name}"
+  task_link = %|&lt;a href="https://#{space_slug}.kinops.io/app/console/#/workflow/runs/builder/tree/#{full_tree_path}/runs/#{run_id}"&gt;#{run_id}&lt;/a&gt;|
   variables['Error Message'] &lt;&lt; "&lt;br&gt;&lt;br&gt;Run Id: #{task_link}"
 end
 

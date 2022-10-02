@@ -40,7 +40,8 @@ integration_config = JSON.parse( JSON.parse(@request['Body'])['Integration Confi
 params = JSON.parse( integration_config['Initiation Custom Action Parameters'] || "{}" )
 
 recipient_group = details[0]['incident']['alerts'][0]['tags'].select{ |tag| 
-  tag['name'] == "bp_mir3recipient"
+  #tag['name'] == "bp_mir3recipient"
+  tag['name'] == "bp_mir3schedulename"
 }[0]['value']
 
 #source_id_value = begin
@@ -78,7 +79,7 @@ query%&gt;</parameter>
                     <task label="Any - Unique" type="Complete" value="integration_config = JSON.parse( JSON.parse(@request['Body'])['Integration Config Values'] )&#10;integration_config['Notify more than once per record'] == &quot;No&quot; &amp;&amp; &#10;@results['Active Alerts']['Count'].to_i &gt; 0">system_junction_v1_11</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_2" name="Create Submission - Orig" x="45.86945065207964" y="456.0583035922752">
+            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_2" name="Create Submission - Orig" x="45.86945" y="456.0583">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -159,7 +160,7 @@ source_ref_id = recipient_group
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_3</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_3" name="Change State" x="48.87071812147689" y="541.0069710816854">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_3" name="Change State" x="48.87072" y="541.00696">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -283,7 +284,7 @@ restart_result
                     <task label="True" type="Complete" value="@results['Evaluate Restart Condition']['output'].strip == &quot;true&quot;">utilities_create_trigger_v1_6</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_6" name="Send Stop Notification Update Trigger (Restarting)" x="862.8105133251039" y="372.161602348154">
+            <task definition_id="utilities_create_trigger_v1" id="utilities_create_trigger_v1_6" name="Send Stop Notification Update Trigger (Restarting)" x="862.8105" y="372.1616">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -303,7 +304,7 @@ existing_activity_record[0]['values']['Deferral Token']
                     <task label="" type="Complete" value="">kinetic_core_api_v1_18</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_7" name="Create Submission (Restart)" x="1048.9245855708614" y="486.0773156332343">
+            <task definition_id="kinetic_request_ce_submission_create_v1" id="kinetic_request_ce_submission_create_v1_7" name="Create Submission (Restart)" x="1048.9246" y="486.0773">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -378,7 +379,7 @@ details.each{|entry|
                     <task label="" type="Complete" value="">kinetic_request_ce_submission_update_v1_8</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_8" name="Change State (Restart)" x="1052.9283879790532" y="575.0323204696307">
+            <task definition_id="kinetic_request_ce_submission_update_v1" id="kinetic_request_ce_submission_update_v1_8" name="Change State (Restart)" x="1052.9283" y="575.03235">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -574,7 +575,7 @@ existing_activity_record[0]['values']['Deferral Token']
                 <messages></messages>
                 <dependents></dependents>
             </task>
-            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_17" name="Create Submission" x="250.14068910309862" y="536.0342216737266">
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_17" name="Create Submission" x="250.14069" y="536.03424">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -654,7 +655,7 @@ source_ref_id = recipient_group
                     <task label="" type="Complete" value="">system_junction_v1_11</task>
                 </dependents>
             </task>
-            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_18" name="Create Submission (Restart)2" x="865.5481805143254" y="530.3358793902809">
+            <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_18" name="Create Submission (Restart)2" x="865.54816" y="530.3359">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>

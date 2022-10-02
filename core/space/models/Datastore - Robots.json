@@ -29,7 +29,7 @@
           "query": "q=id=\"${parameters('Robot Id')}\""
         }
       ],
-      "structure": "Submissions > datastore"
+      "structure": "Submissions > datastore > robot-definitions"
     }
   ],
   "name": "Datastore - Robots",

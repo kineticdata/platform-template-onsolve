@@ -187,7 +187,8 @@ recipients = JSON.parse( @request['Body'] )['Integration Configuration']['Recipi
 source_data = JSON.parse( @request['Body'] )['Source Data'][0]
 
 recipient_group = source_data['incident']['alerts'][0]['tags'].select{ |tag| 
-  tag['name'] == "bp_mir3recipient"
+  #tag['name'] == "bp_mir3recipient"
+  tag['name'] == "bp_mir3schedulename"
 }[0]['value']
 
 
@@ -799,9 +800,13 @@ rows = JSON.parse( @request['Body'] )['Source Data']
 #Sort rows by 'bp_host' tag and 'startedOn'
 rows.sort_by!{ |row| 
   [
-    row['incident']['alerts'][0]['tags'].select{ |tag| 
-      tag['name'] == "bp_host"
-    }[0]['value'],
+    begin
+      row['incident']['alerts'][0]['tags'].select{ |tag| 
+        tag['name'] == "bp_host"
+      }[0]['value']
+    rescue
+      "unknown"
+    end,
     row['incident']['alerts'][0]['startedOn'] 
   ]
 }
@@ -809,34 +814,76 @@ rows.sort_by!{ |row|
 notification_content = ""
 
 if rows.size == 1
-  device = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
-    tag['name'] == "bp_host"
-  }[0]['value']
-  description = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
-    tag['name'] == "bp_description"
-  }[0]['value']
+  #device = row['incident']['alerts'][0]['tags'].select{ |tag| 
+    #  tag['name'] == "bp_host"
+    #}[0]['value']
+  device = begin
+    rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_host"
+    }[0]['value']
+  rescue
+    "unknown"
+  end
+  #description = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+  #  tag['name'] == "bp_description"
+  #}[0]['value']
+  description = begin
+    rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_description"
+    }[0]['value']
+  rescue
+    "unspecified description"
+  end
   
   notification_content = "A Notification has been received for a device you support.\n"
   notification_content += "The alert is for device: #{device}\n"
   notification_content += "Message: #{description}"
 elsif rows.size &lt; 21
-  device = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
-    tag['name'] == "bp_host"
-  }[0]['value']
-  description = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
-    tag['name'] == "bp_description"
-  }[0]['value']
+  #device = row['incident']['alerts'][0]['tags'].select{ |tag| 
+    #  tag['name'] == "bp_host"
+    #}[0]['value']
+  device = begin
+    rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_host"
+    }[0]['value']
+  rescue
+    "unknown"
+  end
+  #description = rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+  #  tag['name'] == "bp_description"
+  #}[0]['value']
+  description = begin
+    rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+      tag['name'] == "bp_description"
+    }[0]['value']
+  rescue
+    "unspecified description"
+  end
   
   notification_content = "A total of #{rows.size} alert notifications have been received for devices you support.\n"
   notification_content += "The first alert is for device: #{device}\n"
   notification_content += "Message: #{description}\n"
   rows.drop(1).each{|row|
-    device = row['incident']['alerts'][0]['tags'].select{ |tag| 
-      tag['name'] == "bp_host"
-    }[0]['value']
-    description = row['incident']['alerts'][0]['tags'].select{ |tag| 
-      tag['name'] == "bp_description"
-    }[0]['value']
+    #device = row['incident']['alerts'][0]['tags'].select{ |tag| 
+    #  tag['name'] == "bp_host"
+    #}[0]['value']
+    device = begin
+      rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+        tag['name'] == "bp_host"
+      }[0]['value']
+    rescue
+      "unknown"
+    end
+    #description = row['incident']['alerts'][0]['tags'].select{ |tag| 
+    #  tag['name'] == "bp_description"
+    #}[0]['value']
+    description = begin
+      rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+        tag['name'] == "bp_description"
+      }[0]['value']
+  rescue
+    "unspecified description"
+  end
   
     notification_content += "Next alert is for device: #{device}\n"
     notification_content += "Message: #{description}\n"
@@ -844,9 +891,16 @@ elsif rows.size &lt; 21
 else
   device_groups = {}
   rows.each{|row|
-    device = row['incident']['alerts'][0]['tags'].select{ |tag| 
-      tag['name'] == "bp_host"
-    }[0]['value']
+    #device = row['incident']['alerts'][0]['tags'].select{ |tag| 
+    #  tag['name'] == "bp_host"
+    #}[0]['value']
+    device = begin
+      rows[0]['incident']['alerts'][0]['tags'].select{ |tag| 
+        tag['name'] == "bp_host"
+      }[0]['value']
+      rescue
+        "unknown"
+      end
   
     if !device_groups.has_key?(device)
       device_groups[device] = 0
@@ -909,9 +963,7 @@ end
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters></parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="" type="Complete" value="">routine_kinetic_submission_create_v1_118</task>
                 </dependents>
@@ -923,14 +975,12 @@ end
                 <deferrable>false</deferrable>
                 <visible>false</visible>
                 <parameters></parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents>
                     <task label="If updates configured" type="Complete" value="JSON.parse( @request['Body'] )['Integration Configuration']['Notification Initiation Action'] != &quot;None&quot;">routine_kinetic_submission_create_v1_119</task>
                 </dependents>
             </task>
-            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_130" name="Raise Stop Error" x="521.8017523649769" y="307.73754784252804">
+            <task definition_id="utilities_echo_v1" id="utilities_echo_v1_130" name="Raise Stop Error" x="521.80176" y="307.73755">
                 <version>1</version>
                 <configured>true</configured>
                 <defers>false</defers>
@@ -971,9 +1021,7 @@ end
                     <parameter dependsOnId="" dependsOnValue="" id="type" label="Type:" menu="All,Some,Any" required="true" tooltip="How many loop processes must be completed before continuing?">All</parameter>
                     <parameter dependsOnId="type" dependsOnValue="Some" id="number" label="Number:" menu="" required="false" tooltip="If some, how many?"></parameter>
                 </parameters>
-                <messages>
-                    <message type="Complete"></message>
-                </messages>
+                <messages></messages>
                 <dependents></dependents>
             </task>
             <task definition_id="kinetic_core_api_v1" id="kinetic_core_api_v1_133" name="Update Source System Ticket Submission" x="1689" y="677">
